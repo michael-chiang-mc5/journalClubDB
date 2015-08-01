@@ -1,0 +1,11 @@
+<h1>List of all citations</h1>
+
+{% if citation_list %}
+  <ul>
+    {% for citation in citation_list %}
+    <li>{{ citation.title }}</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Empty citation list</p>
+{% endif %}
