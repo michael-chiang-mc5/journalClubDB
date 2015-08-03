@@ -20,5 +20,7 @@ def searchInterface(request):
 def search(request):
     search_str = request.POST.get("search_str")
     pubmed = PubmedInterface()
-    results = pubmed.getRecords(search_str,10)
-    return HttpResponse(results[0]['title'])
+    pubmed.getRecords(search_str,10)
+    context = {'pubmed': pubmed}
+    return render(request, 'papers/searchResults.html', context)
+    #return HttpResponse(results[0]['title'])

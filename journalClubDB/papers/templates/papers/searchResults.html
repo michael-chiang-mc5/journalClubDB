@@ -1,0 +1,18 @@
+<h1>Search Results</h1>
+
+{% for entry in pubmed.entries %}
+  <li>
+    <p>{{ entry.title }}</p>
+    <p>
+      {% for author in entry.author %}
+        {% if forloop.last %}
+          and {{ author }}
+        {% else %}
+          {{ author }},
+        {% endif %}
+      {% endfor %}
+    </p>
+    <p>{{ entry.fullSource }}</p>
+    <p>http://www.ncbi.nlm.nih.gov/pubmed/{{ entry.pubmedID }}
+  </li>
+{% endfor %}
