@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.views import generic
-from .models import Citation
+from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.http import HttpResponse
+from .models import Citation
 from .Pubmed import PubmedInterface
 
 # see all citations in database
@@ -17,10 +18,19 @@ def searchInterface(request):
     return render(request, 'papers/search.html')
 
 # get search string from /searchInterface/.  Search using google scholar
-def search(request):
+def search(request,page):
+
     search_str = request.POST.get("search_str")
+
+
     pubmed = PubmedInterface()
-    pubmed.getRecords(search_str,10)
-    context = {'pubmed': pubmed}
+    pubmed.getRecords(search_str,20)
+    paginator = Paginator(pubmed.entries, 5) # get pages with 5 items each
+
+    try:
+        posts = paginator.page(page)
+    except (InvalidPage, EmptyPage):
+        posts = paginator.page(paginator.num_pages)
+
+    context = {'posts': posts}
     return render(request, 'papers/searchResults.html', context)
-    #return HttpResponse(results[0]['title'])

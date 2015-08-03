@@ -12,7 +12,7 @@ urlpatterns = [
     url(r'^searchInterface/$', views.searchInterface, name='searchInterface'),
 
     # ex: /papers/search/
-    url(r'^search/$', views.search, name='search'),
+    url(r'^search/(?P<page>[0-9]+)/$', views.search, name='search'),
 
 
     # ex: /polls/5

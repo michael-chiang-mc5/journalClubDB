@@ -1,5 +1,6 @@
 from django.db import models
 
+# This internal journalclubDB citation data (as opposed to external pubmed citation data)
 class Citation(models.Model):
     def __str__(self):
         return self.title

@@ -1,6 +1,6 @@
 <h1>Search Results</h1>
 
-{% for entry in pubmed.entries %}
+{% for entry in posts %}
   <li>
     <p>{{ entry.title }}</p>
     <p>
@@ -15,4 +15,19 @@
     <p>{{ entry.fullSource }}</p>
     <p>http://www.ncbi.nlm.nih.gov/pubmed/{{ entry.pubmedID }}
   </li>
+{% endfor %}
+
+
+
+<!-- Next/Prev page links  -->
+{% for page in posts.paginator.page_range %}
+  {% if page == posts.number %}
+    {{ page }}
+  {% else %}
+    <form action="{% url 'papers:search' page %}" method=POST>
+        {% csrf_token %}
+        <input type="hidden" name="search_str" value="orchid" />
+        <button>{{ page }}</button>
+    </form>
+  {% endif %}
 {% endfor %}
