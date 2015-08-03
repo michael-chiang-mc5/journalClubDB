@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views import generic
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.http import HttpResponse
+import math
 from .models import Citation
 from .Pubmed import PubmedInterface
 
@@ -16,19 +17,31 @@ class IndexView(generic.ListView):
 # search interface
 def search(request,page):
 
-    search_str = None
-    if request.method == 'POST':
-        search_str = request.POST.get("search_str")
+    pubmed = PubmedInterface()
+    search_str = ''
+    totalPages = 0
+    pageNumber=0
 
-    posts = None
-    if search_str is not None:
-        pubmed = PubmedInterface()
-        pubmed.getRecords(search_str,20)
-        paginator = Paginator(pubmed.entries, 5) # get pages with 5 items each
-        try:
-            posts = paginator.page(page)
-        except (InvalidPage, EmptyPage):
-            posts = paginator.page(paginator.num_pages)
+    if request.method == 'POST': # either search initiated or page change
+        searchInitiated = request.POST.get("searchInitiated")
+        if searchInitiated == "True": # search initiated
+            search_str = request.POST.get("search_str")
+            pubmed.countNumberSearchResults(search_str)
+            numberSearchResults = pubmed.numberSearchResults
+            totalPages = math.ceil(numberSearchResults/10)
+            pageNumber=1
+            retMin = 0
+            retMax = 10
+            pubmed.getRecords(search_str,retMin,retMax)
+        else: # page change
+            search_str = request.POST.get("search_str")
+            pageNumber = int(request.POST.get("pageNumber"))
+            retMin = (pageNumber-1)*10
+            retMax = 10
+            pubmed.getRecords(search_str,retMin,retMax)
+            totalPages = int(request.POST.get("totalPages"))
+        context = {'entries': pubmed.entries, 'search_str': search_str, 'totalPages':totalPages, 'totalPagesRange': range(1,totalPages), 'pageNumber': pageNumber, 'freshSearch': False}
+    else:
+        context = {'entries': pubmed.entries, 'search_str': search_str, 'totalPages':totalPages, 'totalPagesRange': range(1,totalPages), 'pageNumber': pageNumber, 'freshSearch': True}
 
-    context = {'posts': posts, 'search_str': search_str}
     return render(request, 'papers/search.html', context)

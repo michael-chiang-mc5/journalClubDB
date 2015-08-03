@@ -1,17 +1,17 @@
 
 <form action="{% url 'papers:search' 1 %}" method=POST>
   {% csrf_token %}
-  <input type="text" {% if search_str != None %}
-                        value="{{ search_str }}"
-                     {% endif %}
-                     name="search_str"><input type="submit">
+  <input type="text" value="{{ search_str }}" name="search_str">
+  <input type="hidden" name="searchInitiated" value="True" />
+  <input type="submit">
 </form>
 
-{% if posts != None %}
+{% if freshSearch == False %}
 <h1>Search Results</h1>
-{% for entry in posts %}
+{% for entry in entries %}
   <li>
-    <p>{{ entry.title }}</p>
+    <a href="">Add to jcDB</a>
+    <p><a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ entry.pubmedID }}">{{ entry.title }}</a></p>
     <p>
       {% for author in entry.author %}
         {% if forloop.last %}
@@ -22,20 +22,19 @@
       {% endfor %}
     </p>
     <p>{{ entry.fullSource }}</p>
-    <p>http://www.ncbi.nlm.nih.gov/pubmed/{{ entry.pubmedID }}
   </li>
 {% endfor %}
 
-
-
 <!-- Next/Prev page links  -->
-{% for page in posts.paginator.page_range %}
-  {% if page == posts.number %}
+{% for page in totalPagesRange %}
+  {% if page == pageNumber %}
     {{ page }}
   {% else %}
     <form action="{% url 'papers:search' page %}" method=POST>
         {% csrf_token %}
         <input type="hidden" name="search_str" value="{{ search_str }}" />
+        <input type="hidden" name="pageNumber" value="{{ page }}" />
+        <input type="hidden" name="totalPages" value="{{ totalPages }}"/>
         <button>{{ page }}</button>
     </form>
   {% endif %}

@@ -11,13 +11,14 @@ class PubmedInterface():
 
     def __init__(self):
         Entrez.email = "michael.chiang.mc5@gmail.com"
-        self.entries = []
+        self.entries = [] # each entry is a single pubmed result
+        self.numberSearchResults = 0 # this is the total number of results returned by a pubmed search, not the number of entries stored
 
     def __str__(self):
-        return "Provides functionality to interface with pubmed."
+        return str(self.entries)
 
-    def getRecords(self,search_str,maxNumberOfRecords):
-        ids = self.getIDs(search_str,maxNumberOfRecords)
+    def getRecords(self,search_str,retMin,retMax):
+        ids = self.getIDs(search_str,retMin,retMax)
         handle = Entrez.efetch(db="pubmed", id=ids, rettype="medline",retmode="text")
         records = Medline.parse(handle)
         rn = []
@@ -38,11 +39,19 @@ class PubmedInterface():
             pubmedEntry.pubmedID = record.get("PMID", None)
             self.entries.append(pubmedEntry)
 
-    def getIDs(self,search_str,maxNumberOfRecords):
-        handle = Entrez.esearch(db="pubmed", term=search_str, retmax=maxNumberOfRecords)
+    # retMin starts at 0 (i.e., first search result is indexed as 0)
+    def getIDs(self,search_str,retMin,retMax):
+        handle = Entrez.esearch(db="pubmed", term=search_str, retstart=retMin , retmax=retMax)
         record = Entrez.read(handle)
         idlist = record["IdList"]
         return idlist
+
+    def countNumberSearchResults(self,search_str):
+        handle = Entrez.egquery(term=search_str)
+        record = Entrez.read(handle)
+        for row in record["eGQueryResult"]:
+            if row["DbName"]=="pubmed":
+                self.numberSearchResults = int(row["Count"])
 
 class PubmedEntry():
 
