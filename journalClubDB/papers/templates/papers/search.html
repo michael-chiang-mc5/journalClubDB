@@ -1,0 +1,12 @@
+
+<form action="{% url 'papers:search' %}" method=POST>
+  {% csrf_token %}
+  <input type="text" name="search_str"><input type="submit">
+</form>
+
+<!--
+
+<form id="search" method="get" action="http://www.google.com">
+  <input type="text" name="q"><input type="submit">
+</form>
+-->
