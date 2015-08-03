@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views import generic
 from .models import Citation
 from django.http import HttpResponse
-from .scholar2 import testFunction
+from .Pubmed import PubmedInterface
 
 # see all citations in database
 class IndexView(generic.ListView):
@@ -19,7 +19,6 @@ def searchInterface(request):
 # get search string from /searchInterface/.  Search using google scholar
 def search(request):
     search_str = request.POST.get("search_str")
-
-
-
-    return HttpResponse(testFunction())
+    pubmed = PubmedInterface()
+    results = pubmed.getRecords(search_str,10)
+    return HttpResponse(results[0]['title'])
