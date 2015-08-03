@@ -14,23 +14,21 @@ class IndexView(generic.ListView):
         return Citation.objects.all()
 
 # search interface
-def searchInterface(request):
-    return render(request, 'papers/search.html')
-
-# get search string from /searchInterface/.  Search using google scholar
 def search(request,page):
 
-    search_str = request.POST.get("search_str")
+    search_str = None
+    if request.method == 'POST':
+        search_str = request.POST.get("search_str")
 
+    posts = None
+    if search_str is not None:
+        pubmed = PubmedInterface()
+        pubmed.getRecords(search_str,20)
+        paginator = Paginator(pubmed.entries, 5) # get pages with 5 items each
+        try:
+            posts = paginator.page(page)
+        except (InvalidPage, EmptyPage):
+            posts = paginator.page(paginator.num_pages)
 
-    pubmed = PubmedInterface()
-    pubmed.getRecords(search_str,20)
-    paginator = Paginator(pubmed.entries, 5) # get pages with 5 items each
-
-    try:
-        posts = paginator.page(page)
-    except (InvalidPage, EmptyPage):
-        posts = paginator.page(paginator.num_pages)
-
-    context = {'posts': posts}
-    return render(request, 'papers/searchResults.html', context)
+    context = {'posts': posts, 'search_str': search_str}
+    return render(request, 'papers/search.html', context)
