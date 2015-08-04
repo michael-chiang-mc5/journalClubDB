@@ -1,6 +1,6 @@
 <!-- navigation bar.  Move to template -->
 <a href="{% url 'papers:index' %}">index</a>
-<a href="{% url 'papers:search' 0 %}">Search</a>
+<a href="{% url 'papers:search_development' 0 %}">Search</a>
 
 <h1>Paper details</h1>
 
@@ -8,3 +8,10 @@
 <p> {{ citation.author }} </p>
 <p> {{ citation.fullSource}} </p>
 <p> {{ citation.abstract }} </p>
+
+<p>
+    <h1>{{ thread1.description }}</h1>
+    {% for p in posts1 %}
+      <p>{{ p.text }}</p>
+    {% endfor %}
+</p>

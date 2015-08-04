@@ -5,20 +5,19 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 import logging
 import math
-from .models import Citation
+from .models import Citation, Thread, Post
 from .Pubmed import PubmedInterface
 logger = logging.getLogger(__name__)
 import time
-from django.views.decorators.csrf import csrf_exempt
+import pickle # used to debug, remove later
+import os
 
 # see all citations in database
-class IndexView(generic.ListView):
+def index(request):
     template_name = 'papers/index.html'
-    context_object_name = 'citation_list'
-    def get_queryset(self):
-        """Return list of all citations"""
-        return Citation.objects.all()
-
+    citations = Citation.objects.all()
+    context = {'citations': citations,}
+    return render(request, 'papers/index.html', context)
 
 # returns a string, otherwise returns None
 def citationSanitizer(request,field_name):
@@ -35,18 +34,45 @@ def addCitation(request):
         field_entry = citationSanitizer(request,f)
         setattr(citation,f,field_entry)
     citation.save()
+
+    thread = Thread()
+    setattr(thread,'description','General comments')
+    setattr(thread,'owner',citation)
+    thread.save()
+
     return HttpResponse("donezo") # TODO: return detail pk for link
 
 
 # internal citation information
 def detail(request,pk):
     citation = Citation.objects.get(pk=pk)
-    context = {'citation': citation}
+    thread1 = Thread.objects.filter(owner=pk)[0]
+    posts1 = Post.objects.filter(owner=thread1.pk)
+
+    context = {'citation': citation,'thread1': thread1,'posts1':posts1}
     return render(request, 'papers/detail.html', context)
+
+# search is terribly slow.  Use this for development
+def search_development(request,page):
+    with open('/Users/mcah5a/Desktop/projects/journalClubDB/journalClubDB/pubmedObject.pkl','rb') as input:
+        pubmed = pickle.load(input)
+    search_str = 'asdf'
+    totalPages=0
+    pageNumber=0
+    searchInitiated = "True"
+    search_str = 'asdf'
+    numberSearchResults = 4
+    totalPages = math.ceil(numberSearchResults/10)
+    pageNumber=1
+    retMin = 0
+    retMax = 10
+    freshSearch=False
+    totalPages = min([totalPages,15+1]) # maximum of 15 pages
+    context = {'entries': pubmed.entries, 'search_str': search_str, 'totalPages':totalPages, 'totalPagesRange': range(1,totalPages), 'pageNumber': pageNumber, 'freshSearch': freshSearch}
+    return render(request, 'papers/search.html', context)
 
 # search interface
 def search(request,page):
-    logger.debug("in search")
     pubmed = PubmedInterface()
     search_str = ''
     totalPages=0

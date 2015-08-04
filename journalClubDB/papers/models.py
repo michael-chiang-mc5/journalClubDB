@@ -1,6 +1,6 @@
 from django.db import models
 
-# This internal journalclubDB citation data (as opposed to external pubmed citation data)
+# This is internal journalclubDB citation data (as opposed to external pubmed citation data)
 class Citation(models.Model):
     def __str__(self):
         return self.title
@@ -18,3 +18,17 @@ class Citation(models.Model):
     doi = models.TextField(blank=True)
     fullAuthorNames = models.TextField(blank=True)
     pubmedID = models.TextField(blank=True)
+
+# Discussion thread for a particular citation
+class Thread(models.Model):
+    def __str__(self):
+        return self.description
+    owner = models.ForeignKey(Citation)
+    description = models.TextField(blank=True)
+
+class Post(models.Model):
+    def __str__(self):
+        return self.text
+    owner = models.ForeignKey(Thread)
+    text = models.TextField(blank=True)
+    pub_date = models.DateTimeField('date published')
