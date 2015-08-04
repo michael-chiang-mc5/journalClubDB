@@ -31,19 +31,13 @@ def citationSanitizer(request,field_name):
 
 # probably better to use ajax
 def addCitation(request):
-    if request.is_ajax():
-        message = "Yes, AJAX!"
-    else:
-        message = "Not Ajax"
-    return HttpResponse(message)
-#    logger.debug("in addCitation")
-#    citation = Citation()
-#    field_list = ["title", "author", "journal", "volume","number","pages","date","fullSource","keywords","abstract","doi","fullAuthorNames","pubmedID"]
-#    for f in field_list:
-#        field_entry = citationSanitizer(request,f)
-#        setattr(citation,f,field_entry)
-#    citation.save()
-#    return redirect('papers:index')
+    citation = Citation()
+    field_list = ["title", "author", "journal", "volume","number","pages","date","fullSource","keywords","abstract","doi","fullAuthorNames","pubmedID"]
+    for f in field_list:
+        field_entry = citationSanitizer(request,f)
+        setattr(citation,f,field_entry)
+    citation.save()
+    return HttpResponse("donezo")
 
 # search interface
 def search(request,page):

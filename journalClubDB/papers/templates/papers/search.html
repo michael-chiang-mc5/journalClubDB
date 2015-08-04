@@ -1,74 +1,15 @@
-<!-- TODO: move this to base template -->
-
+<!-- serve javascript -->
 <head>
   {% load staticfiles %}
   <script src="{% static "/static/js/jquery-2.1.4.min.js" %}"></script>
-
+  <script>
+    url_js = "{% url 'papers:addCitation' %}"
+    csrf_js = '{{ csrf_token }}'
+  </script>
+  <script src="{% static "/static/js/ajax.js" %}"></script>
 </head>
 
-
-<script type="text/javascript">
-    $(function() {
-        $("button").click(function() {
-          var id = $(this).attr("id")
-          var arr = id.split('_')
-          var idNumber = arr[1]
-
-
-          $("#" + id + " span").text('Saving');
-
-            $.ajax({
-                url: "{% url 'papers:addCitation' %}",
-                type: "GET",
-                success: function(data) {
-                    alert(data);
-                },
-                error: function(data) {
-                    alert("Got an error dude");
-                }
-            });
-        $("#" + id + " span").text(idNumber);
-
-        })
-    })
-</script>
-
-<button type="button" id="num_1" method="POST">Hello Server!</button>
-
-
-<script type="text/javascript">
-
-$(document).ready(function() {
-       $("#test").submit(function(event){
-            $.ajax({
-                 type:"POST",
-                 url: "{% url 'papers:addCitation' %}",
-                 data: {
-                        'video': $('#test').val(), // from form
-                        csrfmiddlewaretoken: '{{ csrf_token }}',
-                        },
-                 success: function(){
-                     $('#message').html("<h2>Contact Form Submitted!</h2>")
-                 }
-            });
-            return false; //<---- move it here
-       });
-
-});
-</script>
-
-<form method='post' id ='test'>
-  {% csrf_token %}
-
-   <input type="hidden" value="video34" />
-    <input type='submit' value='Test button'/>
-
-    <div id = 'message'>Initial text</div>
-
-</form>
-
-
-
+<!-- Search bar -->
 <form action="{% url 'papers:search' 1 %}" method=POST>
   {% csrf_token %}
   <input type="text" value="{{ search_str }}" name="search_str">
@@ -81,39 +22,24 @@ $(document).ready(function() {
 {% for entry in entries %}
   <li>
     <!-- button to add pubmed citation to internal database-->
-    <!-- <form action="{% url 'papers:addCitation' %}" method=POST>
-        {% csrf_token %}
-        <input type="hidden" name="title" value="{{ entry.title }}"/>
-        <input type="hidden" name="author" value="{{ entry.author }}"/>
-        <input type="hidden" name="journal" value="{{ entry.journal }}"/>
-        <input type="hidden" name="volume" value="{{ entry.volume }}"/>
-        <input type="hidden" name="number" value="{{ entry.number }}"/>
-        <input type="hidden" name="pages" value="{{ entry.pages }}"/>
-        <input type="hidden" name="date" value="{{ entry.date }}"/>
-        <input type="hidden" name="fullSource" value="{{ entry.fullSource }}"/>
-        <input type="hidden" name="keywords" value="{{ entry.keywords }}"/>
-        <input type="hidden" name="abstract" value="{{ entry.abstract }}"/>
-        <input type="hidden" name="doi" value="{{ entry.doi }}"/>
-        <input type="hidden" name="fullAuthorNames" value="{{ entry.fullAuthorNames }}"/>
-        <input type="hidden" name="pubmedID" value="{{ entry.pubmedID }}"/>
-        <button>Add</button>
-    </form>-->
-    <button id="add_{{ forloop.counter }}">
-      <span class="addCitation">Add</span>
-      <input type="hidden" name="title{{ forloop.counter }}" value="{{ entry.title }}"/>
-      <input type="hidden" name="author{{ forloop.counter }}" value="{{ entry.author }}"/>
-      <input type="hidden" name="journal{{ forloop.counter }}" value="{{ entry.journal }}"/>
-      <input type="hidden" name="volume{{ forloop.counter }}" value="{{ entry.volume }}"/>
-      <input type="hidden" name="number{{ forloop.counter }}" value="{{ entry.number }}"/>
-      <input type="hidden" name="pages{{ forloop.counter }}" value="{{ entry.pages }}"/>
-      <input type="hidden" name="date{{ forloop.counter }}" value="{{ entry.date }}"/>
-      <input type="hidden" name="fullSource{{ forloop.counter }}" value="{{ entry.fullSource }}"/>
-      <input type="hidden" name="keywords{{ forloop.counter }}" value="{{ entry.keywords }}"/>
-      <input type="hidden" name="abstract{{ forloop.counter }}" value="{{ entry.abstract }}"/>
-      <input type="hidden" name="doi{{ forloop.counter }}" value="{{ entry.doi }}"/>
-      <input type="hidden" name="fullAuthorNames{{ forloop.counter }}" value="{{ entry.fullAuthorNames }}"/>
-      <input type="hidden" name="pubmedID{{ forloop.counter }}" value="{{ entry.pubmedID }}"/>
-    </button>
+    <form method='post' id="f_{{ forloop.counter }}">
+       {% csrf_token %}
+       <input type="hidden" id="title_{{ forloop.counter }}" value="{{ entry.title }}"/>
+       <input type="hidden" id="author_{{ forloop.counter }}" value="{{ entry.author }}"/>
+       <input type="hidden" id="journal_{{ forloop.counter }}" value="{{ entry.journal }}"/>
+       <input type="hidden" id="volume_{{ forloop.counter }}" value="{{ entry.volume }}"/>
+       <input type="hidden" id="number_{{ forloop.counter }}" value="{{ entry.number }}"/>
+       <input type="hidden" id="pages_{{ forloop.counter }}" value="{{ entry.pages }}"/>
+       <input type="hidden" id="date_{{ forloop.counter }}" value="{{ entry.date }}"/>
+       <input type="hidden" id="fullSource_{{ forloop.counter }}" value="{{ entry.fullSource }}"/>
+       <input type="hidden" id="keywords_{{ forloop.counter }}" value="{{ entry.keywords }}"/>
+       <input type="hidden" id="abstract_{{ forloop.counter }}" value="{{ entry.abstract }}"/>
+       <input type="hidden" id="doi_{{ forloop.counter }}" value="{{ entry.doi }}"/>
+       <input type="hidden" id="fullAuthorNames_{{ forloop.counter }}" value="{{ entry.fullAuthorNames }}"/>
+       <input type="hidden" id="pubmedID_{{ forloop.counter }}" value="{{ entry.pubmedID }}"/>
+       <input type='submit' id="s_{{ forloop.counter }}" value='Import'/>
+    </form>
+
     <!-- title with pubmed link -->
     <p><a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ entry.pubmedID }}">{{ entry.title }}</a></p>
     <!-- author list -->
@@ -145,5 +71,4 @@ $(document).ready(function() {
     </form>
   {% endif %}
 {% endfor %}
-
 {% endif %}
