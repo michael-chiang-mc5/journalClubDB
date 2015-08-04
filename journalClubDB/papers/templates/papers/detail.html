@@ -1,0 +1,10 @@
+<!-- navigation bar.  Move to template -->
+<a href="{% url 'papers:index' %}">index</a>
+<a href="{% url 'papers:search' 0 %}">Search</a>
+
+<h1>Paper details</h1>
+
+<p> {{ citation.title }} </p>
+<p> {{ citation.author }} </p>
+<p> {{ citation.fullSource}} </p>
+<p> {{ citation.abstract }} </p>

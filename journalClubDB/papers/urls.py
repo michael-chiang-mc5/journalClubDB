@@ -11,4 +11,8 @@ urlpatterns = [
     # ex: /papers/addCitation/
     url(r'^addCitation/$', views.addCitation, name='addCitation'),
 
+    # ex: /papers/detail/0/
+    url(r'^detail/(?P<pk>[0-9]+)/$', views.detail, name='detail'),
+
+
 ]

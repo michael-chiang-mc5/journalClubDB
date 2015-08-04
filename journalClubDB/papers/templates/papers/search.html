@@ -9,6 +9,9 @@
   <script src="{% static "/static/js/ajax.js" %}"></script>
 </head>
 
+<!-- navigation bar.  Move to template -->
+<a href="{% url 'papers:index' %}">Index</a>
+
 <!-- Search bar -->
 <form action="{% url 'papers:search' 1 %}" method=POST>
   {% csrf_token %}

@@ -28,8 +28,6 @@ def citationSanitizer(request,field_name):
             return f
     return ''
 
-
-# probably better to use ajax
 def addCitation(request):
     citation = Citation()
     field_list = ["title", "author", "journal", "volume","number","pages","date","fullSource","keywords","abstract","doi","fullAuthorNames","pubmedID"]
@@ -37,7 +35,14 @@ def addCitation(request):
         field_entry = citationSanitizer(request,f)
         setattr(citation,f,field_entry)
     citation.save()
-    return HttpResponse("donezo")
+    return HttpResponse("donezo") # TODO: return detail pk for link
+
+
+# internal citation information
+def detail(request,pk):
+    citation = Citation.objects.get(pk=pk)
+    context = {'citation': citation}
+    return render(request, 'papers/detail.html', context)
 
 # search interface
 def search(request,page):
