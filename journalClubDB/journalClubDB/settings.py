@@ -25,7 +25,7 @@ SECRET_KEY = '=#yx!jft^+h52xh&5_#3q5!xz0i63g!z2cgwkympl70y&*mibo'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -99,5 +99,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
+STATICFILES_DIRS = (
+    "/Users/mcah5a/Desktop/projects/journalClubDB/journalClubDB/static/",
+)
 
 STATIC_URL = '/static/'
