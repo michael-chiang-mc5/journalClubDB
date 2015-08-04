@@ -10,8 +10,27 @@
 <h1>Search Results</h1>
 {% for entry in entries %}
   <li>
-    <a href="">Add to jcDB</a>
+    <!-- button to add pubmed citation to internal database-->
+    <form action="{% url 'papers:addCitation' %}" method=POST>
+        {% csrf_token %}
+        <input type="hidden" name="title" value="{{ entry.title }}"/>
+        <input type="hidden" name="author" value="{{ entry.author }}"/>
+        <input type="hidden" name="journal" value="{{ entry.journal }}"/>
+        <input type="hidden" name="volume" value="{{ entry.volume }}"/>
+        <input type="hidden" name="number" value="{{ entry.number }}"/>
+        <input type="hidden" name="pages" value="{{ entry.pages }}"/>
+        <input type="hidden" name="date" value="{{ entry.date }}"/>
+        <input type="hidden" name="fullSource" value="{{ entry.fullSource }}"/>
+        <input type="hidden" name="keywords" value="{{ entry.keywords }}"/>
+        <input type="hidden" name="abstract" value="{{ entry.abstract }}"/>
+        <input type="hidden" name="doi" value="{{ entry.doi }}"/>
+        <input type="hidden" name="fullAuthorNames" value="{{ entry.fullAuthorNames }}"/>
+        <input type="hidden" name="pubmedID" value="{{ entry.pubmedID }}"/>
+        <button>Add</button>
+    </form>
+    <!-- title with pubmed link -->
     <p><a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ entry.pubmedID }}">{{ entry.title }}</a></p>
+    <!-- author list -->
     <p>
       {% for author in entry.author %}
         {% if forloop.last %}
@@ -21,7 +40,8 @@
         {% endif %}
       {% endfor %}
     </p>
-    <p>{{ entry.fullSource }}</p>
+    <!-- journal information -->
+    <p>{{ entry.fullCite }}</p>
   </li>
 {% endfor %}
 
