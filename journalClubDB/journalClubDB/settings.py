@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'papers',
+    'registration', # django-registration-redux, see http://www.tangowithdjango.com/book17/chapters/login_redux.html
 )
 
 MIDDLEWARE_CLASSES = (
@@ -56,7 +57,7 @@ ROOT_URLCONF = 'journalClubDB.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [  "/Users/mcah5a/Desktop/projects/journalClubDB/journalClubDB/templates/",],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -104,3 +105,10 @@ STATICFILES_DIRS = (
 )
 
 STATIC_URL = '/static/'
+
+# required for django-registration-redux
+REGISTRATION_OPEN = True                # If True, users can register
+ACCOUNT_ACTIVATION_DAYS = 7     # One-week activation window; you may, of course, use a different value.
+REGISTRATION_AUTO_LOGIN = True  # If True, the user will be automatically logged in.
+LOGIN_REDIRECT_URL = '/papers/'  # The page you want users to arrive at after they successful log in
+LOGIN_URL = '/accounts/login/'  # The page users are directed to if they are not logged in,

@@ -2,7 +2,6 @@ from django.contrib import admin
 
 from .models import Citation,Thread,Post
 
-
 class PostInline(admin.TabularInline):
     model = Post
     extra = 1

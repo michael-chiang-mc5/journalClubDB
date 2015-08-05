@@ -15,8 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+import registration
+
+from registration.backends.simple.views import RegistrationView
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^papers/', include('papers.urls', namespace="papers"))
+    url(r'^papers/', include('papers.urls', namespace="papers")),
+    url(r'^accounts/register/complete/$', 'papers.views.index'),  # TODO: make registration not require email, see http://stackoverflow.com/questions/6364623/django-registration-email-as-username
+    url(r'^accounts/', include('registration.backends.simple.urls')),
 ]

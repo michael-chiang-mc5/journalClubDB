@@ -59,7 +59,7 @@ def addCitation(request):
 def detail(request,pk):
     citation = Citation.objects.get(pk=pk)
     thread1 = Thread.objects.filter(owner=pk)[0]
-    posts1 = Post.objects.filter(owner=thread1.pk)
+    posts1 = Post.objects.filter(owner=thread1.pk) # TODO: sort by time_created
 
     context = {'citation': citation,'thread1': thread1,'posts1':posts1}
     return render(request, 'papers/detail.html', context)

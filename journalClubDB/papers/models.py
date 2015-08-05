@@ -1,9 +1,23 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # This is internal journalclubDB citation data (as opposed to external pubmed citation data)
 class Citation(models.Model):
     def __str__(self):
         return self.title
+
+    def num_posts(self):
+        return sum([t.num_posts() for t in self.thread_set.all()])
+
+    def time_last_post(self):
+        tMax = None
+        for t in self.thread_set.all():
+            if tMax is None:
+                tMax = t.time_last_post()
+            else:
+                if t.time_last_post() > tMax:
+                    tMax = t.time_last_post()
+        return tMax
 
     title = models.TextField(blank=True)
     author = models.TextField(blank=True)
@@ -20,15 +34,33 @@ class Citation(models.Model):
     pubmedID = models.PositiveIntegerField(blank=True)
 
 # Discussion thread for a particular citation
+# Possible categories: Historical context, Inside scoop
 class Thread(models.Model):
     def __str__(self):
-        return self.description
+        return str(self.owner) + ' - ' + self.description
+
+    def num_posts(self):
+        return self.post_set.count()
+
+    def time_last_post(self):
+        tMax = None
+        for p in self.post_set.all():
+            if tMax is None:
+                tMax = p.time_created
+            else:
+                if p.time_created > tMax:
+                    tMax = p.time_created
+        return tMax
+
     owner = models.ForeignKey(Citation)
     description = models.TextField(blank=True)
 
 class Post(models.Model):
     def __str__(self):
         return self.text
+    time_created = models.DateTimeField(auto_now_add=True)
+    creator = models.ForeignKey(User, blank=True, null=True)
     owner = models.ForeignKey(Thread)
     text = models.TextField(blank=True)
-    pub_date = models.DateTimeField('date published')
+    upvotes = models.PositiveIntegerField(blank=True)
+    downvotes = models.PositiveIntegerField(blank=True)
