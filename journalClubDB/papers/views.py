@@ -30,8 +30,12 @@ def citationSanitizer(request,field_name):
 
 def addCitation(request):
 
-    # TODO: check for duplicate citations
-
+    # check for duplicate citations.  If citation already exists, return primary key
+    pubmedID = request.POST['pubmedID']
+    citations = Citation.objects.filter(pubmedID=pubmedID)
+    if len(citations) is not 0:
+        citation_url = reverse('papers:detail',args=[citations[0].pk])
+        return JsonResponse({'new_citation_url':citation_url})
 
     # Create citation
     citation = Citation()
