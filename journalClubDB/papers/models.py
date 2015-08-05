@@ -17,7 +17,7 @@ class Citation(models.Model):
     abstract = models.TextField(blank=True)
     doi = models.TextField(blank=True)
     fullAuthorNames = models.TextField(blank=True)
-    pubmedID = models.TextField(blank=True) # TODO: change this to int
+    pubmedID = models.PositiveIntegerField(blank=True)
 
 # Discussion thread for a particular citation
 class Thread(models.Model):

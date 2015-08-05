@@ -36,7 +36,7 @@ class PubmedInterface():
             pubmedEntry.abstract = record.get("AB", None)
             pubmedEntry.doi = record.get("LID", None)
             pubmedEntry.fullAuthorNames = record.get("FAU", None)
-            pubmedEntry.pubmedID = record.get("PMID", None)
+            pubmedEntry.pubmedID = int(record.get("PMID", None))
             self.entries.append(pubmedEntry)
 
     # retMin starts at 0 (i.e., first search result is indexed as 0)
