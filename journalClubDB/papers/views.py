@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 import time
 import pickle # used to debug, remove later
 import os
+from django.http import JsonResponse
 
 # see all citations in database
 def index(request):
@@ -28,6 +29,11 @@ def citationSanitizer(request,field_name):
     return ''
 
 def addCitation(request):
+
+    # TODO: check for duplicate citations
+
+
+    # Create citation
     citation = Citation()
     field_list = ["title", "author", "journal", "volume","number","pages","date","fullSource","keywords","abstract","doi","fullAuthorNames","pubmedID"]
     for f in field_list:
@@ -35,13 +41,15 @@ def addCitation(request):
         setattr(citation,f,field_entry)
     citation.save()
 
+    # Create threads
     thread = Thread()
     setattr(thread,'description','General comments')
     setattr(thread,'owner',citation)
     thread.save()
 
-    return HttpResponse("donezo") # TODO: return detail pk for link
-
+    # Return url to new citation detail page
+    new_citation_url = reverse('papers:detail',args=[citation.pk])
+    return JsonResponse({'new_citation_url':new_citation_url})
 
 # internal citation information
 def detail(request,pk):

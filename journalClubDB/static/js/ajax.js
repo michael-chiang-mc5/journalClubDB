@@ -3,7 +3,7 @@
 // since django templating does not apply to javascript files
 
 $(document).ready(function() {
-       $("form[id*='f_']").submit(function(event){
+       $( "form[id*='f_']" ).submit(function(event){
 
             var f_id = $(this).attr("id")
             var arr = f_id.split('_')
@@ -29,8 +29,11 @@ $(document).ready(function() {
                         'fullAuthorNames': $('#fullAuthorNames_'+id).val(),
                         'pubmedID': $('#pubmedID_'+id).val(),
                         },
-                 success: function(){
+                 success: function(data){
                      $('#s_'+id).val("Saved")
+                     $('#f_'+id).hide();
+                     $('#b_'+id).show();
+                     $('#a_'+id).attr("href",data.new_citation_url)
                  }
             });
             return false;

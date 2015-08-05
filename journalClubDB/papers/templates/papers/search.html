@@ -5,6 +5,7 @@
   <script>
     url_js = "{% url 'papers:addCitation' %}"
     csrf_js = '{{ csrf_token }}'
+    url2_js = "{% url 'papers:detail' 0 %}"
   </script>
   <script src="{% static "/static/js/ajax.js" %}"></script>
 </head>
@@ -24,6 +25,11 @@
 <h1>Search Results</h1>
 {% for entry in entries %}
   <li>
+    <a href="{% url 'papers:detail' 1 %}" id="a_{{ forloop.counter }}">
+    <button id="b_{{ forloop.counter }}" style="display:none;">
+      Saved
+    </button>
+   </a>
     <!-- button to add pubmed citation to internal database-->
     <form method='post' id="f_{{ forloop.counter }}">
        {% csrf_token %}
