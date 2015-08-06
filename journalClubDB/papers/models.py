@@ -34,7 +34,7 @@ class Citation(models.Model):
     pubmedID = models.PositiveIntegerField(blank=True)
 
 # Discussion thread for a particular citation
-# Possible categories: Historical context, Inside scoop
+# Possible categories: ELI5, Methodology, Results, Discussion, Historical context
 class Thread(models.Model):
     def __str__(self):
         return str(self.owner) + ' - ' + self.description
@@ -60,7 +60,9 @@ class Post(models.Model):
         return self.text
     time_created = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, blank=True, null=True)
-    owner = models.ForeignKey(Thread)
+    thread = models.ForeignKey(Thread)
+    isReplyToPost = models.BooleanField()
+    motherPost = models.ForeignKey('self', blank=True, null=True)
     text = models.TextField(blank=True)
     upvotes = models.PositiveIntegerField(blank=True)
     downvotes = models.PositiveIntegerField(blank=True)

@@ -12,6 +12,7 @@ import time
 import pickle # used to debug, remove later
 import os
 from django.http import JsonResponse
+import datetime
 
 # see all citations in database
 def index(request):
@@ -28,9 +29,35 @@ def citationSanitizer(request,field_name):
             return f
     return ''
 
-def addCitation(request):
+# add posts
+def addPost(request):
 
-    # check for duplicate citations.  If citation already exists, return primary key
+    # get POST data
+    text = request.POST['text']
+    thread_pk = int(request.POST.get("thread_pk", False))
+    is_reply_to_post = bool(int(request.POST.get("isReplyToPost", False)))
+    motherPost_pk = int(request.POST.get("mother_post_pk", False))
+    text = request.POST.get("text", False)
+
+    post = Post()
+    setattr(post,'time_created',datetime.datetime.now())
+    setattr(post,'creator',request.user)
+    setattr(post,'thread',Thread.objects.get(pk=thread_pk))
+    setattr(post,'isReplyToPost', is_reply_to_post)
+    if is_reply_to_post:
+        setattr(post,'mother_post',Post.objects.get(pk=motherPost_pk))
+    setattr(post,'text',text)
+    setattr(post,'upvotes',0)
+    setattr(post,'downvotes',0)
+    post.save()
+
+    return JsonResponse({})
+
+
+
+
+def addCitation(request):
+    # check for duplicate citations.  If citation already exists, return primary key of the citation
     pubmedID = request.POST['pubmedID']
     citations = Citation.objects.filter(pubmedID=pubmedID)
     if len(citations) is not 0:
@@ -46,11 +73,12 @@ def addCitation(request):
     citation.save()
 
     # Create threads
-    thread = Thread()
-    setattr(thread,'description','General comments')
-    setattr(thread,'owner',citation)
-    thread.save()
-
+    thread_names = ["Explain Like I'm Five","Methodology","Results","Historical Context","Discussion"]
+    for name in thread_names:
+        thread = Thread()
+        setattr(thread,'description',name)
+        setattr(thread,'owner',citation)
+        thread.save()
     # Return url to new citation detail page
     new_citation_url = reverse('papers:detail',args=[citation.pk])
     return JsonResponse({'new_citation_url':new_citation_url})
@@ -58,10 +86,13 @@ def addCitation(request):
 # internal citation information
 def detail(request,pk):
     citation = Citation.objects.get(pk=pk)
-    thread1 = Thread.objects.filter(owner=pk)[0]
-    posts1 = Post.objects.filter(owner=thread1.pk) # TODO: sort by time_created
+    threads = Thread.objects.filter(owner=pk)
+    posts_vector = []
+    for thread in threads:
+        posts = Post.objects.filter(thread=thread.pk)
+        posts_vector.append(posts)
 
-    context = {'citation': citation,'thread1': thread1,'posts1':posts1}
+    context = {'citation': citation,'threads': threads,'posts_vector':posts_vector}
     return render(request, 'papers/detail.html', context)
 
 # search is terribly slow.  Use this for development

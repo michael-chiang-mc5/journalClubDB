@@ -1,17 +1,91 @@
+<!-- header -->
+<!DOCTYPE html>
+<head>
+  <title>Bootstrap Case</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  {% load staticfiles %}
+  <script src="{% static "/static/js/jquery-2.1.4.min.js" %}"></script>
+  <script src="{% static "/static/bootstrap-3.3.5-dist/js/bootstrap.min.js" %}"></script>
+</head>
+
+
+
+
 <!-- navigation bar.  Move to template -->
 <a href="{% url 'papers:index' %}">index</a>
 <a href="{% url 'papers:search_development' 0 %}">Search</a>
 
+<!-- Citation data -->
 <h1>Paper details</h1>
-
 <p> {{ citation.title }} </p>
 <p> {{ citation.author }} </p>
 <p> {{ citation.fullSource}} </p>
 <p> {{ citation.abstract }} </p>
 
+<!-- forum -->
+
+<!--
 <p>
-    <h1>{{ thread1.description }}</h1>
-    {% for p in posts1 %}
+  {% for thread,posts in threads_postsVector %}
+    <h1>{{ thread.description }}</h1>
+    {% for p in posts %}
       <p>{{ p.text }}</p>
     {% endfor %}
+  {% endfor %}
 </p>
+-->
+<html lang="en">
+<body>
+<div class="container">
+  <h2>Dynamic Pills</h2>
+  <ul class="nav nav-pills">
+    {% for thread in threads %}
+      {% if forloop.first %}
+        <li class="active"><a data-toggle="pill" href="#t_{{ forloop.counter }}">{{ thread.description }}</a></li>
+      {% else %}
+        <li><a data-toggle="pill" href="#t_{{ forloop.counter }}">{{ thread.description }}</a></li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+
+
+
+  <div class="tab-content">
+    {% for posts in posts_vector %}
+
+      {% if forloop.first %}
+        <div id="t_{{ forloop.counter }}" class="tab-pane fade in active">
+      {% else %}
+        <div id="t_{{ forloop.counter }}" class="tab-pane fade">
+      {% endif %}
+
+
+      {% for p in posts %}
+        <p>{{ p.text }}</p>
+      {% endfor %}
+
+
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+
+
+
+
+</body>
+</html>
+
+<!-- Submit post-->
+<form action="{% url 'papers:addPost' %}" method=POST>
+  {% csrf_token %}
+  <input type="text" value="" name="text">
+  <input type="hidden" name="isReplyToPost" value="0" />
+  <input type="hidden" name="thread_pk" value="2" />
+  <input type="hidden" name="mother_post_pk" value="-1" />
+  <input type="submit">
+</form>
