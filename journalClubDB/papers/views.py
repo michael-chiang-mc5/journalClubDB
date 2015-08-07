@@ -57,10 +57,7 @@ def addPost(request):
     post.save()
 
     currentCitationPk = request.POST.get("citationPk", False)
-    return detail(request,currentCitationPk)
-
-
-
+    return HttpResponseRedirect(reverse('papers:detail', args=[currentCitationPk]))
 
 def addCitation(request):
     # check for duplicate citations.  If citation already exists, return primary key of the citation
@@ -180,7 +177,7 @@ def detail(request,pk):
     for thread in threads:
         posts = Post.objects.filter(thread=thread.pk)
         ordered_posts,dummy = order_post_list(posts) # ordered_posts is not a queryset
-        posts_vector.append(ordered_posts)
+        posts_vector.append(ordered_posts[1:]) # exclude first entry which is master post
     threadsPostsvector = zip(threads,posts_vector)
 
     context = {'citation': citation,'threads': threads,'posts_vector':posts_vector,'threadsPostsvector':threadsPostsvector}
@@ -204,6 +201,27 @@ def search_development(request,page):
     totalPages = min([totalPages,15+1]) # maximum of 15 pages
     context = {'entries': pubmed.entries, 'search_str': search_str, 'totalPages':totalPages, 'totalPagesRange': range(1,totalPages), 'pageNumber': pageNumber, 'freshSearch': freshSearch}
     return render(request, 'papers/search.html', context)
+
+# upvoting and downvoting comments
+def updownvote(request):
+    updown = request.POST.get("updown")
+    post_pk = int(request.POST.get("post_pk"))
+
+    post = Post.objects.get(pk=post_pk)
+    if updown == "up":
+        post.upvoters.add(request.user)
+        post.downvoters.remove(request.user)
+        post.save()
+    else:
+        post.downvoters.add(request.user)
+        post.upvoters.remove(request.user)
+        post.save()
+
+
+    return HttpResponse("asdfads")
+    #return JsonResponse({'post_pk':post_pk})
+
+
 
 # search interface
 def search(request,page):

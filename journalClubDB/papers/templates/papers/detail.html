@@ -21,7 +21,51 @@
           $("#replybox_"+id1+"_"+id2).show();
       });
   });
+
+
+  <!-- upvote/downvote -->
+  $(document).ready(function(){
+      $("form[id*='vote_']").submit(function(event){
+          var vote_updown_id1_id2 = $(this).attr("id")
+          var arr = vote_updown_id1_id2.split('_')
+          var updown = arr[1]
+          var id1 = arr[2]
+          var id2 = arr[3]
+          $("#voteb_"+updown+"_"+id1+"_"+id2).val(updown+"voting");
+
+
+
+
+                    $.ajax({
+                      type:"POST",
+                      url: "{% url 'papers:updownvote' %}", // Todo: turn this into var if moved to ajax.js
+                      data: {
+                             csrfmiddlewaretoken: '{{ csrf_token }}',  // Todo: turn this into var if moved to ajax.js
+                             'updown': updown,
+                             'post_pk': id2,
+                             },
+                     success: function(data){
+                       $("#voteb_"+updown+"_"+id1+"_"+id2).val(updown+"voted");
+
+                              }
+
+                    });
+
+
+
+
+
+          return false;
+
+
+
+
+      });
+  });
+
+
   </script>
+
 
 </head>
 
@@ -45,7 +89,7 @@
 <html lang="en">
 <body>
 <div class="container">
-  <h2>Dynamic Pills</h2>
+
   <ul class="nav nav-pills">
     {% for thread in threads %}
       <li
@@ -83,14 +127,54 @@
               {% else %}
 
               {% for p in posts %}
-              {{ forloop.counter }}
+                <div>
+                <form method='post' id="vote_up_{{ thread.pk }}_{{ p.pk }}">
+                  {% csrf_token %}
 
-                <div>{{ p.text }}
+                  <!-- white space for tree -->
+                  {% load templatetags %}
+                  {% for i in p.node_depth|get_range %}
+                    {% if i != 0 %}
+                      ........
+                    {% endif %}
+                  {% endfor %}
+
+                  <input type='submit' id="voteb_up_{{ thread.pk }}_{{ p.pk }}" value='Upvote'/>
+                </form>
+                <form method='post' id="vote_down_{{ thread.pk }}_{{ p.pk }}">
+                  {% csrf_token %}
+
+                  <!-- white space for tree -->
+                  {% load templatetags %}
+                  {% for i in p.node_depth|get_range %}
+                    {% if i != 0 %}
+                      ........
+                    {% endif %}
+                  {% endfor %}
+
+                  <input type='submit' id="voteb_down_{{ thread.pk }}_{{ p.pk }}" value='Downvote'/>
+                  {{ p.text }}
+                </form>
+
+
+                <!-- white space for tree -->
+                {% load templatetags %}
+                {% for i in p.node_depth|get_range %}
+                  {% if i != 0 %}
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  {% endif %}
+                {% endfor %}
                 <button id="reply_{{ thread.pk }}_{{ p.pk }}">Reply</button>
                 </div>
                 <!-- This form (initially hidden until reply button is clicked) submits a reply to a given post -->
                 <div id="replybox_{{ thread.pk }}_{{ p.pk }}" style="display: none;">
                   <form action="{% url 'papers:addPost' %}" method=POST>
+                    {% load templatetags %}
+                    {% for i in p.node_depth|get_range %}
+                      {% if i != 0 %}
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      {% endif %}
+                    {% endfor %}
                     {% csrf_token %}
                     <input type="text" value="" name="text">
                     <input type="hidden" name="isReplyToPost" value="1" />
