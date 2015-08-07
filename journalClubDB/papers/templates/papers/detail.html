@@ -8,7 +8,23 @@
   {% load staticfiles %}
   <script src="{% static "/static/js/jquery-2.1.4.min.js" %}"></script>
   <script src="{% static "/static/bootstrap-3.3.5-dist/js/bootstrap.min.js" %}"></script>
+
+
+<!-- show reply form for posts -->
+  <script>
+  $(document).ready(function(){
+      $("button[id*='reply_']").click(function(){
+          var reply_id1_id2 = $(this).attr("id")
+          var arr = reply_id1_id2.split('_')
+          var id1 = arr[1]
+          var id2 = arr[2]
+          $("#replybox_"+id1+"_"+id2).show();
+      });
+  });
+  </script>
+
 </head>
+
 
 
 
@@ -26,66 +42,83 @@
 
 <!-- forum -->
 
-<!--
-<p>
-  {% for thread,posts in threads_postsVector %}
-    <h1>{{ thread.description }}</h1>
-    {% for p in posts %}
-      <p>{{ p.text }}</p>
-    {% endfor %}
-  {% endfor %}
-</p>
--->
 <html lang="en">
 <body>
 <div class="container">
   <h2>Dynamic Pills</h2>
   <ul class="nav nav-pills">
     {% for thread in threads %}
-      {% if forloop.first %}
-        <li class="active"><a data-toggle="pill" href="#t_{{ forloop.counter }}">{{ thread.description }}</a></li>
-      {% else %}
-        <li><a data-toggle="pill" href="#t_{{ forloop.counter }}">{{ thread.description }}</a></li>
-      {% endif %}
+      <li
+        {% if forloop.first %}
+          class="active"
+        {% endif %}
+      ><a data-toggle="pill" href="#t_{{ forloop.counter }}">{{ thread.description }}</a></li>
     {% endfor %}
   </ul>
 
 
-
   <div class="tab-content">
-    {% for posts in posts_vector %}
+    {% for thread,posts in threadsPostsvector %}
 
-      {% if forloop.first %}
-        <div id="t_{{ forloop.counter }}" class="tab-pane fade in active">
-      {% else %}
-        <div id="t_{{ forloop.counter }}" class="tab-pane fade">
-      {% endif %}
+      <div id="t_{{ forloop.counter }}" class="tab-pane fade
+        {% if forloop.first %}
+          in active
+        {% endif %}
+      ">
 
 
-      {% for p in posts %}
-        <p>{{ p.text }}</p>
-      {% endfor %}
+            <!-- This form submits a new (non-reply) post to the thread -->
+            <form action="{% url 'papers:addPost' %}" method=POST>
+              {% csrf_token %}
+              <input type="text" value="" name="text">
+              <input type="hidden" name="isReplyToPost" value="0" />
+              <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
+              <input type="hidden" name="mother_pk" value="-1" />
+              <input type="hidden" name="citationPk" value="{{ citation.pk }}" />
+              <input type="submit">
+            </form>
+
+              {% if posts|length == 0 %}
+                <p>No posts!</p>
+              {% else %}
+
+              {% for p in posts %}
+              {{ forloop.counter }}
+
+                <div>{{ p.text }}
+                <button id="reply_{{ thread.pk }}_{{ p.pk }}">Reply</button>
+                </div>
+                <!-- This form (initially hidden until reply button is clicked) submits a reply to a given post -->
+                <div id="replybox_{{ thread.pk }}_{{ p.pk }}" style="display: none;">
+                  <form action="{% url 'papers:addPost' %}" method=POST>
+                    {% csrf_token %}
+                    <input type="text" value="" name="text">
+                    <input type="hidden" name="isReplyToPost" value="1" />
+                    <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
+                    <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
+                    <input type="hidden" name="citationPk" value="{{ citation.pk }}" />
+                    <input type="submit">
+                  </form>
+                </div>
+
+
+              {% endfor %}
+
+
+
+              {% endif %}
+
 
 
       </div>
+
+
+
     {% endfor %}
+    </div>
   </div>
-</div>
-
-
-
 
 
 
 </body>
 </html>
-
-<!-- Submit post-->
-<form action="{% url 'papers:addPost' %}" method=POST>
-  {% csrf_token %}
-  <input type="text" value="" name="text">
-  <input type="hidden" name="isReplyToPost" value="0" />
-  <input type="hidden" name="thread_pk" value="2" />
-  <input type="hidden" name="mother_post_pk" value="-1" />
-  <input type="submit">
-</form>

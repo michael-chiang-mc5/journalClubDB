@@ -62,7 +62,19 @@ class Post(models.Model):
     creator = models.ForeignKey(User, blank=True, null=True)
     thread = models.ForeignKey(Thread)
     isReplyToPost = models.BooleanField()
-    motherPost = models.ForeignKey('self', blank=True, null=True)
-    text = models.TextField(blank=True)
-    upvotes = models.PositiveIntegerField(blank=True)
-    downvotes = models.PositiveIntegerField(blank=True)
+    mother = models.ForeignKey('self', blank=True, null=True)
+    text = models.TextField()
+    node_depth = models.PositiveIntegerField()
+
+    # to access upvoted posts from User instance, user.upvoted.all()
+    upvoters   = models.ManyToManyField(User, blank=True, related_name="upvoted")
+    downvoters = models.ManyToManyField(User, blank=True, related_name="downvoted")
+
+    # This must be recalculated every time a new reply is added to subtree
+    aggregate_score_tmp = models.IntegerField(blank=True, null=True)
+    ordered_index = models.IntegerField(blank=True,null=True)
+
+    # score is a measure of post quality
+    # TODO: Make score based on user quality, i.e., professors have more weight
+    def score(self):
+        return len(self.upvoters.all()) - len(self.downvoters.all())

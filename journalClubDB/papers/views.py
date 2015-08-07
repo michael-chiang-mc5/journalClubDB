@@ -36,22 +36,28 @@ def addPost(request):
     text = request.POST['text']
     thread_pk = int(request.POST.get("thread_pk", False))
     is_reply_to_post = bool(int(request.POST.get("isReplyToPost", False)))
-    motherPost_pk = int(request.POST.get("mother_post_pk", False))
+    mother_pk = int(request.POST.get("mother_pk", False))
     text = request.POST.get("text", False)
 
     post = Post()
     setattr(post,'time_created',datetime.datetime.now())
     setattr(post,'creator',request.user)
     setattr(post,'thread',Thread.objects.get(pk=thread_pk))
-    setattr(post,'isReplyToPost', is_reply_to_post)
-    if is_reply_to_post:
-        setattr(post,'mother_post',Post.objects.get(pk=motherPost_pk))
+    setattr(post,'isReplyToPost', True) # TODO: change this to base_node?
+    if is_reply_to_post: # TODO: change name to is_submission?
+        setattr(post,'mother',Post.objects.get(pk=mother_pk))
+        setattr(post,'node_depth', Post.objects.get(pk=mother_pk).node_depth + 1)
+    else:
+        setattr(post,'mother', Post.objects.get(thread=thread_pk,isReplyToPost=False))
+        setattr(post,'node_depth',1)
     setattr(post,'text',text)
-    setattr(post,'upvotes',0)
-    setattr(post,'downvotes',0)
+    #setattr(post,'upvotes',0)
+    post.save()
+    post.upvoters.add(request.user)
     post.save()
 
-    return JsonResponse({})
+    currentCitationPk = request.POST.get("citationPk", False)
+    return detail(request,currentCitationPk)
 
 
 
@@ -72,16 +78,99 @@ def addCitation(request):
         setattr(citation,f,field_entry)
     citation.save()
 
-    # Create threads
+    # Create threads and master post
     thread_names = ["Explain Like I'm Five","Methodology","Results","Historical Context","Discussion"]
     for name in thread_names:
         thread = Thread()
         setattr(thread,'description',name)
         setattr(thread,'owner',citation)
         thread.save()
+        post = Post()
+        post = Post(time_created=datetime.datetime.now(),creator=request.user,thread=thread,
+                    isReplyToPost=False,text="master_post",node_depth=0)
+        post.save()
+
     # Return url to new citation detail page
     new_citation_url = reverse('papers:detail',args=[citation.pk])
     return JsonResponse({'new_citation_url':new_citation_url})
+
+
+# returns post_list with field aggregate_score_tmp set for all posts in post_list.
+# Input post_list should constitute a full tree with a single base node (no error checking)
+def order_post_list(post_list):
+    # childrenIdx_list[i] gives the indices of children of post_list[i]
+    childrenIdx_list = [None] * len(post_list)
+    for j,post in enumerate(post_list):
+        children = post.post_set.all()
+        children_idx = []
+        for child in children:
+            child_idx = None
+            for i,p in enumerate(post_list):
+                if child.pk is p.pk:
+                    child_idx = i
+                    break
+            children_idx.append(child_idx)
+        childrenIdx_list[j] = children_idx
+
+    # post_list[idx_baseNode] is the base node of the post tree
+    idx_baseNode = None
+    for i,post in enumerate(post_list):
+        if post.node_depth is 0:
+            idx_baseNode = i
+            break
+
+    # recursively calculate aggregate scores and store in post_list[i].aggregate_score_tmp
+    calculateAggregateScore(idx_baseNode, post_list, childrenIdx_list)
+
+    # order post_list
+    ordered_indices = orderPostlist(idx_baseNode, post_list, childrenIdx_list)
+    ordered_post_list = [None] * len(post_list)
+    for i,post in enumerate(ordered_indices):
+        ordered_post_list[i] = post_list[ ordered_indices[i] ]
+
+    return ordered_post_list,post_list
+
+
+# Returns a list of indices corresponding to an ordered post_list
+# ordered[i] = j means that the jth element of post_list belongs in slot i of ordered list
+def orderPostlist(node_idx, post_list, childrenIdx_list):
+    children_indices = childrenIdx_list[node_idx]
+    num_children = len(children_indices)
+
+    if num_children is 0:
+        return [node_idx]
+    else:
+        # create tuple list [ (aggregateScore, index), ...] which is sorted by aggregateScore
+        tup = [None] * len(children_indices)
+        for i,child_idx in enumerate(children_indices):
+            aggregate_score = post_list[child_idx].aggregate_score_tmp
+            tup[i] = (aggregate_score,child_idx)
+        tup = sorted(tup, reverse=True)
+
+        ordered = [node_idx]
+        for t in tup:
+            aggregate_score = t[0]
+            child_idx = t[1]
+            o = orderPostlist(child_idx,post_list,childrenIdx_list)
+            ordered = ordered + o
+        return ordered
+
+def calculateAggregateScore(node_idx, post_list, childrenIdx_list):
+    children_indices = childrenIdx_list[node_idx]
+    num_children = len(children_indices)
+    raw_score = post_list[node_idx].score()
+
+    if num_children is 0:
+        score = raw_score
+        post_list[node_idx].aggregate_score_tmp = score
+        return score
+    else:
+        score = raw_score
+        for child_idx in children_indices:
+            aggregate_score_child = calculateAggregateScore(child_idx,post_list,childrenIdx_list)
+            score = max(score,aggregate_score_child)
+        post_list[node_idx].aggregate_score_tmp = score
+        return score
 
 # internal citation information
 def detail(request,pk):
@@ -90,9 +179,11 @@ def detail(request,pk):
     posts_vector = []
     for thread in threads:
         posts = Post.objects.filter(thread=thread.pk)
-        posts_vector.append(posts)
+        ordered_posts,dummy = order_post_list(posts) # ordered_posts is not a queryset
+        posts_vector.append(ordered_posts)
+    threadsPostsvector = zip(threads,posts_vector)
 
-    context = {'citation': citation,'threads': threads,'posts_vector':posts_vector}
+    context = {'citation': citation,'threads': threads,'posts_vector':posts_vector,'threadsPostsvector':threadsPostsvector}
     return render(request, 'papers/detail.html', context)
 
 # search is terribly slow.  Use this for development

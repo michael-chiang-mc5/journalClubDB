@@ -63,7 +63,7 @@ class PubmedEntry():
         self.number = None
         self.pages = None
         self.date = None
-        self.fullCite = None
+        self.fullSource = None
         self.keywords = None
         self.abstract = None
         self.doi = None

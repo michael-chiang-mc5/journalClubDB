@@ -6,6 +6,9 @@ class PostInline(admin.TabularInline):
     model = Post
     extra = 1
     readonly_fields=('id',)
+    filter_horizontal = ('upvoters','downvoters')
+
+
 class ThreadAdmin(admin.ModelAdmin):
     inlines = [PostInline]
     readonly_fields=('id',)
