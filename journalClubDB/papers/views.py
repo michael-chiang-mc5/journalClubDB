@@ -199,6 +199,7 @@ def search_development(request,page):
     retMax = 10
     freshSearch=False
     totalPages = min([totalPages,15+1]) # maximum of 15 pages
+    pubmed = checkPubmedEntriesForPreexistingCitations(pubmed)
     context = {'entries': pubmed.entries, 'search_str': search_str, 'totalPages':totalPages, 'totalPagesRange': range(1,totalPages), 'pageNumber': pageNumber, 'freshSearch': freshSearch}
     return render(request, 'papers/search.html', context)
 
@@ -216,12 +217,22 @@ def updownvote(request):
         post.downvoters.add(request.user)
         post.upvoters.remove(request.user)
         post.save()
-
-
     return HttpResponse("asdfads")
-    #return JsonResponse({'post_pk':post_pk})
 
 
+# check pubmed search results against internal database
+def checkPubmedEntriesForPreexistingCitations(pubmed):
+    for i,entry in enumerate(pubmed.entries):
+        pubmedID = entry.pubmedID
+        matches = Citation.objects.filter(pubmedID=pubmedID)
+        num_matches = len(matches)
+        if num_matches is 0:
+            pubmed.entries[i].preexistingEntry = False
+            pubmed.entries[i].preexistingEntry_pk = None
+        else:
+            pubmed.entries[i].preexistingEntry = True
+            pubmed.entries[i].preexistingEntry_pk = matches[0].pk
+    return pubmed
 
 # search interface
 def search(request,page):
@@ -239,12 +250,14 @@ def search(request,page):
             pageNumber=1
             retMin = 0
             retMax = 10
+            citations = Citation.objects.all()
             pubmed.getRecords(search_str,retMin,retMax)
         else: # page change
             search_str = request.POST.get("search_str")
             pageNumber = int(request.POST.get("pageNumber"))
             retMin = (pageNumber-1)*10
             retMax = 10
+            citations = Citation.objects.all()
             pubmed.getRecords(search_str,retMin,retMax)
             totalPages = int(request.POST.get("totalPages"))
         freshSearch=False
@@ -252,5 +265,6 @@ def search(request,page):
         freshSearch=True
 
     totalPages = min([totalPages,15+1]) # maximum of 15 pages
+    pubmed = checkPubmedEntriesForPreexistingCitations(pubmed)
     context = {'entries': pubmed.entries, 'search_str': search_str, 'totalPages':totalPages, 'totalPagesRange': range(1,totalPages), 'pageNumber': pageNumber, 'freshSearch': freshSearch}
     return render(request, 'papers/search.html', context)

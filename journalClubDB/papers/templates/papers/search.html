@@ -25,13 +25,24 @@
 <h1>Search Results</h1>
 {% for entry in entries %}
   <li>
-    <a href="{% url 'papers:detail' 1 %}" id="a_{{ forloop.counter }}">
-    <button id="b_{{ forloop.counter }}" style="display:none;">
-      Saved
-    </button>
-   </a>
+
+    <!-- button to go to detail page, initially hidden-->
+    {% if not entry.preexistingEntry %} <!-- Brand new entry that we can import -->
+      <a href="dummy_url" id="a_{{ forloop.counter }}"> <!-- dummy_url will get replaced by ajax -->
+        <button id="b_{{ forloop.counter }}" style="display:none;">Import</button>
+      </a>
+    {% else %}  <!-- Entry already exists -->
+      <a href="{% url 'papers:detail' entry.preexistingEntry_pk %}" id="a_{{ forloop.counter }}">
+        <button id="b_{{ forloop.counter }}">View</button>
+      </a>
+    {% endif %}
+
     <!-- button to add pubmed citation to internal database-->
+    {% if entry.preexistingEntry %}
+    <form method='post' id="f_{{ forloop.counter }}" style="display:none;">
+    {% else %}
     <form method='post' id="f_{{ forloop.counter }}">
+    {% endif %}
        {% csrf_token %}
        <input type="hidden" id="title_{{ forloop.counter }}" value="{{ entry.title }}"/>
        <input type="hidden" id="author_{{ forloop.counter }}" value="{{ entry.author }}"/>

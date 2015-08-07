@@ -30,10 +30,12 @@ $(document).ready(function() {
                         'pubmedID': $('#pubmedID_'+id).val(),
                         },
                  success: function(data){
-                     $('#s_'+id).val("Saved")
+                     //$('#s_'+id).hide();
                      $('#f_'+id).hide();
                      $('#b_'+id).show();
+                     $('#b_'+id).html("View")
                      $('#a_'+id).attr("href",data.new_citation_url)
+
                  }
             });
             return false;
