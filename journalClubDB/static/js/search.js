@@ -1,5 +1,5 @@
 // On button click
-// url_js, csrf_js are variables that need to be set in main html page
+// url_js, csrf_js are variables that need to be set in search.html
 // since django templating does not apply to javascript files
 
 $(document).ready(function() {

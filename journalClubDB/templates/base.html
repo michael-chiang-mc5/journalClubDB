@@ -1,26 +1,66 @@
+<!-- useful bootstrap examples http://www.tutorialrepublic.com/twitter-bootstrap-examples.php -->
+
 <html>
-    <head>
-        <title>{% block title %}{% endblock %}</title>
-    </head>
+  <head>
+    {% load staticfiles %}
+    <title>{% block title %}{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="{% static 'js/jquery-2.1.4.min.js' %}"></script>
+    <script src="{% static 'bootstrap-3.3.5-dist/js/bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+  </head>
 
-    <body>
-        <div>
-            {% block body_block %}{% endblock %}
-        </div>
+  <body>
 
-        <hr />
+  <!-- creates container in center of the webpage -->
+  <div class="container">
 
-        <div>
-            <ul>
+    <!-- navbar -->
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+
+        <a class="navbar-brand" href="#">journalClubDB</a>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <div class="span2"></div>
+            <li class="{% if navbar == 'home' %}active{% endif %}"><a href="{% url 'papers:index' %}">Home</a></li>
+            <li class="{% if navbar == 'addCitation' %}active{% endif %}"><a href="{% url 'papers:search_development' 0 %}">Add citations</a></li> <!-- TODO: change this to real search -->
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">About<span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">Tell me about this website!</a></li>
+                <li><a href="#">JCDB etiquette</a></li>
+                <li><a href="#">Privacy policy</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#">About the developers</a></li>
+                <li><a href="#">Contact</a></li>
+              </ul>
+            </li>
+          </ul>
+          <!-- navbar (right side)-->
+          <ul class="nav navbar-nav navbar-right">
             {% if user.is_authenticated %}
+                <li class="active"><a href="#">{{ user.get_username }}</a></li>
                 <li><a href="{% url 'auth_logout' %}?next=/papers/">Logout</a></li>
             {% else %}
-                <li><a href="{% url 'registration_register' %}">Register Here</a></li>
-                <li><a href="{% url 'auth_login' %}">Login</a></li>
+                <li class="active"><a href="{% url 'registration_register' %}">Register</a></li>
+                <li><a href="{% url 'auth_login' %}">Login</a></li> <!-- add class="active" -->
             {% endif %}
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div><!--/.container-fluid -->
+    </nav>
+  </div>
 
-                <li><a href="/about/">About</a></li>
-            </ul>
-        </div>
-    </body>
+  <!-- main content -->
+  <div class="container">
+    <div>
+      {% block body_block %}{% endblock %}
+    </div>
+  </div>
+
+  <!-- end webpage -->
+  </body>
 </html>

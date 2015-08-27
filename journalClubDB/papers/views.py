@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views import generic
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 import logging
@@ -18,7 +18,23 @@ import datetime
 def index(request):
     template_name = 'papers/index.html'
     citations = Citation.objects.all()
-    context = {'citations': citations,}
+
+    # Paginate
+    paginator = Paginator(citations, 10) # TODO: change this to something more reasonable
+    page = request.GET.get('page')
+    try:
+        citations = paginator.page(page)
+        active_page = int(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        citations = paginator.page(1)
+        active_page = 1
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        citations = paginator.page(paginator.num_pages)
+        active_page = int(paginator.num_pages)
+
+    context = {'citations': citations,'navbar':'home','num_pages':int(paginator.num_pages),'active_page':active_page}
     return render(request, 'papers/index.html', context)
 
 # returns a string, otherwise returns None
@@ -200,7 +216,7 @@ def search_development(request,page):
     freshSearch=False
     totalPages = min([totalPages,15+1]) # maximum of 15 pages
     pubmed = checkPubmedEntriesForPreexistingCitations(pubmed)
-    context = {'entries': pubmed.entries, 'search_str': search_str, 'totalPages':totalPages, 'totalPagesRange': range(1,totalPages), 'pageNumber': pageNumber, 'freshSearch': freshSearch}
+    context = {'navbar':'addCitation','entries': pubmed.entries, 'search_str': search_str, 'totalPages':totalPages, 'totalPagesRange': range(1,totalPages), 'pageNumber': pageNumber, 'freshSearch': freshSearch}
     return render(request, 'papers/search.html', context)
 
 # upvoting and downvoting comments

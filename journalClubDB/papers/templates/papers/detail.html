@@ -1,208 +1,134 @@
-<!-- header -->
-<!DOCTYPE html>
-<head>
-  <title>Bootstrap Case</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-  {% load staticfiles %}
-  <script src="{% static "/static/js/jquery-2.1.4.min.js" %}"></script>
-  <script src="{% static "/static/bootstrap-3.3.5-dist/js/bootstrap.min.js" %}"></script>
+{% extends "base.html" %}
 
 
-<!-- show reply form for posts -->
-  <script>
-  $(document).ready(function(){
-      $("button[id*='reply_']").click(function(){
-          var reply_id1_id2 = $(this).attr("id")
-          var arr = reply_id1_id2.split('_')
-          var id1 = arr[1]
-          var id2 = arr[2]
-          $("#replybox_"+id1+"_"+id2).show();
-      });
-  });
+{% block body_block %}
 
+<!-- custom javascript -->
+{% load staticfiles %}
+<script>
+  url_js = "{% url 'papers:updownvote' %}"
+  csrf_js = '{{ csrf_token }}'
+</script>
+<script src="{% static "/static/js/detail.js" %}"></script>
 
-  <!-- upvote/downvote -->
-  $(document).ready(function(){
-      $("form[id*='vote_']").submit(function(event){
-          var vote_updown_id1_id2 = $(this).attr("id")
-          var arr = vote_updown_id1_id2.split('_')
-          var updown = arr[1]
-          var id1 = arr[2]
-          var id2 = arr[3]
-          $("#voteb_"+updown+"_"+id1+"_"+id2).val(updown+"voting");
-
-
-
-
-                    $.ajax({
-                      type:"POST",
-                      url: "{% url 'papers:updownvote' %}", // Todo: turn this into var if moved to ajax.js
-                      data: {
-                             csrfmiddlewaretoken: '{{ csrf_token }}',  // Todo: turn this into var if moved to ajax.js
-                             'updown': updown,
-                             'post_pk': id2,
-                             },
-                     success: function(data){
-                       $("#voteb_"+updown+"_"+id1+"_"+id2).val(updown+"voted");
-
-                              }
-
-                    });
-
-
-
-
-
-          return false;
-
-
-
-
-      });
-  });
-
-
-  </script>
-
-
-</head>
-
-
-
-
-
-<!-- navigation bar.  Move to template -->
-<a href="{% url 'papers:index' %}">index</a>
-<a href="{% url 'papers:search_development' 0 %}">Search</a>
-
-<!-- Citation data -->
-<h1>Paper details</h1>
-<p> {{ citation.title }} </p>
-<p> {{ citation.author }} </p>
-<p> {{ citation.fullSource}} </p>
-<p> {{ citation.abstract }} </p>
-
-<!-- forum -->
-
-<html lang="en">
-<body>
+<hr >
 <div class="container">
-
-  <ul class="nav nav-pills">
-    {% for thread in threads %}
-      <li
-        {% if forloop.first %}
-          class="active"
-        {% endif %}
-      ><a data-toggle="pill" href="#t_{{ forloop.counter }}">{{ thread.description }}</a></li>
-    {% endfor %}
+  <!-- tab bar -->
+  <ul class="nav nav-pills nav-justified">
+      <li class="active"> <a data-toggle="pill" href="#pubmed_data">Summary</a></li>
+      {% for thread in threads %}
+      <li><a data-toggle="pill" href="#t_{{ forloop.counter }}">{{ thread.description }}</a></li>
+      {% endfor %}
   </ul>
 
-
+  <!-- tab content -->
   <div class="tab-content">
-    {% for thread,posts in threadsPostsvector %}
-
-      <div id="t_{{ forloop.counter }}" class="tab-pane fade
-        {% if forloop.first %}
-          in active
-        {% endif %}
-      ">
-
-
+      <!-- pubmed data -->
+      <div id="pubmed_data" class="tab-pane fade in active">
+          <!-- jumbotron -->
+          <div id="detail_jumbotron" class="jumbotron">
+            <p><a class="btn btn-primary btn-tiny" href="http://www.ncbi.nlm.nih.gov/pubmed/{{ citation.pubmedID }}" role="button">pubmed link &raquo;</a></p>
+              <h1>{{ citation.title }}</h1>
+              <hr >
+              {% load templatetags %} <!-- templatetags cannot be moved to base.html -->
+              <p>{{ citation.fullAuthorNames|parse_full_names }}</p>
+              <p>{{ citation.fullSource }} </p>
+              <hr >
+              <p id="detail_abstract"> {{ citation.abstract }} </p>
+              <hr >
+              <p>Tags: </p>
+          </div>
+      </div>
+      <!-- message boards -->
+      {% for thread,posts in threadsPostsvector %}
+        <div id="t_{{ forloop.counter }}" class="tab-pane fade">
+          <div class="discussion_background">
             <!-- This form submits a new (non-reply) post to the thread -->
-            <form action="{% url 'papers:addPost' %}" method=POST>
+            <div>
+            <form role="form" action="{% url 'papers:addPost' %}" method=POST>
               {% csrf_token %}
-              <input type="text" value="" name="text">
               <input type="hidden" name="isReplyToPost" value="0" />
               <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
               <input type="hidden" name="mother_pk" value="-1" />
               <input type="hidden" name="citationPk" value="{{ citation.pk }}" />
-              <input type="submit">
+              <div class="form-group">
+                <label for="comment">Comment:</label>
+                <textarea class="form-control" rows="10" id="comment" name="text"></textarea>
+              </div>
+              <button type="submit" class="btn btn-default">Submit</button>
             </form>
-
-              {% if posts|length == 0 %}
-                <p>No posts!</p>
-              {% else %}
-
-              {% for p in posts %}
-                <div>
-                <form method='post' id="vote_up_{{ thread.pk }}_{{ p.pk }}">
-                  {% csrf_token %}
-
-                  <!-- white space for tree -->
-                  {% load templatetags %}
-                  {% for i in p.node_depth|get_range %}
-                    {% if i != 0 %}
-                      ........
-                    {% endif %}
-                  {% endfor %}
-
-                  <input type='submit' id="voteb_up_{{ thread.pk }}_{{ p.pk }}" value='Upvote'/>
-                </form>
-                <form method='post' id="vote_down_{{ thread.pk }}_{{ p.pk }}">
-                  {% csrf_token %}
-
-                  <!-- white space for tree -->
-                  {% load templatetags %}
-                  {% for i in p.node_depth|get_range %}
-                    {% if i != 0 %}
-                      ........
-                    {% endif %}
-                  {% endfor %}
-
-                  <input type='submit' id="voteb_down_{{ thread.pk }}_{{ p.pk }}" value='Downvote'/>
-                  {{ p.text }}
-                </form>
+          </div>
 
 
+
+          {% if posts|length == 0 %}
+            <p>No posts!</p>
+          {% else %}
+            {% for p in posts %}
+              <div>
+              <form method='post' id="vote_up_{{ thread.pk }}_{{ p.pk }}">
+                {% csrf_token %}
                 <!-- white space for tree -->
                 {% load templatetags %}
                 {% for i in p.node_depth|get_range %}
                   {% if i != 0 %}
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    ........
                   {% endif %}
-                {% endfor %}
-                <button id="reply_{{ thread.pk }}_{{ p.pk }}">Reply</button>
-                </div>
-                <!-- This form (initially hidden until reply button is clicked) submits a reply to a given post -->
-                <div id="replybox_{{ thread.pk }}_{{ p.pk }}" style="display: none;">
-                  <form action="{% url 'papers:addPost' %}" method=POST>
-                    {% load templatetags %}
-                    {% for i in p.node_depth|get_range %}
-                      {% if i != 0 %}
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                      {% endif %}
-                    {% endfor %}
-                    {% csrf_token %}
-                    <input type="text" value="" name="text">
-                    <input type="hidden" name="isReplyToPost" value="1" />
-                    <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
-                    <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
-                    <input type="hidden" name="citationPk" value="{{ citation.pk }}" />
-                    <input type="submit">
-                  </form>
-                </div>
-
-
+                {% endfor %} <!-- end loop over p.node_depth|get_range -->
+                <input type='submit' id="voteb_up_{{ thread.pk }}_{{ p.pk }}" value='Upvote'/>
+              </form>
+              <form method='post' id="vote_down_{{ thread.pk }}_{{ p.pk }}">
+              {% csrf_token %}
+              <!-- white space for tree -->
+              {% load templatetags %}
+              {% for i in p.node_depth|get_range %}
+                {% if i != 0 %}
+                  ........
+                {% endif %}
               {% endfor %}
+              <input type='submit' id="voteb_down_{{ thread.pk }}_{{ p.pk }}" value='Downvote'/>
+                {{ p.text }}
+              </form>
 
-
-
-              {% endif %}
-
-
-
-      </div>
-
-
-
-    {% endfor %}
-    </div>
+              <!-- white space for tree -->
+              {% load templatetags %}
+              {% for i in p.node_depth|get_range %}
+                {% if i != 0 %}
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                {% endif %}
+              {% endfor %}
+              <button id="reply_{{ thread.pk }}_{{ p.pk }}">Reply</button>
+              </div>
+              <!-- This form (initially hidden until reply button is clicked) submits a reply to a given post -->
+              <div id="replybox_{{ thread.pk }}_{{ p.pk }}" style="display: none;">
+                <form action="{% url 'papers:addPost' %}" method=POST>
+                  {% load templatetags %}
+                  {% for i in p.node_depth|get_range %}
+                    {% if i != 0 %}
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    {% endif %}
+                  {% endfor %}
+                  {% csrf_token %}
+                  <input type="text" value="" name="text">
+                  <input type="hidden" name="isReplyToPost" value="1" />
+                  <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
+                  <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
+                  <input type="hidden" name="citationPk" value="{{ citation.pk }}" />
+                  <input type="submit">
+                </form>
+              </div>
+            {% endfor %} <!-- end loop over posts -->
+          {% endif %} <!-- end if statement checking for empty forum -->
+          </div>
+        </div>
+      {% endfor %}
   </div>
 
 
 
-</body>
-</html>
+
+
+
+
+
+{% endblock %}

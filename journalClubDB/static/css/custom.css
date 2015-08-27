@@ -1,0 +1,32 @@
+
+body {
+    background-color: pink;
+}
+
+.navbar-brand {
+  margin-right: 1.5em;
+}
+
+#indexPagebar {
+  background-color: yellow;
+  margin-top: 0px;
+}
+
+#detail_jumbotron h1 {
+    font-size: 2em;
+}
+
+#detail_jumbotron p {
+    font-size: 0.9em;
+    margin-bottom: 0px;
+}
+
+#detail_jumbotron #detail_abstract {
+    font-size: 1.1em;
+}
+
+
+.discussion_background {
+  background-color: yellow;
+  min-height: 500px;
+}

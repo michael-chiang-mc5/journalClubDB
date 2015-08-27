@@ -1,26 +1,21 @@
-<!-- serve javascript -->
-<head>
-  {% load staticfiles %}
-  <script src="{% static "/static/js/jquery-2.1.4.min.js" %}"></script>
-  <script>
-    url_js = "{% url 'papers:addCitation' %}"
-    csrf_js = '{{ csrf_token }}'
-    url2_js = "{% url 'papers:detail' 0 %}"
-  </script>
-  <script src="{% static "/static/js/ajax.js" %}"></script>
-</head>
+{% extends "base.html" %}
 
-<!-- navigation bar.  Move to template -->
-<a href="{% url 'papers:index' %}">Index</a>
 
-<!-- Search bar -->
-<form action="{% url 'papers:search' 1 %}" method=POST>
-  {% csrf_token %}
-  <input type="text" value="{{ search_str }}" name="search_str">
-  <input type="hidden" name="searchInitiated" value="True" />
-  <input type="submit">
-</form>
 
+<!-- webpage main content -->
+{% block body_block %}
+
+<!-- custom javascript -->
+{% load staticfiles %}
+<script>
+  url_js = "{% url 'papers:addCitation' %}"
+  csrf_js = '{{ csrf_token }}'
+  url2_js = "{% url 'papers:detail' 0 %}"
+</script>
+<script src="{% static "/static/js/search.js" %}"></script>
+
+
+<!-- Search results -->
 {% if freshSearch == False %}
 <h1>Search Results</h1>
 {% for entry in entries %}
@@ -92,3 +87,8 @@
   {% endif %}
 {% endfor %}
 {% endif %}
+
+
+
+
+{% endblock %}
