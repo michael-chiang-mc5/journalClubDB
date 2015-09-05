@@ -1,5 +1,8 @@
-<!-- serve javascript -->
-<head>
+{% extends "base.html" %}
+
+
+{% block javascript %}
+  <!-- custom javascript -->
   {% load staticfiles %}
   <script src="{% static "/static/js/jquery-2.1.4.min.js" %}"></script>
   <script>
@@ -7,11 +10,10 @@
     csrf_js = '{{ csrf_token }}'
     url2_js = "{% url 'papers:detail' 0 %}"
   </script>
-  <script src="{% static "/static/js/ajax.js" %}"></script>
-</head>
+  <script src="{% static "/static/js/search.js" %}"></script>
+{% endblock %}
 
-<!-- navigation bar.  Move to template -->
-<a href="{% url 'papers:index' %}">Index</a>
+{% block body_block %}
 
 <!-- Search bar -->
 <form action="{% url 'papers:search' 1 %}" method=POST>
@@ -92,3 +94,5 @@
   {% endif %}
 {% endfor %}
 {% endif %}
+
+{% endblock %}

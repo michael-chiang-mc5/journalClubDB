@@ -271,7 +271,7 @@ def search(request,page):
         else: # page change
             search_str = request.POST.get("search_str")
             pageNumber = int(request.POST.get("pageNumber"))
-            retMin = (pageNumber-1)*10
+            retMin = (pageNumber - 1)*10
             retMax = 10
             citations = Citation.objects.all()
             pubmed.getRecords(search_str,retMin,retMax)
@@ -283,4 +283,4 @@ def search(request,page):
     totalPages = min([totalPages,15+1]) # maximum of 15 pages
     pubmed = checkPubmedEntriesForPreexistingCitations(pubmed)
     context = {'entries': pubmed.entries, 'search_str': search_str, 'totalPages':totalPages, 'totalPagesRange': range(1,totalPages), 'pageNumber': pageNumber, 'freshSearch': freshSearch}
-    return render(request, 'papers/search.html', context)
+    return render(request, 'papers/search0.html', context)

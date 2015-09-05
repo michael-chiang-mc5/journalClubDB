@@ -1,4 +1,5 @@
 Dependencies:
 python3.4
-biopython
+django
+biopython (requires numpy)
 django-registration-redux
