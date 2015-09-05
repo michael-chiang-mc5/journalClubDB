@@ -36,11 +36,15 @@ def first_author( full_author_list ):
 
 @register.filter
 def parse_full_names( full_names ):
-  split_full_names = full_names.split("'")
-  num_full_names = int((len(split_full_names)-1)/2)
+  # remove ['  ... ']
+  full_names = full_names[2:-2]
+  # standardize quotation marks
+  full_names = full_names.replace('"',"'")
+  split_full_names = full_names.split("', '")
+  num_full_names = len(split_full_names)
   rn = ""
   for i in range(num_full_names):
-      singleName = split_full_names[2*i+1]
+      singleName = split_full_names[i]
       formattedSingleName = singleName.split(", ")[1] + " " + singleName.split(", ")[0]
       if i is 0:
           rn = formattedSingleName
