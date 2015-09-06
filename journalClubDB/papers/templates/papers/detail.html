@@ -43,24 +43,6 @@
       {% for thread,posts in threadsPostsvector %}
         <div id="t_{{ forloop.counter }}" class="tab-pane fade">
           <div class="discussion_background">
-            <!-- This form submits a new (non-reply) post to the thread -->
-            <div>
-            <form role="form" action="{% url 'papers:addPost' %}" method=POST>
-              {% csrf_token %}
-              <input type="hidden" name="isReplyToPost" value="0" />
-              <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
-              <input type="hidden" name="mother_pk" value="-1" />
-              <input type="hidden" name="citationPk" value="{{ citation.pk }}" />
-              <div class="form-group">
-                <label for="comment">Comment:</label>
-                <textarea class="form-control" rows="10" id="comment" name="text"></textarea>
-              </div>
-              <button type="submit" class="btn btn-default">Submit</button>
-            </form>
-          </div>
-
-
-
           {% if posts|length == 0 %}
             <p>No posts!</p>
           {% else %}
@@ -119,8 +101,30 @@
               </div>
             {% endfor %} <!-- end loop over posts -->
           {% endif %} <!-- end if statement checking for empty forum -->
+
+
+
+                  <!-- This form submits a new (non-reply) post to the thread -->
+                  <div>
+                  <form role="form" action="{% url 'papers:addPost' %}" method=POST>
+                    {% csrf_token %}
+                    <input type="hidden" name="isReplyToPost" value="0" />
+                    <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
+                    <input type="hidden" name="mother_pk" value="-1" />
+                    <input type="hidden" name="citationPk" value="{{ citation.pk }}" />
+                    <div class="form-group">
+                      <label for="comment">Comment:</label>
+                      <textarea class="form-control" rows="10" id="comment" name="text"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-default">Submit</button>
+                  </form>
+                  </div>
+
+
+
           </div>
         </div>
+
       {% endfor %}
   </div>
 
