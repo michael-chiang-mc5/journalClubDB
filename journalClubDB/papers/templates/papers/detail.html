@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 
+{% block javascript %}
+{% load staticfiles %}
+<script src="{% static 'js/ckeditor/ckeditor.js' %}"></script>
+<script src="{% static 'js/ckeditor/samples/js/sample.js' %}"></script>
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+{% endblock %}
 
 {% block body_block %}
 
@@ -69,8 +75,10 @@
                 {% endif %}
               {% endfor %}
               <input type='submit' id="voteb_down_{{ thread.pk }}_{{ p.pk }}" value='Downvote'/>
-                {{ p.text }}
               </form>
+              <div>
+              {{ p.text|safe }}
+              </div>
 
               <!-- white space for tree -->
               {% load templatetags %}
@@ -105,6 +113,7 @@
 
 
                   <!-- This form submits a new (non-reply) post to the thread -->
+                  <!--
                   <div>
                   <form role="form" action="{% url 'papers:addPost' %}" method=POST>
                     {% csrf_token %}
@@ -119,6 +128,33 @@
                     <button type="submit" class="btn btn-default">Submit</button>
                   </form>
                   </div>
+                -->
+                <!--
+                <textarea cols="10" id="editor1" name="editor1" rows="10" >&lt;p&gt; &lt;i&gt; Explain like I'm five   &lt;/i&gt;  &lt;/p&gt;
+                -->
+                <div>
+                <form role="form" action="{% url 'papers:addPost' %}" method=POST>
+                  {% csrf_token %}
+                  <input type="hidden" name="isReplyToPost" value="0" />
+                  <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
+                  <input type="hidden" name="mother_pk" value="-1" />
+                  <input type="hidden" name="citationPk" value="{{ citation.pk }}" />
+
+                  <textarea cols="10" id="editor{{ thread.pk }}" name="text" rows="10" >&lt;p&gt; &lt;i&gt; {{ thread.pk }}   &lt;/i&gt;  &lt;/p&gt;
+                  </textarea>
+                  <script>
+                  	CKEDITOR.replace( 'editor{{ thread.pk }}', {
+                  		extraPlugins: 'mathjax',
+                  		mathJaxLib: 'http://cdn.mathjax.org/mathjax/2.2-latest/MathJax.js?config=TeX-AMS_HTML',
+                  		height: 320
+                  	} );
+                  	if ( CKEDITOR.env.ie && CKEDITOR.env.version == 8 ) {
+                	  	document.getElementById( 'ie8-warning' ).className = 'tip alert';
+                	  }
+                  </script>
+                  <button type="submit" class="btn btn-default">Submit</button>
+                </form>
+                </div>
 
 
 

@@ -197,8 +197,8 @@ def detail(request,pk):
     threadsPostsvector = zip(threads,posts_vector)
 
     context = {'citation': citation,'threads': threads,'posts_vector':posts_vector,'threadsPostsvector':threadsPostsvector}
-    #return render(request, 'papers/detail.html', context)
-    return render(request, 'papers/debug_ckeditor.html', context)
+    return render(request, 'papers/detail.html', context)
+    #return render(request, 'papers/debug_ckeditor.html', context)
 
 # search is terribly slow.  Use this for development
 def search_development(request,page):
