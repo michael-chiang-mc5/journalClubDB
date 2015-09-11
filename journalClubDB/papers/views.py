@@ -45,15 +45,29 @@ def citationSanitizer(request,field_name):
             return f
     return ''
 
+def postForm(request):
+    thread_pk = request.POST.get("thread_pk")
+    citation_pk = request.POST.get("citation_pk")
+    citation = request.POST.get("citation")
+    thread = request.POST.get("thread")
+    isReplyToPost = request.POST.get("isReplyToPost")
+    mother_pk = request.POST.get("mother_pk")
+    current_thread = request.POST.get("current_thread") # pane id
+    context={'citation':citation,'citation_pk':citation_pk,'thread':thread,'thread_pk':thread_pk,'isReplyToPost':isReplyToPost,'mother_pk':mother_pk,'current_thread':current_thread}
+    return render(request, 'papers/postForm.html', context)
+
+
 # add posts
 def addPost(request):
 
     # get POST data
     text = request.POST['text']
     thread_pk = int(request.POST.get("thread_pk", False))
+    citation_pk = request.POST.get("citation_pk", False)
     is_reply_to_post = bool(int(request.POST.get("isReplyToPost", False)))
     mother_pk = int(request.POST.get("mother_pk", False))
     text = request.POST.get("text", False)
+    current_thread = request.POST.get("current_thread", False)
 
     post = Post()
     setattr(post,'time_created',datetime.datetime.now())
@@ -72,8 +86,7 @@ def addPost(request):
     post.upvoters.add(request.user)
     post.save()
 
-    currentCitationPk = request.POST.get("citationPk", False)
-    return HttpResponseRedirect(reverse('papers:detail', args=[currentCitationPk]))
+    return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,current_thread]))
 
 def addCitation(request):
     # check for duplicate citations.  If citation already exists, return primary key of the citation
@@ -106,6 +119,138 @@ def addCitation(request):
     # Return url to new citation detail page
     new_citation_url = reverse('papers:detail',args=[citation.pk])
     return JsonResponse({'new_citation_url':new_citation_url})
+
+
+# returns ordered list of posts.  Ordering is greedy
+# Input post_list should constitute a full tree with a single base node (no error checking)
+def order_greedy_post_list(post_list):
+    # childrenIdx_list[i] gives the indices of children of post_list[i]
+    childrenIdx_list = [None] * len(post_list)
+    for j,post in enumerate(post_list):
+        children = post.post_set.all()
+        children_idx = []
+        for child in children:
+            child_idx = None
+            for i,p in enumerate(post_list):
+                if child.pk is p.pk:
+                    child_idx = i
+                    break
+            children_idx.append(child_idx)
+        childrenIdx_list[j] = children_idx
+
+    # get base node of post tree
+    idx_baseNode = None
+    for i,post in enumerate(post_list):
+        if post.node_depth is 0:
+            idx_baseNode = i
+            break
+
+    # order post_list
+    ordered_indices = orderGreedyPostlist(idx_baseNode, post_list, childrenIdx_list)
+    ordered_post_list = [None] * len(post_list)
+    for i,post in enumerate(ordered_indices):
+        ordered_post_list[i] = post_list[ ordered_indices[i] ]
+
+    return ordered_post_list # note this is no longer a queryset
+
+
+# returns ordered list of posts.  Ordering is greedy
+# Input post_list should constitute a full tree with a single base node (no error checking)
+def order_greedy_post_list_with_indents(post_list):
+    # childrenIdx_list[i] gives the indices of children of post_list[i]
+    childrenIdx_list = [None] * len(post_list)
+    for j,post in enumerate(post_list):
+        children = post.post_set.all()
+        children_idx = []
+        for child in children:
+            child_idx = None
+            for i,p in enumerate(post_list):
+                if child.pk is p.pk:
+                    child_idx = i
+                    break
+            children_idx.append(child_idx)
+        childrenIdx_list[j] = children_idx
+
+    # get base node of post tree
+    idx_baseNode = None
+    for i,post in enumerate(post_list):
+        if post.node_depth is 0:
+            idx_baseNode = i
+            break
+
+    # order post_list
+    ordered_indices = orderGreedyPostlist_with_indents(idx_baseNode, post_list, childrenIdx_list,True)
+    ordered_post_list = []
+    for i,post in enumerate(ordered_indices):
+        if ordered_indices[i] == 'in' or ordered_indices[i] == 'out':
+            ordered_post_list.append(ordered_indices[i])
+        else:
+            #print(len(ordered_post_list))
+            #print(i)
+            #print(len(post_list))
+            #print(ordered_indices[i])
+            #print(len(ordered_indices))
+            #print(i)
+            #print("***********")
+            ordered_post_list.append(post_list[ ordered_indices[i] ])
+    return ordered_post_list # note this is no longer a queryset
+
+
+# Returns a list of indices corresponding to an ordered post_list
+# ordered[i] = j means that the jth element of post_list belongs in slot i of ordered list
+def orderGreedyPostlist_with_indents(node_idx, post_list, childrenIdx_list,withIndents):
+    children_indices = childrenIdx_list[node_idx]
+    num_children = len(children_indices)
+
+    if num_children is 0:
+        if withIndents:
+            return ['in',node_idx,'out']
+        else:
+            return [node_idx]
+    else:
+        # create tuple list [ (aggregateScore, index), ...] which is sorted by aggregateScore
+        tup = [None] * len(children_indices)
+        for i,child_idx in enumerate(children_indices):
+            score = post_list[child_idx].score()
+            tup[i] = (score,child_idx)
+        tup = sorted(tup, reverse=True)
+        if withIndents:
+            ordered = ['in',node_idx]
+        else:
+            ordered = [node_idx]
+        for t in tup:
+            score = t[0]
+            child_idx = t[1]
+            o = orderGreedyPostlist_with_indents(child_idx,post_list,childrenIdx_list,withIndents)
+            if withIndents:
+                ordered = ordered + o + ['out']
+            else:
+                ordered = ordered + o
+        return ordered
+
+# Returns a list of indices corresponding to an ordered post_list
+# ordered[i] = j means that the jth element of post_list belongs in slot i of ordered list
+def orderGreedyPostlist(node_idx, post_list, childrenIdx_list):
+    children_indices = childrenIdx_list[node_idx]
+    num_children = len(children_indices)
+
+    if num_children is 0:
+        return [node_idx]
+    else:
+        # create tuple list [ (aggregateScore, index), ...] which is sorted by aggregateScore
+        tup = [None] * len(children_indices)
+        for i,child_idx in enumerate(children_indices):
+            score = post_list[child_idx].score()
+            tup[i] = (score,child_idx)
+        tup = sorted(tup, reverse=True)
+
+    ordered = [node_idx]
+    for t in tup:
+        score = t[0]
+        child_idx = t[1]
+        o = orderGreedyPostlist(child_idx,post_list,childrenIdx_list)
+        ordered = ordered + o
+    return ordered
 
 
 # returns post_list with field aggregate_score_tmp set for all posts in post_list.
@@ -141,8 +286,7 @@ def order_post_list(post_list):
     for i,post in enumerate(ordered_indices):
         ordered_post_list[i] = post_list[ ordered_indices[i] ]
 
-    return ordered_post_list,post_list
-
+    return ordered_post_list
 
 # Returns a list of indices corresponding to an ordered post_list
 # ordered[i] = j means that the jth element of post_list belongs in slot i of ordered list
@@ -186,17 +330,49 @@ def calculateAggregateScore(node_idx, post_list, childrenIdx_list):
         return score
 
 # internal citation information
-def detail(request,pk):
+def detail(request,pk,current_thread):
     citation = Citation.objects.get(pk=pk)
     threads = Thread.objects.filter(owner=pk)
     posts_vector = []
+    indent_vector = []
+    num_depth1_posts = []
     for thread in threads:
         posts = Post.objects.filter(thread=thread.pk)
-        ordered_posts,dummy = order_post_list(posts) # ordered_posts is not a queryset
-        posts_vector.append(ordered_posts[1:]) # exclude first entry which is master post
-    threadsPostsvector = zip(threads,posts_vector)
+        ordered_posts = order_greedy_post_list(posts) # ordered_posts is not a queryset
+        indent = [o.node_depth-1 for o in ordered_posts]
+        posts_vector.append(ordered_posts[1:]) # exclude first entry which is a dummy master post
+        indent_vector.append(indent[1:]) # exclude first entry which is a dummy master post
+        num_depth1_posts.append(len(posts.filter(node_depth=1)))
 
-    context = {'citation': citation,'threads': threads,'posts_vector':posts_vector,'threadsPostsvector':threadsPostsvector}
+    threadsPostsIndents = zip(threads,posts_vector,indent_vector,num_depth1_posts)
+    context = {'citation': citation,'threads': threads,'posts_vector':posts_vector,'threadsPostsIndents':threadsPostsIndents,'current_thread':int(current_thread)}
+    return render(request, 'papers/detail.html', context)
+
+# internal citation information
+def detail0(request,pk,current_thread):
+    citation = Citation.objects.get(pk=pk)
+    threads = Thread.objects.filter(owner=pk)
+    posts_vector = []
+    indent_vector = []
+    num_depth1_posts = []
+    for thread in threads:
+        posts = Post.objects.filter(thread=thread.pk)
+        ordered_posts = order_greedy_post_list_with_indents(posts) # ordered_posts is not a queryset
+        posts_vector.append(ordered_posts[1:]) # exclude first entry which is a dummy master post
+        indent_vector.append(indent[1:]) # exclude first entry which is a dummy master post
+        num_depth1_posts.append(len(posts.filter(node_depth=1)))
+
+
+    treeLogic_vector = []
+    for posts,indents in zip(posts_vector,indent_vector):
+        treeLogic = []
+        for post,indent in zip(posts,indents):
+            treeLogic.append('in_jcdb')
+
+            treeLogic.append('out_jcdb')
+
+    threadsPostsIndents = zip(threads,posts_vector,indent_vector,num_depth1_posts)
+    context = {'citation': citation,'threads': threads,'posts_vector':posts_vector,'threadsPostsIndents':threadsPostsIndents,'current_thread':int(current_thread)}
     return render(request, 'papers/detail.html', context)
     #return render(request, 'papers/debug_ckeditor.html', context)
 
@@ -235,6 +411,24 @@ def updownvote(request):
         post.upvoters.remove(request.user)
         post.save()
     return HttpResponse("asdfads")
+
+# upvote comment
+# assumes that user is authenticated
+def upvote(request):
+    post_pk = request.POST.get("post_pk")
+    post = Post.objects.get(pk=post_pk)
+    post.upvoters.add(request.user)
+    post.downvoters.remove(request.user)
+    post.save()
+    return JsonResponse({'score':post.score()})
+
+def downvote(request):
+    post_pk = request.POST.get("post_pk")
+    post = Post.objects.get(pk=post_pk)
+    post.upvoters.remove(request.user)
+    post.downvoters.add(request.user)
+    post.save()
+    return JsonResponse({'score':post.score()})
 
 
 # check pubmed search results against internal database

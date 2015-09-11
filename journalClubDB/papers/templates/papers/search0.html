@@ -8,7 +8,7 @@
   <script>
     url_js = "{% url 'papers:addCitation' %}"
     csrf_js = '{{ csrf_token }}'
-    url2_js = "{% url 'papers:detail' 0 %}"
+    url2_js = "{% url 'papers:detail' 0 0 %}"
   </script>
   <script src="{% static "/static/js/search.js" %}"></script>
 {% endblock %}

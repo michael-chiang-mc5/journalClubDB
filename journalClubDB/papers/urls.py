@@ -11,15 +11,24 @@ urlpatterns = [
     # ex: /papers/addCitation/
     url(r'^addCitation/$', views.addCitation, name='addCitation'),
 
-    # ex: /papers/addCitation/
+    # ex:
     url(r'^addPost/$', views.addPost, name='addPost'),
 
-    # ex: /papers/addCitation/
+    url(r'^postForm/$', views.postForm, name='postForm'),
+
+
+    # ex:
     url(r'^updownvote/$', views.updownvote, name='updownvote'),
 
+    # ex:
+    url(r'^upvote/$', views.upvote, name='upvote'),
 
-    # ex: /papers/detail/0/
-    url(r'^detail/(?P<pk>[0-9]+)/$', views.detail, name='detail'),
+    # ex:
+    url(r'^downvote/$', views.downvote, name='downvote'),
+
+
+    # ex: /papers/detail/0/0/
+    url(r'^detail/(?P<pk>[0-9]+)/(?P<current_thread>[0-9]+)/$', views.detail0, name='detail'),
 
     # ex: /papers/search/0/
     url(r'^search_development/(?P<page>[0-9]+)/$', views.search_development, name='search_development'),

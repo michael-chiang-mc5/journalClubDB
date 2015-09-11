@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block javascript %}
+{% load staticfiles %}
+<script src="{% static 'js/ckeditor/ckeditor.js' %}"></script>
+<script src="{% static 'js/ckeditor/samples/js/sample.js' %}"></script>
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+{% endblock %}
+
+{% block body_block %}
+
+<!-- custom javascript -->
+{% load staticfiles %}
+<script>
+  url_js = "{% url 'papers:updownvote' %}"
+  csrf_js = '{{ csrf_token }}'
+  url_upvote = "{% url 'papers:upvote' %}"
+  url_downvote = "{% url 'papers:downvote' %}"
+</script>
+<script src="{% static "/static/js/detail.js" %}"></script>
+
+<div>
+<h2>{{ citation }}</h2>
+<h4>{{ thread }}</h4>
+</div>
+
+<div>
+  <form role="form" action="{% url 'papers:addPost' %}" method=POST>
+    <!-- POST data -->
+    {% csrf_token %}
+    <input type="hidden" name="isReplyToPost" value="{{ isReplyToPost }}" />
+    <input type="hidden" name="thread_pk" value="{{ thread_pk }}" />
+    <input type="hidden" name="mother_pk" value="{{ mother_pk }}" />
+    <input type="hidden" name="citation_pk" value="{{ citation_pk }}" />
+    <input type="hidden" name="current_thread" value="{{ current_thread }}" />
+
+    <!-- WYSIWYG text editor -->
+    <textarea cols="10" id="editor{{ thread.pk }}" name="text" rows="10" >&lt;p&gt; &lt;i&gt; {{ thread.pk }}   &lt;/i&gt;  &lt;/p&gt;
+    </textarea>
+    <script>
+    	CKEDITOR.replace( 'editor{{ thread.pk }}', {
+    		extraPlugins: 'mathjax',
+    		mathJaxLib: 'http://cdn.mathjax.org/mathjax/2.2-latest/MathJax.js?config=TeX-AMS_HTML',
+    		height: 320
+    	} );
+    	if ( CKEDITOR.env.ie && CKEDITOR.env.version == 8 ) {
+  	  	document.getElementById( 'ie8-warning' ).className = 'tip alert';
+  	  }
+    </script>
+
+    <!-- submit button -->
+    <button type="submit" class="btn btn-default">Submit</button>
+  </form>
+</div>
+
+{% endblock %}

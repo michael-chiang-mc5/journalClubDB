@@ -17,7 +17,7 @@
   <div id="dropDown{{ citation.pk }}" class="sublinks collapse">
     <a class="list-group-item small">{{ citation.abstract }}</a>
     <a class="list-group-item small">Tags: </a>
-    <a class="list-group-item small" href="{% url 'papers:detail' citation.pk %}">Click to discuss this paper!</a>
+    <a class="list-group-item small" href="{% url 'papers:detail' citation.pk  0 %}">Click to discuss this paper!</a>
   </div>
   {% endfor %}
 

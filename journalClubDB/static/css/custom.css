@@ -26,7 +26,53 @@ body {
 }
 
 
-.discussion_background {
+.vote-up-off {
+  text-indent: -9999em;
+  font-size: 1px;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  background-position: 0 -170px;
+  width: 32px;
+  height: 33px;
+  background-image: url('http://cdn.sstatic.net/scifi/img/sprites.png?v=130c4bfceca0');
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.votecell .vote-count-post {
+    color: #435963 !important;
+    line-height: 16px !important;
+    padding: 9px 0 !important;
+    font-size: 22px;
+    display: block;
+    text-align: center;
+
+}
+
+.vote-down-off {
+  text-indent: -9999em;
+  font-size: 1px;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  background-position: 0 -220px;
+  margin-bottom: 5px;
+  width: 32px;
+  height: 33px;
+  background-image: url('http://cdn.sstatic.net/scifi/img/sprites.png?v=130c4bfceca0');
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+table {
+  border-spacing: 100px;
+}
+
+.answercell {
+  padding-left: 50px;
+}
+
+.user_comments_header {
   background-color: yellow;
-  min-height: 500px;
 }
