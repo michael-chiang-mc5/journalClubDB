@@ -359,7 +359,6 @@ def detail0(request,pk,current_thread):
         posts = Post.objects.filter(thread=thread.pk)
         ordered_posts = order_greedy_post_list_with_indents(posts) # ordered_posts is not a queryset
         posts_vector.append(ordered_posts[1:]) # exclude first entry which is a dummy master post
-        indent_vector.append(indent[1:]) # exclude first entry which is a dummy master post
         num_depth1_posts.append(len(posts.filter(node_depth=1)))
 
 
