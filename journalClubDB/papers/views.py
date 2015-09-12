@@ -121,38 +121,6 @@ def addCitation(request):
     return JsonResponse({'new_citation_url':new_citation_url})
 
 
-# returns ordered list of posts.  Ordering is greedy
-# Input post_list should constitute a full tree with a single base node (no error checking)
-def order_greedy_post_list(post_list):
-    # childrenIdx_list[i] gives the indices of children of post_list[i]
-    childrenIdx_list = [None] * len(post_list)
-    for j,post in enumerate(post_list):
-        children = post.post_set.all()
-        children_idx = []
-        for child in children:
-            child_idx = None
-            for i,p in enumerate(post_list):
-                if child.pk is p.pk:
-                    child_idx = i
-                    break
-            children_idx.append(child_idx)
-        childrenIdx_list[j] = children_idx
-
-    # get base node of post tree
-    idx_baseNode = None
-    for i,post in enumerate(post_list):
-        if post.node_depth is 0:
-            idx_baseNode = i
-            break
-
-    # order post_list
-    ordered_indices = orderGreedyPostlist(idx_baseNode, post_list, childrenIdx_list)
-    ordered_post_list = [None] * len(post_list)
-    for i,post in enumerate(ordered_indices):
-        ordered_post_list[i] = post_list[ ordered_indices[i] ]
-
-    return ordered_post_list # note this is no longer a queryset
-
 
 # returns ordered list of posts.  Ordering is greedy
 # Input post_list should constitute a full tree with a single base node (no error checking)
@@ -182,16 +150,9 @@ def order_greedy_post_list_with_indents(post_list):
     ordered_indices = orderGreedyPostlist_with_indents(idx_baseNode, post_list, childrenIdx_list,True)
     ordered_post_list = []
     for i,post in enumerate(ordered_indices):
-        if ordered_indices[i] == 'in' or ordered_indices[i] == 'out':
+        if type(ordered_indices[i]) is str: #.startswith('in') or ordered_indices[i].startswith('out'):
             ordered_post_list.append(ordered_indices[i])
         else:
-            #print(len(ordered_post_list))
-            #print(i)
-            #print(len(post_list))
-            #print(ordered_indices[i])
-            #print(len(ordered_indices))
-            #print(i)
-            #print("***********")
             ordered_post_list.append(post_list[ ordered_indices[i] ])
     return ordered_post_list # note this is no longer a queryset
 
@@ -204,7 +165,7 @@ def orderGreedyPostlist_with_indents(node_idx, post_list, childrenIdx_list,withI
 
     if num_children is 0:
         if withIndents:
-            return ['in',node_idx,'out']
+            return ['in-'+str(post_list[node_idx].node_depth),node_idx,'out-'+str(post_list[node_idx].node_depth)]
         else:
             return [node_idx]
     else:
@@ -215,7 +176,7 @@ def orderGreedyPostlist_with_indents(node_idx, post_list, childrenIdx_list,withI
             tup[i] = (score,child_idx)
         tup = sorted(tup, reverse=True)
         if withIndents:
-            ordered = ['in',node_idx]
+            ordered = ['in-'+str(post_list[node_idx].node_depth),node_idx]
         else:
             ordered = [node_idx]
         for t in tup:
@@ -227,110 +188,9 @@ def orderGreedyPostlist_with_indents(node_idx, post_list, childrenIdx_list,withI
             else:
                 ordered = ordered + o
         if withIndents:
-            ordered = ordered + ['out']
+            ordered = ordered + ['out-'+str(post_list[node_idx].node_depth)]
         return ordered
 
-
-# Returns a list of indices corresponding to an ordered post_list
-# ordered[i] = j means that the jth element of post_list belongs in slot i of ordered list
-def orderGreedyPostlist(node_idx, post_list, childrenIdx_list):
-    children_indices = childrenIdx_list[node_idx]
-    num_children = len(children_indices)
-
-    if num_children is 0:
-        return [node_idx]
-    else:
-        # create tuple list [ (aggregateScore, index), ...] which is sorted by aggregateScore
-        tup = [None] * len(children_indices)
-        for i,child_idx in enumerate(children_indices):
-            score = post_list[child_idx].score()
-            tup[i] = (score,child_idx)
-        tup = sorted(tup, reverse=True)
-
-    ordered = [node_idx]
-    for t in tup:
-        score = t[0]
-        child_idx = t[1]
-        o = orderGreedyPostlist(child_idx,post_list,childrenIdx_list)
-        ordered = ordered + o
-    return ordered
-
-
-# returns post_list with field aggregate_score_tmp set for all posts in post_list.
-# Input post_list should constitute a full tree with a single base node (no error checking)
-def order_post_list(post_list):
-    # childrenIdx_list[i] gives the indices of children of post_list[i]
-    childrenIdx_list = [None] * len(post_list)
-    for j,post in enumerate(post_list):
-        children = post.post_set.all()
-        children_idx = []
-        for child in children:
-            child_idx = None
-            for i,p in enumerate(post_list):
-                if child.pk is p.pk:
-                    child_idx = i
-                    break
-            children_idx.append(child_idx)
-        childrenIdx_list[j] = children_idx
-
-    # post_list[idx_baseNode] is the base node of the post tree
-    idx_baseNode = None
-    for i,post in enumerate(post_list):
-        if post.node_depth is 0:
-            idx_baseNode = i
-            break
-
-    # recursively calculate aggregate scores and store in post_list[i].aggregate_score_tmp
-    calculateAggregateScore(idx_baseNode, post_list, childrenIdx_list)
-
-    # order post_list
-    ordered_indices = orderPostlist(idx_baseNode, post_list, childrenIdx_list)
-    ordered_post_list = [None] * len(post_list)
-    for i,post in enumerate(ordered_indices):
-        ordered_post_list[i] = post_list[ ordered_indices[i] ]
-
-    return ordered_post_list
-
-# Returns a list of indices corresponding to an ordered post_list
-# ordered[i] = j means that the jth element of post_list belongs in slot i of ordered list
-def orderPostlist(node_idx, post_list, childrenIdx_list):
-    children_indices = childrenIdx_list[node_idx]
-    num_children = len(children_indices)
-
-    if num_children is 0:
-        return [node_idx]
-    else:
-        # create tuple list [ (aggregateScore, index), ...] which is sorted by aggregateScore
-        tup = [None] * len(children_indices)
-        for i,child_idx in enumerate(children_indices):
-            aggregate_score = post_list[child_idx].aggregate_score_tmp
-            tup[i] = (aggregate_score,child_idx)
-        tup = sorted(tup, reverse=True)
-
-        ordered = [node_idx]
-        for t in tup:
-            aggregate_score = t[0]
-            child_idx = t[1]
-            o = orderPostlist(child_idx,post_list,childrenIdx_list)
-            ordered = ordered + o
-        return ordered
-
-def calculateAggregateScore(node_idx, post_list, childrenIdx_list):
-    children_indices = childrenIdx_list[node_idx]
-    num_children = len(children_indices)
-    raw_score = post_list[node_idx].score()
-
-    if num_children is 0:
-        score = raw_score
-        post_list[node_idx].aggregate_score_tmp = score
-        return score
-    else:
-        score = raw_score
-        for child_idx in children_indices:
-            aggregate_score_child = calculateAggregateScore(child_idx,post_list,childrenIdx_list)
-            score = max(score,aggregate_score_child)
-        post_list[node_idx].aggregate_score_tmp = score
-        return score
 
 # internal citation information
 def detail(request,pk,current_thread):
@@ -371,22 +231,6 @@ def search_development(request,page):
     pubmed = checkPubmedEntriesForPreexistingCitations(pubmed)
     context = {'navbar':'addCitation','entries': pubmed.entries, 'search_str': search_str, 'totalPages':totalPages, 'totalPagesRange': range(1,totalPages), 'pageNumber': pageNumber, 'freshSearch': freshSearch}
     return render(request, 'papers/search.html', context)
-
-# upvoting and downvoting comments
-def updownvote(request):
-    updown = request.POST.get("updown")
-    post_pk = int(request.POST.get("post_pk"))
-
-    post = Post.objects.get(pk=post_pk)
-    if updown == "up":
-        post.upvoters.add(request.user)
-        post.downvoters.remove(request.user)
-        post.save()
-    else:
-        post.downvoters.add(request.user)
-        post.upvoters.remove(request.user)
-        post.save()
-    return HttpResponse("asdfads")
 
 # upvote comment
 # assumes that user is authenticated

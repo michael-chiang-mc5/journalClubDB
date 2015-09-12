@@ -1,13 +1,3 @@
-// show reply form for posts -->
-  $(document).ready(function(){
-      $("button[id*='reply_']").click(function(){
-          var reply_id1_id2 = $(this).attr("id")
-          var arr = reply_id1_id2.split('_')
-          var id1 = arr[1]
-          var id2 = arr[2]
-          $("#replybox_"+id1+"_"+id2).show();
-      });
-  });
 
 // submit post
 $(document).ready(function() {
@@ -20,11 +10,7 @@ $(document).ready(function() {
 // upvote/downvote with divs
   $(document).ready(function() {
     $( ".vote-up-off " ).click(function() {
-
-      // get post pk
-      post_pk = $( this ).prev('input').val()
-
-
+      post_pk = $( this ).prev('input').val()       // get post private key
       var me = this;
       $.ajax({
            type:"POST",

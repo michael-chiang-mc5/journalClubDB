@@ -35,6 +35,48 @@ def first_author( full_author_list ):
       return last_name + ' et al'
 
 @register.filter
+def is_depth_divisible_by_two( text ):
+    indent_prefix = 'in-'
+    dedent_prefix = 'out-'
+    if text.startswith(indent_prefix):
+        depth = int(text[len(indent_prefix):])
+    elif text.startswith(dedent_prefix):
+        depth = int(text[len(dedent_prefix):])
+    return depth % 2 == 0
+
+@register.filter
+def is_depth_one( text ):
+    indent_prefix = 'in-'
+    dedent_prefix = 'out-'
+    if text.startswith(indent_prefix):
+        depth = int(text[len(indent_prefix):])
+    elif text.startswith(dedent_prefix):
+        depth = int(text[len(dedent_prefix):])
+    return depth == 1
+
+# returns True if text is indent
+@register.filter
+def is_indent( text ):
+    indent_prefix = 'in-'
+    if type(text) is not str:
+        return False
+    elif text.startswith(indent_prefix):
+        return True
+    else:
+        return False
+
+# returns True if text is dedent
+@register.filter
+def is_dedent( text ):
+    dedent_prefix = 'out-'
+    if type(text) is not str:
+        return False
+    elif text.startswith(dedent_prefix):
+        return True
+    else:
+        return False
+
+@register.filter
 def parse_full_names( full_names ):
   # remove ['  ... ']
   full_names = full_names[2:-2]

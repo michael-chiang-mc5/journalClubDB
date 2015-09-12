@@ -73,10 +73,37 @@ table {
   padding-left: 10px;
 }
 
-.big-box {
-  padding-left: 50px;
+.big-box-depth-divisible-by-two {
+  border: 20px solid white;
+  background-color: white;
+  padding-left: 40px;
+}
+
+.big-box-depth-is-one {
+  border: 20px solid grey;
+  background-color: grey;
+  padding-left: 40px;
+}
+
+.big-box-depth-not-divisible-by-two {
+  border: 20px solid grey;
+  background-color: grey;
+  padding-left: 40px;
+}
+
+
+.vertical-spacer {
+  height: 10px;
 }
 
 .user_comments_header {
   background-color: yellow;
+}
+
+.submit {
+  cursor: pointer;
+}
+
+.single-post {
+  margin-left:-40px
 }

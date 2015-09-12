@@ -1,3 +1,6 @@
-python3.4
+python manage.py shell
 from papers.models import *
 from papers.views import *
+posts = Post.objects.filter(thread=2)
+ordered_posts = order_greedy_post_list_with_indents(posts)
+ordered_posts
