@@ -44,13 +44,12 @@
         </div>
       </div>
 
-      <!-- message boards -->
-      {% for thread,posts,indents,numDepth1Posts in threadsPostsIndents %}
-        <!-- Each thread is a separate discussion topic (e.g. ELI5, Methodology, etc.)-->
+      <!-- message boards: each thread is its own topic -->
+      {% for thread,posts,numDepth1Posts in threadsPostsIndents %}
         <div id="thread_{{ forloop.counter }}" {% if current_thread == forloop.counter %} class="tab-pane fade in active" {% else %} class="tab-pane fade" {% endif %}>
-        <!-- <div id="thread_{{ forloop.counter }}" class="tab-pane fade"> -->
           <div class="user_comments">
-            <div class="user_comments_header">  <!-- Display number of depth 1 comments, and link for user to submit their own comment -->
+            <!-- Display number of depth 1 comments, and link for user to submit their own comment -->
+            <div class="user_comments_header">
               <h2> {{ numDepth1Posts }} comments </h2>
               <a class='submit'>Add your own comment!</a>
               <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
@@ -66,57 +65,47 @@
             </div>
 
           {% for p in posts %}
-            <div id="post_{{ p.pk }}">
-              <table>
-                <tbody>
-                  <tr>
-                    <!-- interface to vote up or down a comment -->
-                    <td class="votecell">
-                      <div class="vote">
-                        <input type="hidden" name="post_pk" value="{{ p.pk }}">
-                        <a class="vote-up-off" title="This answer is useful" value="{{ p.pk }}">up vote</a>
-                        <span itemprop="upvoteCount" class="vote-count-post ">{{ p.score }}</span>
-                        <a class="vote-down-off" title="This answer is not useful">down vote</a>
-                      </div>
-                    </td>
-                    <!-- user commment -->
-                    <td class="answercell">
-                      {{ p.text|safe }}
-                      <a class='submit'>reply</a>
-                      <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
-                        {% csrf_token %}
-                        <input type="hidden" name="citation" value="{{ citation.title }}" />
-                        <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
-                        <input type="hidden" name="thread" value="{{ thread.description }}" />
-                        <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
-                        <input type="hidden" name="isReplyToPost" value="1" />
-                        <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
-                        <input type="hidden" name="current_thread" value="{{ forloop.counter }}" />
-                      </form>
-                    </td>
-                  </tr>
-                  <tr> <!-- replies -->
-                    <td class="votecell"></td> <!-- add padding -->
-                    <td class="answercell">
-                      <div id="comments-1234" class="comments">
-                        <table>
-                          <tbody>
-                            <tr id="comment-1" class="comment">
-                              asdf
-                            </tr>
-                            <tr id="comment-2" class="comment">
-                              qwer
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </td>
-                  </tr>
+            {% if p == 'in' %}
+              <div class="big-box">
+            {% elif p == 'out' %}
+              </div>
+            {% else %}
+              <div id="post_{{ p.pk }}">
+                <table>
+                  <tbody>
+                    <tr>
+                      <!-- interface to vote up or down a comment -->
+                      <td class="votecell">
+                        <div class="vote">
+                          <input type="hidden" name="post_pk" value="{{ p.pk }}">
+                          <a class="vote-up-off" title="This answer is useful" value="{{ p.pk }}">up vote</a>
+                          <span itemprop="upvoteCount" class="vote-count-post ">{{ p.score }}</span>
+                          <a class="vote-down-off" title="This answer is not useful">down vote</a>
+                        </div>
+                      </td>
+                      <!-- user commment -->
+                      <td class="answercell">
+                        {{ p.text|safe }}
+                        <a class='submit'>reply</a>
+                        <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
+                          {% csrf_token %}
+                          <input type="hidden" name="citation" value="{{ citation.title }}" />
+                          <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
+                          <input type="hidden" name="thread" value="{{ thread.description }}" />
+                          <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
+                          <input type="hidden" name="isReplyToPost" value="1" />
+                          <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
+                          <input type="hidden" name="current_thread" value="{{ forloop.parentloop.counter }}" />
+                        </form>
+                      </td>
+                    </tr>
 
-                </tbody>
-              </table>
+                  </tbody>
+                </table>
+              </div> <!-- end div id="post_{{ p.pk }}" -->
+            {% endif %}
 
-            </div> <!-- end div id="post_{{ p.pk }}" -->
+
           {% endfor %} <!-- end loop over posts -->
 
         </div> <!-- end div id="thread_{{ forloop.counter }}" class="tab-pane fade" -->

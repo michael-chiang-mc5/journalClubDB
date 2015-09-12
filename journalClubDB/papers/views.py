@@ -223,10 +223,13 @@ def orderGreedyPostlist_with_indents(node_idx, post_list, childrenIdx_list,withI
             child_idx = t[1]
             o = orderGreedyPostlist_with_indents(child_idx,post_list,childrenIdx_list,withIndents)
             if withIndents:
-                ordered = ordered + o + ['out']
+                ordered = ordered + o
             else:
                 ordered = ordered + o
+        if withIndents:
+            ordered = ordered + ['out']
         return ordered
+
 
 # Returns a list of indices corresponding to an ordered post_list
 # ordered[i] = j means that the jth element of post_list belongs in slot i of ordered list
@@ -334,43 +337,17 @@ def detail(request,pk,current_thread):
     citation = Citation.objects.get(pk=pk)
     threads = Thread.objects.filter(owner=pk)
     posts_vector = []
-    indent_vector = []
-    num_depth1_posts = []
-    for thread in threads:
-        posts = Post.objects.filter(thread=thread.pk)
-        ordered_posts = order_greedy_post_list(posts) # ordered_posts is not a queryset
-        indent = [o.node_depth-1 for o in ordered_posts]
-        posts_vector.append(ordered_posts[1:]) # exclude first entry which is a dummy master post
-        indent_vector.append(indent[1:]) # exclude first entry which is a dummy master post
-        num_depth1_posts.append(len(posts.filter(node_depth=1)))
-
-    threadsPostsIndents = zip(threads,posts_vector,indent_vector,num_depth1_posts)
-    context = {'citation': citation,'threads': threads,'posts_vector':posts_vector,'threadsPostsIndents':threadsPostsIndents,'current_thread':int(current_thread)}
-    return render(request, 'papers/detail.html', context)
-
-# internal citation information
-def detail0(request,pk,current_thread):
-    citation = Citation.objects.get(pk=pk)
-    threads = Thread.objects.filter(owner=pk)
-    posts_vector = []
-    indent_vector = []
-    num_depth1_posts = []
+    num_depth1_posts = [] # number of depth 1 comments used for display
     for thread in threads:
         posts = Post.objects.filter(thread=thread.pk)
         ordered_posts = order_greedy_post_list_with_indents(posts) # ordered_posts is not a queryset
-        posts_vector.append(ordered_posts[1:]) # exclude first entry which is a dummy master post
+
+        ordered_posts = ordered_posts[2:-1] # exclude first entry (dummy post) along with indents/dedents
+        posts_vector.append(ordered_posts)
+
         num_depth1_posts.append(len(posts.filter(node_depth=1)))
 
-
-    treeLogic_vector = []
-    for posts,indents in zip(posts_vector,indent_vector):
-        treeLogic = []
-        for post,indent in zip(posts,indents):
-            treeLogic.append('in_jcdb')
-
-            treeLogic.append('out_jcdb')
-
-    threadsPostsIndents = zip(threads,posts_vector,indent_vector,num_depth1_posts)
+    threadsPostsIndents = zip(threads,posts_vector,num_depth1_posts)
     context = {'citation': citation,'threads': threads,'posts_vector':posts_vector,'threadsPostsIndents':threadsPostsIndents,'current_thread':int(current_thread)}
     return render(request, 'papers/detail.html', context)
     #return render(request, 'papers/debug_ckeditor.html', context)

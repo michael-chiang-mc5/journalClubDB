@@ -70,6 +70,10 @@ table {
 }
 
 .answercell {
+  padding-left: 10px;
+}
+
+.big-box {
   padding-left: 50px;
 }
 
