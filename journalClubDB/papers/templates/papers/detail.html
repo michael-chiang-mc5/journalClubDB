@@ -11,7 +11,6 @@
   <!-- custom javascript -->
   {% load staticfiles %}
   <script>
-    url_js = "{% url 'papers:updownvote' %}"
     csrf_js = '{{ csrf_token }}'
     url_upvote = "{% url 'papers:upvote' %}"
     url_downvote = "{% url 'papers:downvote' %}"

@@ -18,9 +18,6 @@ urlpatterns = [
 
 
     # ex:
-    url(r'^updownvote/$', views.updownvote, name='updownvote'),
-
-    # ex:
     url(r'^upvote/$', views.upvote, name='upvote'),
 
     # ex:
