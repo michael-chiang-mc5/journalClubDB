@@ -117,7 +117,7 @@ def addCitation(request):
         post.save()
 
     # Return url to new citation detail page
-    new_citation_url = reverse('papers:detail',args=[citation.pk])
+    new_citation_url = reverse('papers:detail',args=[citation.pk,0])
     return JsonResponse({'new_citation_url':new_citation_url})
 
 
@@ -298,4 +298,4 @@ def search(request,page):
     totalPages = min([totalPages,15+1]) # maximum of 15 pages
     pubmed = checkPubmedEntriesForPreexistingCitations(pubmed)
     context = {'entries': pubmed.entries, 'search_str': search_str, 'totalPages':totalPages, 'totalPagesRange': range(1,totalPages), 'pageNumber': pageNumber, 'freshSearch': freshSearch}
-    return render(request, 'papers/search0.html', context)
+    return render(request, 'papers/search.html', context)

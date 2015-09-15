@@ -1,13 +1,14 @@
 from django.contrib import admin
 
-from .models import Citation,Thread,Post
+from .models import Citation,Thread,Post,UserProfile
+
+admin.site.register(UserProfile)
 
 class PostInline(admin.TabularInline):
     model = Post
     extra = 1
     readonly_fields=('id',)
     filter_horizontal = ('upvoters','downvoters')
-
 
 class ThreadAdmin(admin.ModelAdmin):
     inlines = [PostInline]

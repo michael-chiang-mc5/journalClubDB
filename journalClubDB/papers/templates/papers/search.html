@@ -1,21 +1,28 @@
 {% extends "base.html" %}
 
 
+{% block javascript %}
+  <!-- custom javascript -->
+  {% load staticfiles %}
+  <script src="{% static "/static/js/jquery-2.1.4.min.js" %}"></script>
+  <script>
+    url_js = "{% url 'papers:addCitation' %}"
+    csrf_js = '{{ csrf_token }}'
+    url2_js = "{% url 'papers:detail' 0 0 %}"
+  </script>
+  <script src="{% static "/static/js/search.js" %}"></script>
+{% endblock %}
 
-<!-- webpage main content -->
 {% block body_block %}
 
-<!-- custom javascript -->
-{% load staticfiles %}
-<script>
-  url_js = "{% url 'papers:addCitation' %}"
-  csrf_js = '{{ csrf_token }}'
-  url2_js = "{% url 'papers:detail' 0 0 %}"
-</script>
-<script src="{% static "/static/js/search.js" %}"></script>
+<!-- Search bar -->
+<form action="{% url 'papers:search' 1 %}" method=POST>
+  {% csrf_token %}
+  <input type="text" value="{{ search_str }}" name="search_str">
+  <input type="hidden" name="searchInitiated" value="True" />
+  <input type="submit">
+</form>
 
-
-<!-- Search results -->
 {% if freshSearch == False %}
 <h1>Search Results</h1>
 {% for entry in entries %}
@@ -27,7 +34,7 @@
         <button id="b_{{ forloop.counter }}" style="display:none;">Import</button>
       </a>
     {% else %}  <!-- Entry already exists -->
-      <a href="{% url 'papers:detail' entry.preexistingEntry_pk %}" id="a_{{ forloop.counter }}">
+      <a href="{% url 'papers:detail' entry.preexistingEntry_pk 0 %}" id="a_{{ forloop.counter }}">
         <button id="b_{{ forloop.counter }}">View</button>
       </a>
     {% endif %}
@@ -87,8 +94,5 @@
   {% endif %}
 {% endfor %}
 {% endif %}
-
-
-
 
 {% endblock %}

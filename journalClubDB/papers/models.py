@@ -78,3 +78,9 @@ class Post(models.Model):
     # TODO: Make score based on user quality, i.e., professors have more weight
     def score(self):
         return len(self.upvoters.all()) - len(self.downvoters.all())
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    library   = models.ManyToManyField(Citation, blank=True, related_name="citation_library")
+    def __str__(self):
+        return self.user.username
