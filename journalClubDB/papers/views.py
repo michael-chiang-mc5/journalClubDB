@@ -49,11 +49,12 @@ def postForm(request):
     thread_pk = request.POST.get("thread_pk")
     citation_pk = request.POST.get("citation_pk")
     citation = request.POST.get("citation")
-    thread = request.POST.get("thread")
+    thread_title = request.POST.get("thread_title")
+    thread_description = request.POST.get("thread_description")
     isReplyToPost = request.POST.get("isReplyToPost")
     mother_pk = request.POST.get("mother_pk")
     current_thread = request.POST.get("current_thread") # pane id
-    context={'citation':citation,'citation_pk':citation_pk,'thread':thread,'thread_pk':thread_pk,'isReplyToPost':isReplyToPost,'mother_pk':mother_pk,'current_thread':current_thread}
+    context={'citation':citation,'citation_pk':citation_pk,'thread_title':thread_title,'thread_description':thread_description,'thread_pk':thread_pk,'isReplyToPost':isReplyToPost,'mother_pk':mother_pk,'current_thread':current_thread}
     return render(request, 'papers/postForm.html', context)
 
 
@@ -105,11 +106,17 @@ def addCitation(request):
     citation.save()
 
     # Create threads and master post
-    thread_names = ["Explain Like I'm Five","Methodology","Results","Historical Context","Discussion"]
-    for name in thread_names:
+    thread_titles = ["Explain Like I'm Five","Methodology","Results","Historical Context","Discussion"]
+    thread_descriptions = ["Easy to understand summary of the paper",
+                           "Description of innovative methodologies",
+                           "Description of main results of the paper",
+                           "How does the paper fit into the pre-existing literature",
+                           "Discuss!!"]
+    for title,description in zip(thread_titles,thread_descriptions):
         thread = Thread()
-        setattr(thread,'description',name)
         setattr(thread,'owner',citation)
+        setattr(thread,'title',title)
+        setattr(thread,'description',description)
         thread.save()
         post = Post()
         post = Post(time_created=datetime.datetime.now(),creator=request.user,thread=thread,

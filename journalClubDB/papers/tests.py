@@ -17,7 +17,7 @@ class postScoreTests(TestCase):
         citation.save()
 
         # create a thread linked to citation
-        thread = Thread(owner=citation, description="discussion")
+        thread = Thread(owner=citation, title="discussion")
         thread.save()
 
         # create users
@@ -64,7 +64,7 @@ class postScoreTests(TestCase):
     def test_aggregate_scores(self):
         post1 = Post.objects.get(text="user1's first post")
         post2 = Post.objects.get(text="user2's first reply to user 1")
-        thread = Thread.objects.get(description="discussion")
+        thread = Thread.objects.get(title="discussion")
 
         tree = Post.objects.filter(thread=thread)
         ordered_tree,tree = order_post_list(tree)

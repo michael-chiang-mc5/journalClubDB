@@ -21,14 +21,17 @@
   <div class="container">
     <!-- tab bar -->
     <ul class="nav nav-pills nav-justified">
-      <li {% if current_thread == 0 %} class="active" {% endif %}> <a data-toggle="pill" href="#pubmed_data">Summary</a></li>
+      <li {% if current_thread == 0 %} class="active" {% endif %}> <a data-toggle="pill" href="#thread_0">Summary</a></li>
       {% for thread in threads %}
-        <li {% if current_thread == forloop.counter %} class="active" {% endif %}><a data-toggle="pill" href="#thread_{{ forloop.counter }}">{{ thread.description }}</a></li>
+        <li {% if current_thread == forloop.counter %} class="active" {% endif %}><a data-toggle="pill" href="#thread_{{ forloop.counter }}">{{ thread.title }}</a></li>
       {% endfor %}
     </ul>
 
-    <div class="tab-content"> <!-- tabs for threads -->
-      <div id="pubmed_data" {% if current_thread == 0 %} class="tab-pane fade in active" {% else %} class="tab-pane fade" {% endif %}>
+    <div class="tab-content">
+
+
+      <!-- Content for summary jumbotron -->
+      <div id="thread_0" {% if current_thread == 0 %} class="tab-pane fade in active" {% else %} class="tab-pane fade" {% endif %}>
         <div id="detail_jumbotron" class="jumbotron">
           <p><a class="btn btn-primary btn-tiny" href="http://www.ncbi.nlm.nih.gov/pubmed/{{ citation.pubmedID }}" role="button">pubmed link &raquo;</a></p>
           <h1>{{ citation.title }}</h1>
@@ -43,7 +46,7 @@
         </div>
       </div>
 
-      <!-- message boards: each thread is its own topic -->
+      <!-- message board tabs (ELI5, methodology, etc) -->
       {% for thread,posts,numDepth1Posts in threadsPostsIndents %}
         <div id="thread_{{ forloop.counter }}" {% if current_thread == forloop.counter %} class="tab-pane fade in active" {% else %} class="tab-pane fade" {% endif %}>
           <div class="user_comments">
@@ -55,7 +58,8 @@
                 {% csrf_token %}
                 <input type="hidden" name="citation" value="{{ citation.title }}" />
                 <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
-                <input type="hidden" name="thread" value="{{ thread.description }}" />
+                <input type="hidden" name="thread_title" value="{{ thread.title }}" />
+                <input type="hidden" name="thread_description" value="{{ thread.description }}" />
                 <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
                 <input type="hidden" name="isReplyToPost" value="0" />
                 <input type="hidden" name="mother_pk" value="-1" />
@@ -99,7 +103,8 @@
                           {% csrf_token %}
                           <input type="hidden" name="citation" value="{{ citation.title }}" />
                           <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
-                          <input type="hidden" name="thread" value="{{ thread.description }}" />
+                          <input type="hidden" name="thread_title" value="{{ thread.title }}" />
+                          <input type="hidden" name="thread_description" value="{{ thread.description }}" />
                           <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
                           <input type="hidden" name="isReplyToPost" value="1" />
                           <input type="hidden" name="mother_pk" value="{{ p.pk }}" />

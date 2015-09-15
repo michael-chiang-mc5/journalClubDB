@@ -12,7 +12,6 @@
 <!-- custom javascript -->
 {% load staticfiles %}
 <script>
-  url_js = "{% url 'papers:updownvote' %}"
   csrf_js = '{{ csrf_token }}'
   url_upvote = "{% url 'papers:upvote' %}"
   url_downvote = "{% url 'papers:downvote' %}"
@@ -21,7 +20,7 @@
 
 <div>
 <h2>{{ citation }}</h2>
-<h4>{{ thread }}</h4>
+<h4>{{ thread_title }} - {{ thread_description }}</h4>
 </div>
 
 <div>

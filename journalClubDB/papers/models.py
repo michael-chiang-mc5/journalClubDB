@@ -37,7 +37,7 @@ class Citation(models.Model):
 # Possible categories: ELI5, Methodology, Results, Discussion, Historical context
 class Thread(models.Model):
     def __str__(self):
-        return str(self.owner) + ' - ' + self.description
+        return str(self.owner) + ' - ' + self.title
 
     def num_posts(self):
         return self.post_set.count()
@@ -53,6 +53,7 @@ class Thread(models.Model):
         return tMax
 
     owner = models.ForeignKey(Citation)
+    title = models.TextField(blank=True)
     description = models.TextField(blank=True)
 
 class Post(models.Model):
