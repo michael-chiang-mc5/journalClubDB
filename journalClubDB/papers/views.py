@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 import logging
 import math
 from .models import Citation, Thread, Post
+from .forms import UserForm #, UserProfileForm
 from .Pubmed import PubmedInterface
 logger = logging.getLogger(__name__)
 import time
@@ -13,6 +14,59 @@ import pickle # used to debug, remove later
 import os
 from django.http import JsonResponse
 import datetime
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+
+# user login.  Code from: http://www.tangowithdjango.com/book17/chapters/login.html
+def login(request):
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+
+    # Use Django's machinery to attempt to see if the username/password
+    # combination is valid - a User object is returned if it is.
+    user = authenticate(username=username, password=password)
+
+    # If we have a User object, the details are correct.
+    # If None (Python's way of representing the absence of a value), no user
+    # with matching credentials was found.
+    if user:
+        # Is the account active? It could have been disabled.
+        if user.is_active:
+            # If the account is valid and active, we can log the user in.
+            # We'll send the user back to the homepage.
+            login(request, user)
+            return HttpResponseRedirect('/papers/')
+        else:
+            # An inactive account was used - no logging in!
+            return HttpResponse("Your Rango account is disabled.")
+    else:
+        # Bad login details were provided. So we can't log the user in.
+        print("Invalid login details: {0}, {1}".format(username, password))
+        return HttpResponse("Invalid login details supplied.")
+
+# code from: http://stackoverflow.com/questions/1531272/django-ajax-response-for-valid-available-username-email-during-registration
+def is_field_available(request):
+    if request.method == "GET":
+        get = request.GET.copy()
+        if 'username' in get:
+            return HttpResponse(False)
+            name = get['username']
+            if User.objects.filter(username__iexact=name):
+                return HttpResponse(False)
+            else:
+                return HttpResponse(True)
+    return HttpResponseServerError("Requires username to test")
+
+# user registration.  Code from: http://www.tangowithdjango.com/book17/chapters/login.html
+def register(request):
+    username = request.POST.get("username")
+    password1 = request.POST.get("password1")
+    email = request.POST.get("email")
+    user = User.objects.create_user(username, email, password1)
+    #user.set_password(user.password) # I don't think this is necessary, should hash automatically
+    user.save()
+    message = 'Registration successful'
+    return JsonResponse({'message':message})
 
 # see all citations in database
 def index(request):

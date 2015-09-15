@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from . import views
+from django.views.generic import TemplateView
 
 urlpatterns = [
     # ex: /papers/
@@ -29,6 +30,11 @@ urlpatterns = [
 
     # ex: /papers/search/0/
     url(r'^search_development/(?P<page>[0-9]+)/$', views.search_development, name='search_development'),
+
+    url(r'^register/$', views.register, name='register'), # ADD NEW PATTERN!
+    url(r'^login/$', views.login, name='login'),
+    url(r'^is_field_available/$', views.is_field_available, name='is_field_available'),
+    url(r'^test/$', TemplateView.as_view(template_name='papers/login.html'), name='home'),
 
 
 ]

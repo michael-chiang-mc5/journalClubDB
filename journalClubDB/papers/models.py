@@ -82,6 +82,7 @@ class Post(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
+    education = models.TextField(blank=True)
     library   = models.ManyToManyField(Citation, blank=True, related_name="citation_library")
     def __str__(self):
         return self.user.username
