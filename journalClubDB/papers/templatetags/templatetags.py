@@ -1,6 +1,21 @@
 from django.template import Library
-
+from datetime import datetime, timedelta, timezone
+from django.utils.timesince import timesince
 register = Library()
+
+
+@register.filter
+def age(value):
+    now = datetime.now(timezone.utc)
+    try:
+        difference = now - value
+    except:
+        return "qwer"
+        return value
+    if difference <= timedelta(minutes=1):
+        return 'just now'
+    return '%(time)s ago' % {'time': timesince(value).split(', ')[0]}
+
 
 @register.filter
 def get_range( value ):

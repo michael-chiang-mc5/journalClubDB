@@ -3,20 +3,21 @@
 {% block javascript %}
 {% load staticfiles %}
 <script src="{% static 'js/ckeditor/ckeditor.js' %}"></script>
-<script src="{% static 'js/ckeditor/samples/js/sample.js' %}"></script>
 <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-{% endblock %}
-
-{% block body_block %}
-
 <!-- custom javascript -->
-{% load staticfiles %}
+<!--
 <script>
   csrf_js = '{{ csrf_token }}'
   url_upvote = "{% url 'papers:upvote' %}"
   url_downvote = "{% url 'papers:downvote' %}"
 </script>
 <script src="{% static "/static/js/detail.js" %}"></script>
+-->
+
+{% endblock %}
+
+{% block body_block %}
+
 
 <div>
 <h2>{{ citation }}</h2>
@@ -32,6 +33,8 @@
     <input type="hidden" name="mother_pk" value="{{ mother_pk }}" />
     <input type="hidden" name="citation_pk" value="{{ citation_pk }}" />
     <input type="hidden" name="current_thread" value="{{ current_thread }}" />
+    <input type="hidden" name="post_pk" value="{{ post_pk }}" />
+    <input type="hidden" name="edit_or_reply" value="{{ edit_or_reply }}" />
 
     <!-- WYSIWYG text editor -->
     <textarea cols="10" id="editor{{ thread.pk }}" name="text" rows="10" ></textarea>
@@ -44,8 +47,6 @@
     	if ( CKEDITOR.env.ie && CKEDITOR.env.version == 8 ) {
   	  	document.getElementById( 'ie8-warning' ).className = 'tip alert';
   	  }
-      var initial_text = "asdf"
-      //CKEDITOR.instances.editor{{ thread.pk }}.setData(initial_text);
       var e = CKEDITOR.instances.editor{{ thread.pk }};
       e.setData("{{ initial_text|safe }}")
 

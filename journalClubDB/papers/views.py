@@ -120,43 +120,59 @@ def postForm(request):
     mother_pk = request.POST.get("mother_pk")
     current_thread = request.POST.get("current_thread") # pane id
     initial_text = request.POST.get("initial_text")
-    initial_text = initial_text.replace("\r","")
-    initial_text = initial_text.replace("\n","")
-    initial_text = "<blockquote>" + initial_text + "</blockquote>" + "<br >"
+    post_pk = request.POST.get("post_pk")
+    edit_or_reply = request.POST.get("edit_or_reply")
 
-    save_object(initial_text, 'initial_text.pkl')
-    context={'citation':citation,'citation_pk':citation_pk,'thread_title':thread_title,'thread_description':thread_description,'thread_pk':thread_pk,'isReplyToPost':isReplyToPost,'mother_pk':mother_pk,'current_thread':current_thread,'initial_text':initial_text}
+    blockquote = request.POST.get("blockquote")
+    if blockquote == "True":
+        initial_text = initial_text.replace("\r","")
+        initial_text = initial_text.replace("\n","")
+        initial_text = "<blockquote>" + initial_text + "</blockquote>" + "<br >"
+    else:
+        initial_text = initial_text.replace("\r","")
+        initial_text = initial_text.replace("\n","")
+
+    context={'citation':citation,'citation_pk':citation_pk,'thread_title':thread_title,'thread_description':thread_description,'thread_pk':thread_pk,'isReplyToPost':isReplyToPost,'mother_pk':mother_pk,'current_thread':current_thread,'initial_text':initial_text,'post_pk':post_pk,'edit_or_reply':edit_or_reply}
     return render(request, 'papers/postForm.html', context)
 
-
-# add posts
+# add post
 def addPost(request):
+    edit_or_reply = request.POST.get("edit_or_reply", False)
+    if edit_or_reply == "edit":
+        new_text = request.POST.get("text", False)
+        post_pk = request.POST.get("post_pk", False)
+        post = Post.objects.filter(pk=post_pk).all()[0]
+        citation_pk = request.POST.get("citation_pk", False)
+        current_thread = request.POST.get("current_thread", False)
+        setattr(post,'text',new_text)
+        setattr(post,'time_created',datetime.datetime.now())
+        post.save()
+        return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,current_thread]))
+    elif edit_or_reply == "reply":
+        # get POST data
+        thread_pk = int(request.POST.get("thread_pk", False))
+        citation_pk = request.POST.get("citation_pk", False)
+        is_reply_to_post = bool(int(request.POST.get("isReplyToPost", False)))
+        mother_pk = int(request.POST.get("mother_pk", False))
+        text = request.POST.get("text", False)
+        current_thread = request.POST.get("current_thread", False)
 
-    # get POST data
-    text = request.POST['text']
-    thread_pk = int(request.POST.get("thread_pk", False))
-    citation_pk = request.POST.get("citation_pk", False)
-    is_reply_to_post = bool(int(request.POST.get("isReplyToPost", False)))
-    mother_pk = int(request.POST.get("mother_pk", False))
-    text = request.POST.get("text", False)
-    current_thread = request.POST.get("current_thread", False)
-
-    post = Post()
-    setattr(post,'time_created',datetime.datetime.now())
-    setattr(post,'creator',request.user)
-    setattr(post,'thread',Thread.objects.get(pk=thread_pk))
-    setattr(post,'isReplyToPost', True) # TODO: change this to base_node?
-    if is_reply_to_post: # TODO: change name to is_submission?
-        setattr(post,'mother',Post.objects.get(pk=mother_pk))
-        setattr(post,'node_depth', Post.objects.get(pk=mother_pk).node_depth + 1)
-    else:
-        setattr(post,'mother', Post.objects.get(thread=thread_pk,isReplyToPost=False))
-        setattr(post,'node_depth',1)
-    setattr(post,'text',text)
-    post.save()
-    post.upvoters.add(request.user)
-    post.save()
-    return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,current_thread]))
+        post = Post()
+        setattr(post,'time_created',datetime.datetime.now())
+        setattr(post,'creator',request.user)
+        setattr(post,'thread',Thread.objects.get(pk=thread_pk))
+        setattr(post,'isReplyToPost', True) # TODO: change this to base_node?
+        if is_reply_to_post: # TODO: change name to is_submission?
+            setattr(post,'mother',Post.objects.get(pk=mother_pk))
+            setattr(post,'node_depth', Post.objects.get(pk=mother_pk).node_depth + 1)
+        else:
+            setattr(post,'mother', Post.objects.get(thread=thread_pk,isReplyToPost=False))
+            setattr(post,'node_depth',1)
+        setattr(post,'text',text)
+        post.save()
+        post.upvoters.add(request.user)
+        post.save()
+        return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,current_thread]))
 
 def addCitation(request):
     # check for duplicate citations.  If citation already exists, return primary key of the citation

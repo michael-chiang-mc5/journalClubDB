@@ -21,11 +21,10 @@ $(document).ready(function() {
 
 
 
-// submit post
+// bring up postForm.html
 $(document).ready(function() {
   $("a.submit").click(function() {
     $( this ).next('form').submit();
-    //$("#formData").submit();
   });
 });
 
