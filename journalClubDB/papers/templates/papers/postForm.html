@@ -34,8 +34,7 @@
     <input type="hidden" name="current_thread" value="{{ current_thread }}" />
 
     <!-- WYSIWYG text editor -->
-    <textarea cols="10" id="editor{{ thread.pk }}" name="text" rows="10" >&lt;p&gt; &lt;i&gt; {{ thread.pk }}   &lt;/i&gt;  &lt;/p&gt;
-    </textarea>
+    <textarea cols="10" id="editor{{ thread.pk }}" name="text" rows="10" ></textarea>
     <script>
     	CKEDITOR.replace( 'editor{{ thread.pk }}', {
     		extraPlugins: 'mathjax',
@@ -45,6 +44,11 @@
     	if ( CKEDITOR.env.ie && CKEDITOR.env.version == 8 ) {
   	  	document.getElementById( 'ie8-warning' ).className = 'tip alert';
   	  }
+      var initial_text = "asdf"
+      //CKEDITOR.instances.editor{{ thread.pk }}.setData(initial_text);
+      var e = CKEDITOR.instances.editor{{ thread.pk }};
+      e.setData("{{ initial_text|safe }}")
+
     </script>
 
     <!-- submit button -->

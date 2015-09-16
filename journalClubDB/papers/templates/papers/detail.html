@@ -66,6 +66,7 @@
                   <input type="hidden" name="isReplyToPost" value="0" />
                   <input type="hidden" name="mother_pk" value="-1" />
                   <input type="hidden" name="current_thread" value="{{ forloop.counter }}" />
+                  <input type="hidden" name="initial_text" value="" />
                 </form>
               {% else %}
                 <div class="active modal_item" id="comment-modal"><a id="modal_item1" data-toggle="modal" data-target="#myModal">Add your own comment!</a></div>
@@ -117,7 +118,9 @@
                         </td>
                         <!-- user commment -->
                         <td class="answercell">
-                          {{ p.text|safe }}
+                          <div class="comment-text">
+                            {{ p.text|safe }}
+                          </div>
 
                           {% if user.is_authenticated %}
                             <a class='submit'>reply</a>
@@ -131,6 +134,7 @@
                               <input type="hidden" name="isReplyToPost" value="1" />
                               <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
                               <input type="hidden" name="current_thread" value="{{ forloop.parentloop.counter }}" />
+                              <input type="hidden" name="initial_text" value="{{ p.text }}" />
                             </form>
                           {% else %}
                             <div class="active modal_item" id="reply-modal"><a id="modal_item1" data-toggle="modal" data-target="#myModal">reply</a></div>

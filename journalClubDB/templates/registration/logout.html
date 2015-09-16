@@ -1,6 +1,0 @@
-{% extends "base.html" %}
-
-{% block body_block %}
-<meta http-equiv="refresh" content="1;url={% url 'papers:index' %}" />
-<p>Logged out, returning to index in one second (click <a href="{% url 'papers:index' %}">here</a> if you don't want to wait)</p>
-{% endblock %}

@@ -83,8 +83,7 @@
                           </div>
                           <div id="user_banned">Your account was banned</div>
                           <div id="wrong_id_or_password">wrong username or password</div>
-                          <a href="/password" class="c-pull-right">reset password</a>
-
+                          <a href="{% url 'password_reset' %}" class="c-pull-right">reset password</a>
                           <div id="loginErrorMsg" class="alert alert-error hide">Wrong username or password</div>
                           <div class="checkbox">
                               <label> <input type="checkbox" name="remember" id="remember">Remember me</label>

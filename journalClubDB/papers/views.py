@@ -106,6 +106,10 @@ def citationSanitizer(request,field_name):
             return f
     return ''
 
+def save_object(obj, filename):
+    with open(filename, 'wb') as output:
+        pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
+
 def postForm(request):
     thread_pk = request.POST.get("thread_pk")
     citation_pk = request.POST.get("citation_pk")
@@ -115,7 +119,13 @@ def postForm(request):
     isReplyToPost = request.POST.get("isReplyToPost")
     mother_pk = request.POST.get("mother_pk")
     current_thread = request.POST.get("current_thread") # pane id
-    context={'citation':citation,'citation_pk':citation_pk,'thread_title':thread_title,'thread_description':thread_description,'thread_pk':thread_pk,'isReplyToPost':isReplyToPost,'mother_pk':mother_pk,'current_thread':current_thread}
+    initial_text = request.POST.get("initial_text")
+    initial_text = initial_text.replace("\r","")
+    initial_text = initial_text.replace("\n","")
+    initial_text = "<blockquote>" + initial_text + "</blockquote>" + "<br >"
+
+    save_object(initial_text, 'initial_text.pkl')
+    context={'citation':citation,'citation_pk':citation_pk,'thread_title':thread_title,'thread_description':thread_description,'thread_pk':thread_pk,'isReplyToPost':isReplyToPost,'mother_pk':mother_pk,'current_thread':current_thread,'initial_text':initial_text}
     return render(request, 'papers/postForm.html', context)
 
 
@@ -143,11 +153,9 @@ def addPost(request):
         setattr(post,'mother', Post.objects.get(thread=thread_pk,isReplyToPost=False))
         setattr(post,'node_depth',1)
     setattr(post,'text',text)
-    #setattr(post,'upvotes',0)
     post.save()
     post.upvoters.add(request.user)
     post.save()
-
     return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,current_thread]))
 
 def addCitation(request):
@@ -269,16 +277,13 @@ def detail(request,pk,current_thread):
     for thread in threads:
         posts = Post.objects.filter(thread=thread.pk)
         ordered_posts = order_greedy_post_list_with_indents(posts) # ordered_posts is not a queryset
-
         ordered_posts = ordered_posts[2:-1] # exclude first entry (dummy post) along with indents/dedents
         posts_vector.append(ordered_posts)
-
         num_depth1_posts.append(len(posts.filter(node_depth=1)))
 
     threadsPostsIndents = zip(threads,posts_vector,num_depth1_posts)
     context = {'citation': citation,'threads': threads,'posts_vector':posts_vector,'threadsPostsIndents':threadsPostsIndents,'current_thread':int(current_thread)}
     return render(request, 'papers/detail.html', context)
-    #return render(request, 'papers/debug_ckeditor.html', context)
 
 # search is terribly slow.  Use this for development
 def search_development(request,page):
