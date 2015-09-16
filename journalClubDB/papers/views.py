@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 import logging
 import math
 from .models import Citation, Thread, Post
-from .forms import UserForm #, UserProfileForm
+#from .forms import UserForm #, UserProfileForm
 from .Pubmed import PubmedInterface
 logger = logging.getLogger(__name__)
 import time
@@ -14,16 +14,20 @@ import pickle # used to debug, remove later
 import os
 from django.http import JsonResponse
 import datetime
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
+
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect('/')
+
 # user login.  Code from: http://www.tangowithdjango.com/book17/chapters/login.html
-def login(request):
+def user_login(request): # login is taken up by native django function
     username = request.POST.get('username')
     password = request.POST.get('password')
 
-    # Use Django's machinery to attempt to see if the username/password
-    # combination is valid - a User object is returned if it is.
+    # Use Django's machinery to attempt to see if the username/password combination is valid - a User object is returned if it is.
     user = authenticate(username=username, password=password)
 
     # If we have a User object, the details are correct.
@@ -35,14 +39,15 @@ def login(request):
             # If the account is valid and active, we can log the user in.
             # We'll send the user back to the homepage.
             login(request, user)
-            return HttpResponseRedirect('/papers/')
+            return HttpResponse(True)
         else:
             # An inactive account was used - no logging in!
-            return HttpResponse("Your Rango account is disabled.")
+            return HttpResponse("Banned")
     else:
         # Bad login details were provided. So we can't log the user in.
         print("Invalid login details: {0}, {1}".format(username, password))
-        return HttpResponse("Invalid login details supplied.")
+        return HttpResponse(False)
+
 
 # code from: http://stackoverflow.com/questions/1531272/django-ajax-response-for-valid-available-username-email-during-registration
 def is_field_available(request):
@@ -65,6 +70,8 @@ def register(request):
     user = User.objects.create_user(username, email, password1)
     #user.set_password(user.password) # I don't think this is necessary, should hash automatically
     user.save()
+    user = authenticate(username=username, password=password1)
+    login(request, user)
     message = 'Registration successful'
     return JsonResponse({'message':message})
 

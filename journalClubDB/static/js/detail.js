@@ -1,3 +1,25 @@
+function ChangeUrl(title, url) {
+    if (typeof (history.pushState) != "undefined") {
+        var obj = { Title: title, Url: url };
+        history.pushState(obj, obj.Title, obj.Url);
+    } else {
+        //alert("Browser does not support HTML5.");
+    }
+}
+
+$(document).ready(function() {
+  $( "li[id*='pill_']" ).click(function(event){
+    var pill_id = $(this).attr("id")
+    var arr = pill_id.split('_')
+    var id = arr[1]
+    ChangeUrl("","../"+id+"/")
+  });
+  //$("#pill_2").click(function() {
+  //  ChangeUrl("","../asdf.html")
+  //});
+});
+
+
 
 // submit post
 $(document).ready(function() {

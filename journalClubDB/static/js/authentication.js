@@ -1,22 +1,47 @@
 
 // log in
 $(document).ready(function() {
+  $('#user_banned').hide()
+  $('#wrong_id_or_password').hide()
 
   $("#login_button").click(function() {
-    alert("asdfsdf")
+    $('#user_banned').hide()
+    $('#wrong_id_or_password').hide()
+
     var f = $( this ).prev('form')
     $.ajax({
          type:"POST",
          url: url_login,
          data: f.serialize(),
          success: function(data){
-           $('#myModal').modal('hide')
+           if(data == "True"){
+             $('#myModal').modal('hide')
+             location.reload();
+             return true
+           } else if (data == "False") {
+             $('#wrong_id_or_password').show()
+             return false
+           } else {
+             $('#user_banned').show()
+             return false
+           }
+
          }
     });
 
   });
 });
 
+// log out
+$(document).ready(function() {
+
+  $("#logout_button").click(function() {
+    $.get(url_logout, {},
+        function(data, status){
+          location.reload();
+        });
+  });
+});
 
 // register
 $(document).ready(function() {
@@ -44,7 +69,7 @@ $(document).ready(function() {
     }
 
     // check if username pre-exists TODO: this doesn't exit main function, need to return twice
-    $.get('/papers/is_field_available/', { 'username': username },
+    $.get(url_is_field_available, { 'username': username },
         function(data, status){
             if(data == "True"){
               return true
@@ -61,6 +86,7 @@ $(document).ready(function() {
          data: f.serialize(),
          success: function(data){
            $('#myModal').modal('hide')
+           location.reload();
          }
     });
 

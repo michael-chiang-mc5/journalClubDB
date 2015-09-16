@@ -21,9 +21,9 @@
   <div class="container">
     <!-- tab bar -->
     <ul class="nav nav-pills nav-justified">
-      <li {% if current_thread == 0 %} class="active" {% endif %}> <a data-toggle="pill" href="#thread_0">Summary</a></li>
+      <li id="pill_0" {% if current_thread == 0 %} class="active" {% endif %}> <a data-toggle="pill" href="#thread_0">Summary</a></li>
       {% for thread in threads %}
-        <li {% if current_thread == forloop.counter %} class="active" {% endif %}><a data-toggle="pill" href="#thread_{{ forloop.counter }}">{{ thread.title }}</a></li>
+        <li id="pill_{{ forloop.counter }}" {% if current_thread == forloop.counter %} class="active" {% endif %}><a data-toggle="pill" href="#thread_{{ forloop.counter }}">{{ thread.title }}</a></li>
       {% endfor %}
     </ul>
 

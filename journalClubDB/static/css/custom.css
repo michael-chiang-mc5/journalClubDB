@@ -104,6 +104,11 @@ table {
   cursor: pointer;
 }
 
+#modal_item {
+  cursor: pointer;
+}
+
+
 .single-post {
   margin-left:-40px
 }
