@@ -104,10 +104,13 @@ table {
   cursor: pointer;
 }
 
-#modal_item {
+.modal_item {
   cursor: pointer;
 }
 
+#login-title {
+  font-size: 20px;
+}
 
 .single-post {
   margin-left:-40px

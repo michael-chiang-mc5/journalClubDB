@@ -28,8 +28,6 @@
     </ul>
 
     <div class="tab-content">
-
-
       <!-- Content for summary jumbotron -->
       <div id="thread_0" {% if current_thread == 0 %} class="tab-pane fade in active" {% else %} class="tab-pane fade" {% endif %}>
         <div id="detail_jumbotron" class="jumbotron">
@@ -46,6 +44,8 @@
         </div>
       </div>
 
+
+
       <!-- message board tabs (ELI5, methodology, etc) -->
       {% for thread,posts,numDepth1Posts in threadsPostsIndents %}
         <div id="thread_{{ forloop.counter }}" {% if current_thread == forloop.counter %} class="tab-pane fade in active" {% else %} class="tab-pane fade" {% endif %}>
@@ -53,78 +53,101 @@
             <!-- Display number of depth 1 comments, and link for user to submit their own comment -->
             <div class="user_comments_header">
               <h2> {{ numDepth1Posts }} comments </h2>
-              <a class='submit'>Add your own comment!</a>
-              <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
-                {% csrf_token %}
-                <input type="hidden" name="citation" value="{{ citation.title }}" />
-                <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
-                <input type="hidden" name="thread_title" value="{{ thread.title }}" />
-                <input type="hidden" name="thread_description" value="{{ thread.description }}" />
-                <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
-                <input type="hidden" name="isReplyToPost" value="0" />
-                <input type="hidden" name="mother_pk" value="-1" />
-                <input type="hidden" name="current_thread" value="{{ forloop.counter }}" />
-              </form>
+
+              {% if user.is_authenticated %}
+                <a class='submit'>Add your own comment!</a>
+                <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
+                  {% csrf_token %}
+                  <input type="hidden" name="citation" value="{{ citation.title }}" />
+                  <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
+                  <input type="hidden" name="thread_title" value="{{ thread.title }}" />
+                  <input type="hidden" name="thread_description" value="{{ thread.description }}" />
+                  <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
+                  <input type="hidden" name="isReplyToPost" value="0" />
+                  <input type="hidden" name="mother_pk" value="-1" />
+                  <input type="hidden" name="current_thread" value="{{ forloop.counter }}" />
+                </form>
+              {% else %}
+                <div class="active modal_item" id="comment-modal"><a id="modal_item1" data-toggle="modal" data-target="#myModal">Add your own comment!</a></div>
+              {% endif %}
             </div>
 
-          {% for p in posts %}
-            {% if p|is_indent %}
-              {% if p|is_depth_one %}
-                <div class="vertical-spacer"></div>
-                <div class="big-box-depth-is-one">
-              {% elif p|is_depth_divisible_by_two %}
-                <div class="vertical-spacer"></div>
-                <div class="big-box-depth-divisible-by-two">
+            {% for p in posts %}
+              {% if p|is_indent %}
+                {% if p|is_depth_one %}
+                  <div class="vertical-spacer"></div>
+                  <div class="big-box-depth-is-one">
+                {% elif p|is_depth_divisible_by_two %}
+                  <div class="vertical-spacer"></div>
+                  <div class="big-box-depth-divisible-by-two">
+                {% else %}
+                  <div class="vertical-spacer"></div>
+                  <div class="big-box-depth-not-divisible-by-two">
+                {% endif %}
+              {% elif p|is_dedent %}
+                </div>
               {% else %}
-                <div class="vertical-spacer"></div>
-                <div class="big-box-depth-not-divisible-by-two">
+                <div id="post_{{ p.pk }}" class="single-post">
+                  <table>
+                    <tbody>
+                      <tr>
+                        <!-- interface to vote up or down a comment -->
+                        <td class="votecell">
+                          <div class="vote">
+                            {% if user.is_authenticated %}
+                              <input type="hidden" name="post_pk" value="{{ p.pk }}">
+                              <a class="vote-up-off" title="This answer is useful" value="{{ p.pk }}">up vote</a>
+                            {% else %}
+                              <div class="active modal_item" id="upvote-modal"><a class="vote-up-off" id="modal_item1" data-toggle="modal" data-target="#myModal">up vote</a></div>
+                            {% endif %}
+
+
+                            <span itemprop="upvoteCount" class="vote-count-post ">{{ p.score }}</span>
+
+
+                            {% if user.is_authenticated %}
+                              <a class="vote-down-off" title="This answer is not useful">down vote</a>
+                            {% else %}
+                              <div class="active modal_item" id="downvote-modal"><a class="vote-down-off" id="modal_item1" data-toggle="modal" data-target="#myModal">up vote</a></div>
+                            {% endif %}
+
+
+
+                          </div>
+                        </td>
+                        <!-- user commment -->
+                        <td class="answercell">
+                          {{ p.text|safe }}
+
+                          {% if user.is_authenticated %}
+                            <a class='submit'>reply</a>
+                            <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
+                              {% csrf_token %}
+                              <input type="hidden" name="citation" value="{{ citation.title }}" />
+                              <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
+                              <input type="hidden" name="thread_title" value="{{ thread.title }}" />
+                              <input type="hidden" name="thread_description" value="{{ thread.description }}" />
+                              <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
+                              <input type="hidden" name="isReplyToPost" value="1" />
+                              <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
+                              <input type="hidden" name="current_thread" value="{{ forloop.parentloop.counter }}" />
+                            </form>
+                          {% else %}
+                            <div class="active modal_item" id="reply-modal"><a id="modal_item1" data-toggle="modal" data-target="#myModal">reply</a></div>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div> <!-- end div id="post_{{ p.pk }}" -->
               {% endif %}
-            {% elif p|is_dedent %}
-              </div>
-            {% else %}
-              <div id="post_{{ p.pk }}" class="single-post">
-                <table>
-                  <tbody>
-                    <tr>
-                      <!-- interface to vote up or down a comment -->
-                      <td class="votecell">
-                        <div class="vote">
-                          <input type="hidden" name="post_pk" value="{{ p.pk }}">
-                          <a class="vote-up-off" title="This answer is useful" value="{{ p.pk }}">up vote</a>
-                          <span itemprop="upvoteCount" class="vote-count-post ">{{ p.score }}</span>
-                          <a class="vote-down-off" title="This answer is not useful">down vote</a>
-                        </div>
-                      </td>
-                      <!-- user commment -->
-                      <td class="answercell">
-                        {{ p.text|safe }}
-                        <a class='submit'>reply</a>
-                        <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
-                          {% csrf_token %}
-                          <input type="hidden" name="citation" value="{{ citation.title }}" />
-                          <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
-                          <input type="hidden" name="thread_title" value="{{ thread.title }}" />
-                          <input type="hidden" name="thread_description" value="{{ thread.description }}" />
-                          <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
-                          <input type="hidden" name="isReplyToPost" value="1" />
-                          <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
-                          <input type="hidden" name="current_thread" value="{{ forloop.parentloop.counter }}" />
-                        </form>
-                      </td>
-                    </tr>
+            {% endfor %} <!-- end loop over posts -->
 
-                  </tbody>
-                </table>
-              </div> <!-- end div id="post_{{ p.pk }}" -->
-            {% endif %}
-
-
-          {% endfor %} <!-- end loop over posts -->
-
-        </div> <!-- end div id="thread_{{ forloop.counter }}" class="tab-pane fade" -->
-        </div> <!-- not sure what this corresponds to -->
+          </div> <!-- end  <div class="user_comments"> -->
+        </div> <!-- div id="thread_{{ forloop.counter }}" -->
       {% endfor %} <!-- end loop over threadsPostsIndents -->
     </div> <!-- end div tab-content -->
+  </div> <!-- end div container -->
 
 
 {% endblock %}

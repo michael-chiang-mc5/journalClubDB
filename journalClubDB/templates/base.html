@@ -33,7 +33,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">put jcdb message here</h4>
+          <div id="login-title">put jcdb message here</div>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -140,7 +140,7 @@
                 <li class="active"><a href="#">{{ user.get_username }}</a></li>
                 <li><a id="logout_button" href=".">Logout</a></li>
             {% else %}
-                <li class="active" id="modal_item"><a id="modal_item1" data-toggle="modal" data-target="#myModal">Register or log in</a></li>
+                <li class="active modal_item" id="register-modal"><a id="modal_item1" data-toggle="modal" data-target="#myModal">Register or log in</a></li>
             {% endif %}
           </ul>
         </div><!--/.nav-collapse -->

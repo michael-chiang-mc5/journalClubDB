@@ -1,13 +1,48 @@
 
+$(document).ready(function() {
+  $("#modal_item1").click(function() {
+    $('#user_banned').hide()
+    $('#wrong_id_or_password').hide()
+    $('#login-title').hide()
+  });
+
+  $("#register-modal").click(function() {
+    $('#login-title').html("Register or log in.  It only takes seconds!")
+    $('#login-title').show()
+  });
+
+  $("#comment-modal").click(function() {
+    $('#login-title').html("You must register to post comments.  It only takes seconds!")
+    $('#login-title').show()
+  });
+
+  $("#reply-modal").click(function() {
+    $('#login-title').html("You must register to post comments.  It only takes seconds!")
+    $('#login-title').show()
+  });
+
+  $("#upvote-modal").click(function() {
+    $('#login-title').html("You must register to vote on comments.  It only takes seconds!")
+    $('#login-title').show()
+  });
+
+  $("#downvote-modal").click(function() {
+    $('#login-title').html("You must register to vote on comments.  It only takes seconds!")
+    $('#login-title').show()
+  });
+
+});
+
+
+
+
 // log in
 $(document).ready(function() {
   $('#user_banned').hide()
   $('#wrong_id_or_password').hide()
+  $('#login-title').hide()
 
   $("#login_button").click(function() {
-    $('#user_banned').hide()
-    $('#wrong_id_or_password').hide()
-
     var f = $( this ).prev('form')
     $.ajax({
          type:"POST",
