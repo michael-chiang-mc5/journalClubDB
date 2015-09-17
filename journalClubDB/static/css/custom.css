@@ -1,4 +1,20 @@
 
+.red-tooltip {
+    color: red;
+    vertical-align: middle;
+}
+.red-tooltip + .tooltip > .tooltip-inner {
+  background-color: red;
+  font-size: 14px;
+  width: 1000px;
+}
+
+
+.modal-dialog {
+  width: 700
+}
+
+
 body {
     background-color: pink;
 }

@@ -54,12 +54,11 @@ def is_field_available(request):
     if request.method == "GET":
         get = request.GET.copy()
         if 'username' in get:
-            return HttpResponse(False)
             name = get['username']
             if User.objects.filter(username__iexact=name):
-                return HttpResponse(False)
+                return HttpResponse("False")
             else:
-                return HttpResponse(True)
+                return HttpResponse("True")
     return HttpResponseServerError("Requires username to test")
 
 # user registration.  Code from: http://www.tangowithdjango.com/book17/chapters/login.html

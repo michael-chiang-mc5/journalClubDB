@@ -14,9 +14,6 @@ $(document).ready(function() {
     var id = arr[1]
     ChangeUrl("","../"+id+"/")
   });
-  //$("#pill_2").click(function() {
-  //  ChangeUrl("","../asdf.html")
-  //});
 });
 
 

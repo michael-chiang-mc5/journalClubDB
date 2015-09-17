@@ -1,32 +1,22 @@
 
 $(document).ready(function() {
   $("#modal_item1").click(function() {
-    $('#user_banned').hide()
-    $('#wrong_id_or_password').hide()
-    $('#login-title').hide()
-  });
-
-  $("#register-modal").click(function() {
+    $('.wrong_id_or_password').hide()
+    $('.wrong_id_or_password').mouseleave()
+    $('#username_exists').hide()
+    $('#username_exists').mouseleave()
+    $('.passwords_match').hide()
+    $(".passwords_match").mouseleave();
     $('#login-title').html("Register or log in.  It only takes seconds!")
     $('#login-title').show()
   });
 
-  $("#comment-modal").click(function() {
+  $("#comment-modal, #reply-modal").click(function() {
     $('#login-title').html("You must register to post comments.  It only takes seconds!")
     $('#login-title').show()
   });
 
-  $("#reply-modal").click(function() {
-    $('#login-title').html("You must register to post comments.  It only takes seconds!")
-    $('#login-title').show()
-  });
-
-  $("#upvote-modal").click(function() {
-    $('#login-title').html("You must register to vote on comments.  It only takes seconds!")
-    $('#login-title').show()
-  });
-
-  $("#downvote-modal").click(function() {
+  $("#upvote-modal, #downvote").click(function() {
     $('#login-title').html("You must register to vote on comments.  It only takes seconds!")
     $('#login-title').show()
   });
@@ -39,11 +29,16 @@ $(document).ready(function() {
 // log in
 $(document).ready(function() {
   $('#user_banned').hide()
-  $('#wrong_id_or_password').hide()
+  $('.wrong_id_or_password').hide()
+  $('.wrong_id_or_password').mouseleave()
   $('#login-title').hide()
 
-  $("#login_button").click(function() {
-    var f = $( this ).prev('form')
+  $("#login_form").submit(function(e) {
+    // var f = $( this ).prev('form')
+    //alert("haha")
+    e.preventDefault();
+
+    var f = $( this )
     $.ajax({
          type:"POST",
          url: url_login,
@@ -54,7 +49,8 @@ $(document).ready(function() {
              location.reload();
              return true
            } else if (data == "False") {
-             $('#wrong_id_or_password').show()
+             $('.wrong_id_or_password').show()
+             $(".wrong_id_or_password").mouseenter();
              return false
            } else {
              $('#user_banned').show()
@@ -81,44 +77,59 @@ $(document).ready(function() {
 // register
 $(document).ready(function() {
   $('#username_exists').hide()
-  $('#passwords_match').hide()
+  $('.passwords_match').hide()
 
-  $("#register_button").click(function() {
+  $("#register_form").submit(function(e) {
+    // prevent page from reloading and make sure all warnings are hidden
+    e.preventDefault();
     $('#username_exists').hide()
-    $('#passwords_match').hide()
+    $('#username_exists').mouseleave()
+    $('.passwords_match').hide()
+    $(".passwords_match").mouseleave();
 
-
-    // check if username is blank
-    var username = $('#register_username').val();
-    if (username == ''){
-       alert('please enter username');
-       return false;
-    }
 
     // check if passwords match
+    var passwords_match = "True"
     var password1 = $('#register_password1').val();
     var password2 = $('#register_password2').val();
     if (password1 != password2){
-      $('#passwords_match').show()
-       return false;
+      passwords_match = "False"
     }
 
-    // check if username pre-exists TODO: this doesn't exit main function, need to return twice
-    $.get(url_is_field_available, { 'username': username },
-        function(data, status){
-            if(data == "True"){
-              return true
-            } else {
-              $('#username_exists').show()
-              return false
-            }
-    });
+    // check if username pre-exists
+    var username = $('#register_username').val();
+    var username_does_not_preexist = "True"
+    $.ajax({
+        url : url_is_field_available,
+        data : { 'username': username },
+        type : "get",
+        async: false,
+        success : function(data) {
+          if (data == "False" ) {
+            username_does_not_preexist = "False"
+          }
+        }
+     });
 
-    var f = $( this ).prev('form')
+   // form check
+    if (passwords_match == "False") {
+      $('.passwords_match').show()
+      $(".passwords_match").mouseenter();
+    }
+    if (username_does_not_preexist == "False") {
+      $('#username_exists').show()
+      $("#username_exists").mouseenter();
+    }
+    if (passwords_match == "False" || username_does_not_preexist == "False") {
+      return false
+    }
+
+    // submit registration form
+    var me = $( this )
     $.ajax({
          type:"POST",
          url: url_register,
-         data: f.serialize(),
+         data: me.serialize(),
          success: function(data){
            $('#myModal').modal('hide')
            location.reload();
@@ -126,4 +137,20 @@ $(document).ready(function() {
     });
 
   });
+});
+
+$(document).ready(function() {
+  $('[data-toggle="popover"]').popover();
+  $("#span0").popover({
+      title: "000",
+      placement: "top",
+      trigger: "manual"
+  });
+  $(document).ready(function(){
+      $('[data-toggle="tooltip"]').tooltip();
+  });
+
+
+
+
 });
