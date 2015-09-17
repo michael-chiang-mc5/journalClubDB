@@ -38,7 +38,8 @@ $(document).ready(function() {
                   'post_pk': post_pk,
                   },
            success: function(data){
-               $( me ).next(".vote-count-post").html( data.score )
+               //$( me ).next(".vote-count-post").html( data.score )
+               $( "#commentscore-pk-"+post_pk ).html( data.score )
            }
       });
     });
@@ -50,7 +51,7 @@ $(document).ready(function() {
       $(document).ready(function() {
         $( ".vote-down-off " ).click(function() {
           // get post pk
-          post_pk = $( this ).prevAll('input').val()
+          post_pk = $( this ).prev('input').val()       // get post private key
           var me = this;
           $.ajax({
                type:"POST",
@@ -60,7 +61,9 @@ $(document).ready(function() {
                       'post_pk': post_pk,
                       },
                success: function(data){
-                   $( me ).prev(".vote-count-post").html( data.score )
+                   //$( me ).prev(".vote-count-post").html( data.score )
+                   $( "#commentscore-pk-"+post_pk ).html( data.score )
+
                }
           });
         });
