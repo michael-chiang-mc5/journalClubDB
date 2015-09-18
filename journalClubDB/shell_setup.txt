@@ -1,6 +1,17 @@
 python manage.py shell
 from papers.models import *
 from papers.views import *
+from datetime import datetime, timedelta, timezone
+now = datetime.now(timezone.utc)
+superuser = User.objects.all()[0]
+p = Post()
+p.add_post('hihi',superuser,now)
+p.get_undecoded_textTupleVector()
+
 posts = Post.objects.filter(thread=2)
 ordered_posts = order_greedy_post_list_with_indents(posts)
 ordered_posts
+
+(delete db.sqlite3)
+python manage.py migrate
+python manage.py createsuperuser

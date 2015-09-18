@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+import json
+from bson import json_util
 
 # This is internal journalclubDB citation data (as opposed to external pubmed citation data)
 class Citation(models.Model):
@@ -64,7 +66,7 @@ class Post(models.Model):
     thread = models.ForeignKey(Thread)
     isReplyToPost = models.BooleanField()
     mother = models.ForeignKey('self', blank=True, null=True)
-    text = models.TextField()
+    text = models.TextField() # TODO: record history, http://stackoverflow.com/questions/1110153/what-is-the-most-efficent-way-to-store-a-list-in-the-django-models
     node_depth = models.PositiveIntegerField()
 
     # to access upvoted posts from User instance, user.upvoted.all()
@@ -72,13 +74,30 @@ class Post(models.Model):
     downvoters = models.ManyToManyField(User, blank=True, related_name="downvoted")
 
     # This must be recalculated every time a new reply is added to subtree
-    aggregate_score_tmp = models.IntegerField(blank=True, null=True)
-    ordered_index = models.IntegerField(blank=True,null=True)
+    #aggregate_score_tmp = models.IntegerField(blank=True, null=True)
+    #ordered_index = models.IntegerField(blank=True,null=True)
 
     # score is a measure of post quality
     # TODO: Make score based on user quality, i.e., professors have more weight
     def score(self):
         return len(self.upvoters.all()) - len(self.downvoters.all())
+
+    def add_post(self,text,editor_pk,date_added):
+        text_tuple_vector = self.get_undecoded_textTupleVector()
+        t = (text,editor_pk,date_added)
+        text_tuple_vector.append(t)
+        self.text = json.dumps(text_tuple_vector, default=json_util.default)
+
+    # v[i] = (text , editor/creator.pk , date)
+    def get_undecoded_textTupleVector(self):
+        if self.text == '':
+            tuple_vector = []
+        else:
+            tuple_vector_undecoded = self.text
+            tuple_vector = json.loads(tuple_vector_undecoded, object_hook=json_util.object_hook)
+        return tuple_vector
+
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)

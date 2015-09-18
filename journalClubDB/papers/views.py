@@ -13,9 +13,9 @@ import time
 import pickle # used to debug, remove later
 import os
 from django.http import JsonResponse
-import datetime
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from datetime import datetime, timedelta, timezone
 
 
 def user_logout(request):
@@ -151,8 +151,9 @@ def addPost(request):
         post = Post.objects.filter(pk=post_pk).all()[0]
         citation_pk = request.POST.get("citation_pk", False)
         current_thread = request.POST.get("current_thread", False)
-        setattr(post,'text',new_text)
-        setattr(post,'time_created',datetime.datetime.now())
+        p.add_post(new_text,0,datetime.now(timezone.utc)) # TODO: change 0 to editing user
+        #setattr(post,'text',new_text)
+        setattr(post,'time_created',datetime.now())
         post.save()
         return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,current_thread]))
     elif edit_or_reply == "reply":
@@ -165,7 +166,7 @@ def addPost(request):
         current_thread = request.POST.get("current_thread", False)
 
         post = Post()
-        setattr(post,'time_created',datetime.datetime.now())
+        setattr(post,'time_created',datetime.now())
         setattr(post,'creator',request.user)
         setattr(post,'thread',Thread.objects.get(pk=thread_pk))
         setattr(post,'isReplyToPost', True) # TODO: change this to base_node?
@@ -175,7 +176,8 @@ def addPost(request):
         else:
             setattr(post,'mother', Post.objects.get(thread=thread_pk,isReplyToPost=False))
             setattr(post,'node_depth',1)
-        setattr(post,'text',text)
+        #setattr(post,'text',text)
+        post.add_post(text,request.user.pk,datetime.now(timezone.utc)) # TODO: change 0 to editing user
         post.save()
         post.upvoters.add(request.user)
         post.save()
@@ -211,8 +213,8 @@ def addCitation(request):
         setattr(thread,'description',description)
         thread.save()
         post = Post()
-        post = Post(time_created=datetime.datetime.now(),creator=request.user,thread=thread,
-                    isReplyToPost=False,text="master_post",node_depth=0)
+        post = Post(time_created=datetime.now(),creator=request.user,thread=thread,
+                    isReplyToPost=False,text="",node_depth=0)
         post.save()
 
     # Return url to new citation detail page

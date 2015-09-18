@@ -129,7 +129,12 @@
                           <hr >
 
                           <div class="comment-text">
-                            {{ p.text|safe }}
+
+                            {% with p.get_undecoded_textTupleVector|last as recent_post %}
+                              {{ recent_post.0 | safe}} <!-- text -->
+                              {{ recent_post.1 }} <!-- editor/creator pk -->
+                              {{ recent_post.2 }} <!-- time created/edited -->
+                            {% endwith %}
                           </div>
 
                           {% if user.is_authenticated %}
