@@ -143,6 +143,7 @@ def postForm(request):
     return render(request, 'papers/postForm.html', context)
 
 # add post
+# TODO: add sanity checks that user is authenticated and is correct user
 def addPost(request):
     edit_or_reply = request.POST.get("edit_or_reply", False)
     if edit_or_reply == "edit":
@@ -151,8 +152,7 @@ def addPost(request):
         post = Post.objects.filter(pk=post_pk).all()[0]
         citation_pk = request.POST.get("citation_pk", False)
         current_thread = request.POST.get("current_thread", False)
-        p.add_post(new_text,0,datetime.now(timezone.utc)) # TODO: change 0 to editing user
-        #setattr(post,'text',new_text)
+        post.add_post(new_text,request.user.pk,datetime.now(timezone.utc),request.user.username)
         setattr(post,'time_created',datetime.now())
         post.save()
         return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,current_thread]))
@@ -169,15 +169,14 @@ def addPost(request):
         setattr(post,'time_created',datetime.now())
         setattr(post,'creator',request.user)
         setattr(post,'thread',Thread.objects.get(pk=thread_pk))
-        setattr(post,'isReplyToPost', True) # TODO: change this to base_node?
+        setattr(post,'isReplyToPost', True) # TODO: pick a better variable name, base_node?
         if is_reply_to_post: # TODO: change name to is_submission?
             setattr(post,'mother',Post.objects.get(pk=mother_pk))
             setattr(post,'node_depth', Post.objects.get(pk=mother_pk).node_depth + 1)
         else:
             setattr(post,'mother', Post.objects.get(thread=thread_pk,isReplyToPost=False))
             setattr(post,'node_depth',1)
-        #setattr(post,'text',text)
-        post.add_post(text,request.user.pk,datetime.now(timezone.utc)) # TODO: change 0 to editing user
+        post.add_post(text,request.user.pk,datetime.now(timezone.utc),request.user.username)
         post.save()
         post.upvoters.add(request.user)
         post.save()

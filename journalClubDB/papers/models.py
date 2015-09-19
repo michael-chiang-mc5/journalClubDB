@@ -66,7 +66,7 @@ class Post(models.Model):
     thread = models.ForeignKey(Thread)
     isReplyToPost = models.BooleanField()
     mother = models.ForeignKey('self', blank=True, null=True)
-    text = models.TextField() # TODO: record history, http://stackoverflow.com/questions/1110153/what-is-the-most-efficent-way-to-store-a-list-in-the-django-models
+    text = models.TextField() # json serialized
     node_depth = models.PositiveIntegerField()
 
     # to access upvoted posts from User instance, user.upvoted.all()
@@ -82,9 +82,9 @@ class Post(models.Model):
     def score(self):
         return len(self.upvoters.all()) - len(self.downvoters.all())
 
-    def add_post(self,text,editor_pk,date_added):
+    def add_post(self,text,editor_pk,date_added,editor_name):
         text_tuple_vector = self.get_undecoded_textTupleVector()
-        t = (text,editor_pk,date_added)
+        t = (text,editor_pk,date_added,editor_name)
         text_tuple_vector.append(t)
         self.text = json.dumps(text_tuple_vector, default=json_util.default)
 

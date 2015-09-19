@@ -125,17 +125,25 @@
                           <span id="commentscore-pk-{{ p.pk }}">{{ p.score }}</span> point{{p.score|pluralize}}
                           , &nbsp;
                           {% load templatetags %} <!-- templatetags cannot be moved to base.html -->
-                          <span class="comment-time">{{ p.time_created|age }}</span>
+                          <span class="comment-time" id="comment-time-{{ p.pk }}">
+                            {% if p.get_undecoded_textTupleVector|length == 1 %}
+                              posted
+                            {% else %}
+                              edited
+                            {% endif %}
+                            {{ p.time_created|age }}
+                          </span>
                           <hr >
 
-                          <div class="comment-text">
-
-                            {% with p.get_undecoded_textTupleVector|last as recent_post %}
-                              {{ recent_post.0 | safe}} <!-- text -->
-                              {{ recent_post.1 }} <!-- editor/creator pk -->
-                              {{ recent_post.2 }} <!-- time created/edited -->
-                            {% endwith %}
+                          {% for recent_post in p.get_undecoded_textTupleVector %}
+                          <div id="comment-text-{{ p.pk }}-{{ forloop.counter }}" class="comment-target-all-{{ p.pk }} comment-all {% if forloop.last %} comment-last {% endif %}">
+                            {{ recent_post.0 | safe}} <!-- text -->
                           </div>
+                          {% endfor %}
+
+                          <hr >
+
+
 
                           {% if user.is_authenticated %}
                           <span style="float:left;">
@@ -150,8 +158,10 @@
                               <input type="hidden" name="isReplyToPost" value="1" />
                               <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
                               <input type="hidden" name="current_thread" value="{{ forloop.parentloop.counter }}" />
-                              <input type="hidden" name="initial_text" value="{{ p.text }}" />
-                              <input type="hidden" name="blockquote" value="True" />
+                              <input type="hidden" name="initial_text" value="{% with p.get_undecoded_textTupleVector|last as recent_post %}
+                                                                                {{ recent_post.0 }}
+                                                                              {% endwith %}
+                                                                              "/>                              <input type="hidden" name="blockquote" value="True" />
                               <input type="hidden" name="post_pk" value="-1" />
                               <input type="hidden" name="edit_or_reply" value="reply" />
                             </form>
@@ -173,7 +183,10 @@
                                 <input type="hidden" name="isReplyToPost" value="1" />
                                 <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
                                 <input type="hidden" name="current_thread" value="{{ forloop.parentloop.counter }}" />
-                                <input type="hidden" name="initial_text" value="{{ p.text }}" />
+                                <input type="hidden" name="initial_text" value="{% with p.get_undecoded_textTupleVector|last as recent_post %}
+                                                                                  {{ recent_post.0 }}
+                                                                                {% endwith %}
+                                                                                "/>
                                 <input type="hidden" name="blockquote" value="False" />
                                 <input type="hidden" name="post_pk" value="{{ p.pk }}" />
                                 <input type="hidden" name="edit_or_reply" value="edit" />
@@ -181,9 +194,37 @@
                             </span>
                             {% endif %}
 
+
                           {% else %}
+                          <span style="float:left;">
                             <div class="active modal_item" id="reply-modal"><a id="modal_item1" data-toggle="modal" data-target="#myModal">reply</a></div>
+                          </span>
+
                           {% endif %}
+                          <!-- dropdown to select post history -->
+                          <span style="float:left;"> &nbsp; &nbsp; &nbsp;</span>
+                          <span style="float:left;">
+                            <div class="dropdown">
+                                 <a href="#" data-toggle="dropdown" class="dropdown-toggle">history <b class="caret"></b></a>
+                                 <ul class="dropdown-menu">
+                                   {% for recent_post in p.get_undecoded_textTupleVector %}
+                                     <li class="li-dropdown-{{p.pk}} li-dropdown-{{p.pk}}-{{forloop.counter}} {% if forloop.last %} active {% endif %}"><a href="#" id="action-{{ p.pk }}-{{ forloop.counter }}" >
+                                       {% if recent_post.3 != p.creator.username %}
+                                         recent_post.3
+                                       {% endif %}
+                                       {% if forloop.counter == 1 %}
+                                         posted
+                                       {% else %}
+                                         edited
+                                       {% endif %}
+                                       {{ recent_post.2|age }}
+                                     </a></li> <!-- time created/edited -->
+                                   {% endfor %}
+                                 </ul>
+                             </div>
+                          </span>
+
+
                         </td>
                       </tr>
                     </tbody>

@@ -1,4 +1,14 @@
 
+
+.dropdown-menu li.active > a,
+.dropdown-menu li.active > a:hover,
+.dropdown-menu li.active > a:focus {
+  color: #fff;
+  background-color: #b91773;
+  border-color: #fff;
+}
+
+
 .red-tooltip {
     color: red;
     vertical-align: middle;
