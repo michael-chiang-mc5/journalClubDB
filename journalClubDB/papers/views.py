@@ -136,7 +136,7 @@ def postForm(request):
     initial_text = initial_text.replace("\\","\\\\")
 
 
-    save_object(initial_text,'asdf.pkl')
+    #save_object(initial_text,'asdf.pkl')
     #return HttpResponse(initial_text)
     #initial_text = '<p>test comment edited&nbsp;<span class=dfdmath-texsd>a(x = {-b apm asqrt{b^2-4ac} aover 2a}a)</span></p>'
     context={'citation':citation,'citation_pk':citation_pk,'thread_title':thread_title,'thread_description':thread_description,'thread_pk':thread_pk,'isReplyToPost':isReplyToPost,'mother_pk':mother_pk,'current_thread':current_thread,'initial_text':initial_text,'post_pk':post_pk,'edit_or_reply':edit_or_reply}

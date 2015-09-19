@@ -97,7 +97,9 @@ class Post(models.Model):
             tuple_vector = json.loads(tuple_vector_undecoded, object_hook=json_util.object_hook)
         return tuple_vector
 
-
+class Tag(models.Model): # use http://jquery-plugins.net/bootstrap-tags-input
+    name = models.TextField()
+    citations  = models.ManyToManyField(Citation, blank=True, related_name="tags")  # to access tags from Citation instance, citation.tags.all()
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
