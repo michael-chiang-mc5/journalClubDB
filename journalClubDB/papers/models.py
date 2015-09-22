@@ -98,6 +98,8 @@ class Post(models.Model):
         return tuple_vector
 
 class Tag(models.Model): # use http://jquery-plugins.net/bootstrap-tags-input
+    def __str__(self):
+        return self.name
     name = models.TextField()
     citations  = models.ManyToManyField(Citation, blank=True, related_name="tags")  # to access tags from Citation instance, citation.tags.all()
 

@@ -35,6 +35,6 @@ urlpatterns = [
     url(r'^user_login/$', views.user_login, name='user_login'),
     url(r'^is_field_available/$', views.is_field_available, name='is_field_available'),
     url(r'^user_logout/$', views.user_logout, name='user_logout'),
-
+    url(r'^add_tag/$', views.add_tag, name='add_tag'),
 
 ]

@@ -1,11 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
 from django.views import generic
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 import logging
 import math
-from .models import Citation, Thread, Post
+from .models import Citation, Thread, Post, Tag
 #from .forms import UserForm #, UserProfileForm
 from .Pubmed import PubmedInterface
 logger = logging.getLogger(__name__)
@@ -105,6 +105,25 @@ def citationSanitizer(request,field_name):
             return f
     return ''
 
+def add_tag(request):
+    if request.method == 'POST':
+        citation_pk = request.POST.get('citation_pk',False)
+        current_thread = request.POST.get('current_thread',False)
+        tag_name = request.POST.get('tag_name',False)
+        # check if tag already exists
+        if Tag.objects.filter(name=tag_name).exists():
+            tag = Tag.objects.filter(name=tag_name)[0]
+            if not tag.citations.filter(pk=citation_pk).exists():
+                tag.citations.add(citation_pk)
+                tag.save()
+        else:
+            tag = Tag()
+            setattr(tag,'name',tag_name)
+            tag.save()
+            tag.citations.add(citation_pk)
+            tag.save()
+        return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,current_thread]))
+
 def save_object(obj, filename):
     with open(filename, 'wb') as output:
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
@@ -177,7 +196,7 @@ def addPost(request):
             setattr(post,'mother', Post.objects.get(thread=thread_pk,isReplyToPost=False))
             setattr(post,'node_depth',1)
         post.add_post(text,request.user.pk,datetime.now(timezone.utc),request.user.username)
-        post.save()
+        post.save() # TODO: This may not be necessary
         post.upvoters.add(request.user)
         post.save()
         return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,current_thread]))
@@ -296,6 +315,8 @@ def orderGreedyPostlist_with_indents(node_idx, post_list, childrenIdx_list,withI
 def detail(request,pk,current_thread):
     citation = Citation.objects.get(pk=pk)
     threads = Thread.objects.filter(owner=pk)
+    associated_tags = citation.tags.all()
+    unused_tags = Tag.objects.exclude(id__in=associated_tags)
     posts_vector = []
     num_depth1_posts = [] # number of depth 1 comments used for display
     for thread in threads:
@@ -306,7 +327,7 @@ def detail(request,pk,current_thread):
         num_depth1_posts.append(len(posts.filter(node_depth=1)))
 
     threadsPostsIndents = zip(threads,posts_vector,num_depth1_posts)
-    context = {'citation': citation,'threads': threads,'posts_vector':posts_vector,'threadsPostsIndents':threadsPostsIndents,'current_thread':int(current_thread)}
+    context = {'citation': citation,'threads': threads,'posts_vector':posts_vector,'threadsPostsIndents':threadsPostsIndents,'current_thread':int(current_thread),'associated_tags':associated_tags,'unused_tags':unused_tags}
     return render(request, 'papers/detail.html', context)
 
 # search is terribly slow.  Use this for development

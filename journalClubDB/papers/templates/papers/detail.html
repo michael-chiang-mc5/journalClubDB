@@ -40,7 +40,30 @@
           <hr >
           <p id="detail_abstract"> {{ citation.abstract }} </p>
           <hr >
-          <p>Tags: </p>
+          <p>Tags:
+            {% for associated_tag in associated_tags %}
+              {{ associated_tag }}, &nbsp;
+            {% endfor %}
+          </p>
+
+          <!-- superuser functionality to add tags -->
+          {% if user.is_superuser %}
+            <hr >
+            <form id='form-tag' action="{% url 'papers:add_tag' %}" method=POST>
+              {% csrf_token %}
+              <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
+              <input type="hidden" name="current_thread" value="0" />
+              Add tag: <input type="text" name="tag_name"><br>
+              <input type="submit" value="Submit">
+            </form>
+            Possible tags: <br >
+            {% for unused_tag in unused_tags %}
+              {{ unused_tag }}, &nbsp;
+            {% endfor %}
+          {% endif %}
+
+
+
         </div>
       </div>
 
