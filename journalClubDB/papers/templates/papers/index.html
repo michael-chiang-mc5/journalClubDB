@@ -3,22 +3,32 @@
 
 <!-- webpage main content -->
 {% block body_block %}
+{% load staticfiles %}
+<script src="{% static "/static/js/index.js" %}"></script>
+
 {% if citations %}
 
 <div class="panel list-group">
   {% for citation in citations %}
 
   <!-- single citation entry -->
-  <a href="#" class="list-group-item" data-toggle="collapse" data-target="#dropDown{{ citation.pk }}" data-parent="#menu"> <!-- TODO: color this (active?) -->
+  <a href="#" id="citation-toggle-{{ citation.pk }}" class="list-group-item" data-toggle="collapse" data-target="#citation-item-{{ citation.pk }}" data-parent="#menu"> <!-- TODO: color this (active?) -->
     <h4 class="list-group-item-heading">{{ citation.title }}</h4>
     <p class="list-group-item-text">{{ citation.author|first_author }}</p>
     <p class="list-group-item-text">{{ citation.journal }}, {{ citation.date|citation_year }}</p>
   </a>
-  <div id="dropDown{{ citation.pk }}" class="sublinks collapse">
+  <div id="citation-item-{{ citation.pk }}" class="citation-index-all sublinks collapse">
     <a class="list-group-item small">{{ citation.abstract }}</a>
-    <a class="list-group-item small">Tags: </a>
-    <a class="list-group-item small" href="{% url 'papers:detail' citation.pk  0 %}">Click to discuss this paper!</a>
+    <a class="list-group-item small">Tags:
+    {% for tag in citation.tags.all %}
+      <span class="label label-primary">{{ tag }}</span>
+    {% endfor %}
+    </a>
+    <a class="list-group-item" href="{% url 'papers:detail' citation.pk  0 %}">
+      <button type="button" class="btn btn-danger btn-xs">Click to discuss this paper!</button>
+    </a>
   </div>
+
   {% endfor %}
 
   </div>

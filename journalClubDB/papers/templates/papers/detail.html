@@ -31,7 +31,6 @@
       <!-- Content for summary jumbotron -->
       <div id="thread_0" {% if current_thread == 0 %} class="tab-pane fade in active" {% else %} class="tab-pane fade" {% endif %}>
         <div id="detail_jumbotron" class="jumbotron">
-          <p><a class="btn btn-primary btn-tiny" href="http://www.ncbi.nlm.nih.gov/pubmed/{{ citation.pubmedID }}" role="button">pubmed link &raquo;</a></p>
           <h1>{{ citation.title }}</h1>
           <hr >
           {% load templatetags %} <!-- templatetags cannot be moved to base.html -->
@@ -42,7 +41,7 @@
           <hr >
           <p>Tags:
             {% for associated_tag in associated_tags %}
-              {{ associated_tag }}, &nbsp;
+              <span class="label label-primary">{{ associated_tag }}</span>
             {% endfor %}
           </p>
 
@@ -62,6 +61,9 @@
             {% endfor %}
           {% endif %}
 
+          <hr >
+          <p><a class="btn btn-primary btn-tiny" href="http://www.ncbi.nlm.nih.gov/pubmed/{{ citation.pubmedID }}" role="button">pubmed link &raquo;</a></p>
+          
 
 
         </div>

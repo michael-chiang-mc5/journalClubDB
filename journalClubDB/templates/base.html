@@ -75,9 +75,11 @@
                               <input type="email" class="form-control" id="id_email" name="email" value="" title="email" placeholder="email (optional)">
                               <span class="help-block"></span>
                           </div>
+                          <!--
                           <div class="checkbox">
                               <label><input type="checkbox" name="remember" id="remember"> Remember me </label>
                           </div>
+                        -->
                           <input id="register_button" class="btn btn-success btn-block" type="submit" value="Sign up">
                       </form>
                   </div>
@@ -103,10 +105,12 @@
                           </div>
                           <a href="{% url 'password_reset' %}" class="c-pull-right">reset password</a>
                           <div id="loginErrorMsg" class="alert alert-error hide">Wrong username or password</div>
+                          <!--
                           <div class="checkbox">
                               <label> <input type="checkbox" name="remember" id="remember">Remember me</label>
                               <span class="help-block"></span>
                           </div>
+                          -->
                           <input id="login_button" class="btn btn-success btn-block" type="submit" value="Log in">
                       </form>
                   </div>
@@ -130,7 +134,7 @@
     <nav class="navbar navbar-default">
       <div class="container-fluid">
 
-        <a class="navbar-brand" href="#">journalClubDB</a>
+        <a class="navbar-brand" href=".">journalClubDB</a>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <div class="span2"></div>
