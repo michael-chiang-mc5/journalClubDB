@@ -4,7 +4,10 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     # ex: /papers/
-    url(r'^$', views.index, name='index'),
+    url(r'^$', views.frontpage, name='index'),
+
+    # ex: /papers/index/
+    url(r'^index/$', views.index, name='index'),
 
     # ex: /papers/search/0/
     url(r'^search/(?P<page>[0-9]+)/$', views.search, name='search'),
@@ -36,5 +39,8 @@ urlpatterns = [
     url(r'^is_field_available/$', views.is_field_available, name='is_field_available'),
     url(r'^user_logout/$', views.user_logout, name='user_logout'),
     url(r'^add_tag/$', views.add_tag, name='add_tag'),
+
+    url(r'^paperOfTheWeek_admin/$', views.paperOfTheWeek_admin, name='paperOfTheWeek_admin'),
+
 
 ]

@@ -109,3 +109,14 @@ class UserProfile(models.Model):
     library   = models.ManyToManyField(Citation, blank=True, related_name="citation_library")
     def __str__(self):
         return self.user.username
+
+# An object of this class stores an ordered list of citations. SUsed to determine the "Paper of the Week"
+class PaperOfTheWeek(models.Model):
+    citation_list = models.ManyToManyField(Citation, through='PaperOfTheWeekInfo')
+
+class PaperOfTheWeekInfo(models.Model):
+    def __str__(self):
+        return str(self.citation) + ", order=" + str(self.order)
+    citation = models.ForeignKey(Citation)
+    paperOfTheWeek = models.ForeignKey(PaperOfTheWeek)
+    order = models.FloatField()

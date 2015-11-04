@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 import logging
 import math
-from .models import Citation, Thread, Post, Tag
+from .models import Citation, Thread, Post, Tag, PaperOfTheWeek, PaperOfTheWeekInfo
 #from .forms import UserForm #, UserProfileForm
 from .Pubmed import PubmedInterface
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta, timezone
-
+import datetime
 
 def user_logout(request):
     logout(request)
@@ -74,6 +74,11 @@ def register(request):
     message = 'Registration successful'
     return JsonResponse({'message':message})
 
+# landing page
+def frontpage(request):
+    citation_pk = getCitationOfTheWeek()
+    return HttpResponse(citation_pk)
+
 # see all citations in database
 def index(request):
     template_name = 'papers/index.html'
@@ -104,6 +109,53 @@ def citationSanitizer(request,field_name):
         if f is not None and f != '' and f != 'None':
             return f
     return ''
+
+# TODO: check that number of Papers of the Week does not exceed weeks elapsed
+def getCitationOfTheWeek():
+    t0 = datetime.date(2000, 1, 1)
+    today = datetime.date.today()
+    days_elapsed = (today-t0).days
+    weeks_elapsed = math.floor(days_elapsed / 7)
+    num_papersOfTheWeek = len(PaperOfTheWeekInfo.objects.all())
+    current_index = weeks_elapsed % num_papersOfTheWeek
+    citation_pk = PaperOfTheWeekInfo.objects.order_by('order')[current_index].citation.pk
+    return citation_pk
+
+# admin interface to set paper of the week
+def paperOfTheWeek_admin(request):
+
+    # adding/removing citations from weekly rotation if user submits form
+    if request.method == 'POST':
+        addOrRemove = request.POST.get('addOrRemove',False)
+        citation_pk = request.POST.get('citation_pk',False)
+        order = request.POST.get('order',False)
+        if order=="":
+            order = PaperOfTheWeekInfo.objects.order_by('-order')[0].order + 1 # sort is inefficient
+        if addOrRemove == "add":
+            p = PaperOfTheWeek.objects.all()[0]
+            c = Citation.objects.get(pk=citation_pk)
+            new_pow_entry = PaperOfTheWeekInfo(citation = c, paperOfTheWeek=p, order=order)
+            new_pow_entry.save()
+        elif addOrRemove == "remove":
+            c = Citation.objects.get(pk=citation_pk)
+            p = PaperOfTheWeekInfo.objects.filter(citation=c)
+            p.delete()
+
+    # display citations in weekly rotation
+    if len(PaperOfTheWeek.objects.all()) == 0:     # check if paperOfTheWeekObject exists. If not, create one
+        paperOfTheWeek = PaperOfTheWeek()
+        paperOfTheWeek.save()
+    # this is a list of all citations used in Papers of the Week. Re-number order to be consecutive integers
+    paperOfTheWeek_list = PaperOfTheWeekInfo.objects.order_by('order')
+    for i,p in enumerate(paperOfTheWeek_list):
+        p.order = i
+        p.save()
+
+    # this is a list of all citations not used in Papers of the Week
+    nonPaperOfTheWeek_list = Citation.objects.exclude(paperoftheweekinfo__in=paperOfTheWeek_list)
+    context = {'paperOfTheWeek_list': paperOfTheWeek_list, 'nonPaperOfTheWeek_list':nonPaperOfTheWeek_list}
+    return render(request, 'papers/paperOfTheWeek_admin.html', context)
+
 
 def add_tag(request):
     if request.method == 'POST':

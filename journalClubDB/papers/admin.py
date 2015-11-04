@@ -13,7 +13,6 @@ class PostInline(admin.TabularInline):
 class ThreadAdmin(admin.ModelAdmin):
     inlines = [PostInline]
     readonly_fields=('id',)
-
 admin.site.register(Thread,ThreadAdmin)
 
 class CitationAdmin(admin.ModelAdmin):

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block body_block %}
+
+<h1>admin interface for paper of the week</h1>
+
+
+<h2>Current list ({{ paperOfTheWeek_list|length }} elements)</h2>
+
+
+
+{% for citation in paperOfTheWeek_list %}
+  <li><b>order={{ citation.order }}</b> &nbsp;&nbsp; <i>{{ citation.citation }}</i> &nbsp;&nbsp; <b>pk={{ citation.citation.pk }}</b></li>
+{% endfor %}
+
+<!-- Interface to add/remove papers from weekly rotation -->
+<h2>Add/remove papers from weekly rotation</h2>
+<form action="{% url 'papers:paperOfTheWeek_admin' %}" method=POST>
+  {% csrf_token %}
+  <div class="radio">
+    <label><input type="radio" name="addOrRemove" value="add">Add to weekly rotation</label>
+  </div>
+  <div class="radio">
+    <label><input type="radio" name="addOrRemove" value="remove">Remove from weekly rotation</label>
+  </div>
+  <label>Citation primary key (pk):</label>
+  <input type="text" name="citation_pk">
+  <br>
+  <label>Position (leave blank if removing or appending to end):</label>
+  <input type="text" name="order">
+  <br>
+  <input type="submit">
+</form>
+
+<h2>Possible additions</h2>
+{% for citation in nonPaperOfTheWeek_list %}
+  <li>{{ citation }}, pk={{ citation.pk }}</li>
+{% endfor %}
+
+{% endblock %}
