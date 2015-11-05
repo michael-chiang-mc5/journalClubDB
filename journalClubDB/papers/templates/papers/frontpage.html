@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load templatetags %} <!-- templatetags cannot be moved to base.html -->
+
+{% block javascript %}
+{% endblock %}
+
+{% block body_block %}
+
+  <!-- Paper of the week -->
+  <div class="jumbotron col-md-8 col-md-offset-2">
+    <h3>Paper of the Week<sup><a>See past Papers of the Week</a></sup></h3>
+    <h2>{{ paperOfTheWeek_citation.title }}</h2>
+    <p>{{ paperOfTheWeek_citation.author|first_author }}</p>
+    <p>{{ paperOfTheWeek_citation.journal }}, {{ paperOfTheWeek_citation.date|citation_year }}</p>
+
+    <a href="{% url 'papers:detail' paperOfTheWeek_citation.pk 0 %}">
+      <button type="button" class="btn btn-danger btn-xs">Click to discuss this paper!</button>
+    </a>
+  </div>
+
+
+
+{% endblock %}

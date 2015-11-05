@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 {% load templatetags %} <!-- templatetags cannot be moved to base.html -->
 
+{% block javascript %}
+  {% load staticfiles %}
+  <script src="{% static "/static/js/index.js" %}"></script>
+{% endblock %}
+
 <!-- webpage main content -->
 {% block body_block %}
-{% load staticfiles %}
-<script src="{% static "/static/js/index.js" %}"></script>
 
 {% if citations %}
 

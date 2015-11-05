@@ -5,17 +5,15 @@
   <script src="{% static 'js/ckeditor/ckeditor.js' %}"></script>
   <script src="{% static 'js/ckeditor/samples/js/sample.js' %}"></script>
   <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-{% endblock %}
-
-{% block body_block %}
-  <!-- custom javascript -->
-  {% load staticfiles %}
   <script>
     csrf_js = '{{ csrf_token }}'
     url_upvote = "{% url 'papers:upvote' %}"
     url_downvote = "{% url 'papers:downvote' %}"
   </script>
   <script src="{% static "/static/js/detail.js" %}"></script>
+{% endblock %}
+
+{% block body_block %}
 
   <hr >
   <div class="container">
@@ -63,7 +61,7 @@
 
           <hr >
           <p><a class="btn btn-primary btn-tiny" href="http://www.ncbi.nlm.nih.gov/pubmed/{{ citation.pubmedID }}" role="button">pubmed link &raquo;</a></p>
-          
+
 
 
         </div>

@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     # ex: /papers/
-    url(r'^$', views.frontpage, name='index'),
+    url(r'^$', views.frontpage, name='frontpage'),
 
     # ex: /papers/index/
     url(r'^index/$', views.index, name='index'),

@@ -34,6 +34,8 @@ class Citation(models.Model):
     doi = models.TextField(blank=True)
     fullAuthorNames = models.TextField(blank=True)
     pubmedID = models.PositiveIntegerField(blank=True)
+    # optional fields
+    link = models.TextField(blank=True,null=True) # link to pdf or something else
 
 # Discussion thread for a particular citation
 # Possible categories: ELI5, Methodology, Results, Discussion, Historical context
@@ -113,6 +115,7 @@ class UserProfile(models.Model):
 # An object of this class stores an ordered list of citations. SUsed to determine the "Paper of the Week"
 class PaperOfTheWeek(models.Model):
     citation_list = models.ManyToManyField(Citation, through='PaperOfTheWeekInfo')
+    offset = models.PositiveIntegerField(blank=True) # used to set current paper of the week
 
 class PaperOfTheWeekInfo(models.Model):
     def __str__(self):

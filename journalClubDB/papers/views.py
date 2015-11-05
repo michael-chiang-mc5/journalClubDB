@@ -15,7 +15,7 @@ import os
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from datetime import datetime, timedelta, timezone
+#from datetime import datetime, timedelta, timezone
 import datetime
 
 def user_logout(request):
@@ -76,8 +76,13 @@ def register(request):
 
 # landing page
 def frontpage(request):
-    citation_pk = getCitationOfTheWeek()
-    return HttpResponse(citation_pk)
+    paperOfTheWeek_citation,dummy = getCitationOfTheWeek()
+    # if there are no citations of the week in the database, return index
+    if paperOfTheWeek_citation == 0:
+        return index(request)
+    else:
+        context = {'paperOfTheWeek_citation': paperOfTheWeek_citation}
+        return render(request, 'papers/frontpage.html', context)
 
 # see all citations in database
 def index(request):
@@ -111,26 +116,36 @@ def citationSanitizer(request,field_name):
     return ''
 
 # TODO: check that number of Papers of the Week does not exceed weeks elapsed
+
 def getCitationOfTheWeek():
     t0 = datetime.date(2000, 1, 1)
     today = datetime.date.today()
     days_elapsed = (today-t0).days
     weeks_elapsed = math.floor(days_elapsed / 7)
     num_papersOfTheWeek = len(PaperOfTheWeekInfo.objects.all())
-    current_index = weeks_elapsed % num_papersOfTheWeek
-    citation_pk = PaperOfTheWeekInfo.objects.order_by('order')[current_index].citation.pk
-    return citation_pk
+    if num_papersOfTheWeek == 0:
+        return 0
+    else:
+        current_index = (weeks_elapsed + PaperOfTheWeek.objects.all()[0].offset) % num_papersOfTheWeek
+        citation_pk = PaperOfTheWeekInfo.objects.order_by('order')[current_index].citation.pk
+        citation = Citation.objects.get(pk=citation_pk)
+        return citation,current_index
 
 # admin interface to set paper of the week
 def paperOfTheWeek_admin(request):
 
     # adding/removing citations from weekly rotation if user submits form
     if request.method == 'POST':
-        addOrRemove = request.POST.get('addOrRemove',False)
-        citation_pk = request.POST.get('citation_pk',False)
-        order = request.POST.get('order',False)
+        addOrRemove = request.POST.get('addOrRemove')
+        citation_pk = request.POST.get('citation_pk')
+        order = request.POST.get('order')
+        offset = request.POST.get('offset')
         if order=="":
-            order = PaperOfTheWeekInfo.objects.order_by('-order')[0].order + 1 # sort is inefficient
+            sorted_citations = PaperOfTheWeekInfo.objects.order_by('-order')  # TODO: sort is inefficient, better to find min
+            if len(sorted_citations) == 0:
+                order = 0
+            else:
+                order = sorted_citations[0].order + 1
         if addOrRemove == "add":
             p = PaperOfTheWeek.objects.all()[0]
             c = Citation.objects.get(pk=citation_pk)
@@ -140,20 +155,45 @@ def paperOfTheWeek_admin(request):
             c = Citation.objects.get(pk=citation_pk)
             p = PaperOfTheWeekInfo.objects.filter(citation=c)
             p.delete()
+        if offset!="": # set offset so that current paper of the week is correctly set
+            paperOfTheWeek_list = PaperOfTheWeekInfo.objects.order_by('order')
+            # find index (idx) of citation with order (o) closest to offset
+            idx = 0
+            diff_storage = float('inf')
+            for i,p in enumerate(paperOfTheWeek_list):
+                o = p.order
+                diff = abs(o - float(offset))
+                if diff<diff_storage:
+                    diff_storage = diff
+                    idx = i
+            # determine modulus offset
+            dummy,currentIdx = getCitationOfTheWeek()
+            if idx > currentIdx:
+                p = PaperOfTheWeek.objects.all()[0]
+                p.offset = p.offset + (idx-currentIdx)
+                p.save()
+            elif idx < currentIdx:
+                p = PaperOfTheWeek.objects.all()[0]
+                p.offset = p.offset - (currentIdx-idx)
+                p.save()
 
     # display citations in weekly rotation
     if len(PaperOfTheWeek.objects.all()) == 0:     # check if paperOfTheWeekObject exists. If not, create one
         paperOfTheWeek = PaperOfTheWeek()
+        paperOfTheWeek.offset = 0;
         paperOfTheWeek.save()
     # this is a list of all citations used in Papers of the Week. Re-number order to be consecutive integers
     paperOfTheWeek_list = PaperOfTheWeekInfo.objects.order_by('order')
     for i,p in enumerate(paperOfTheWeek_list):
         p.order = i
         p.save()
+    # get order of current paper of the week
+    dummy,idx = getCitationOfTheWeek()
+    currentOrder = paperOfTheWeek_list[idx].order
 
     # this is a list of all citations not used in Papers of the Week
     nonPaperOfTheWeek_list = Citation.objects.exclude(paperoftheweekinfo__in=paperOfTheWeek_list)
-    context = {'paperOfTheWeek_list': paperOfTheWeek_list, 'nonPaperOfTheWeek_list':nonPaperOfTheWeek_list}
+    context = {'paperOfTheWeek_list': paperOfTheWeek_list, 'nonPaperOfTheWeek_list':nonPaperOfTheWeek_list, 'currentOrder':currentOrder}
     return render(request, 'papers/paperOfTheWeek_admin.html', context)
 
 
@@ -223,7 +263,7 @@ def addPost(request):
         post = Post.objects.filter(pk=post_pk).all()[0]
         citation_pk = request.POST.get("citation_pk", False)
         current_thread = request.POST.get("current_thread", False)
-        post.add_post(new_text,request.user.pk,datetime.now(timezone.utc),request.user.username)
+        post.add_post(new_text,request.user.pk,datetime.now(datetime.timezone.utc),request.user.username)
         setattr(post,'time_created',datetime.now())
         post.save()
         return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,current_thread]))
@@ -237,7 +277,7 @@ def addPost(request):
         current_thread = request.POST.get("current_thread", False)
 
         post = Post()
-        setattr(post,'time_created',datetime.now())
+        setattr(post,'time_created',datetime.datetime.now())
         setattr(post,'creator',request.user)
         setattr(post,'thread',Thread.objects.get(pk=thread_pk))
         setattr(post,'isReplyToPost', True) # TODO: pick a better variable name, base_node?
@@ -247,7 +287,7 @@ def addPost(request):
         else:
             setattr(post,'mother', Post.objects.get(thread=thread_pk,isReplyToPost=False))
             setattr(post,'node_depth',1)
-        post.add_post(text,request.user.pk,datetime.now(timezone.utc),request.user.username)
+        post.add_post(text,request.user.pk,datetime.datetime.now(datetime.timezone.utc),request.user.username)
         post.save() # TODO: This may not be necessary
         post.upvoters.add(request.user)
         post.save()
@@ -283,7 +323,7 @@ def addCitation(request):
         setattr(thread,'description',description)
         thread.save()
         post = Post()
-        post = Post(time_created=datetime.now(),creator=request.user,thread=thread,
+        post = Post(time_created=datetime.datetime.now(),creator=request.user,thread=thread,
                     isReplyToPost=False,text="",node_depth=0)
         post.save()
 
