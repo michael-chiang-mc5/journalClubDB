@@ -1,3 +1,12 @@
+.spacer {
+  height: 20px;
+}
+
+.post_template form {
+  display: inline-block;
+}
+
+
 .bs-example {
   box-sizing: border-box;
   line-height: 1.42857143;
@@ -83,12 +92,12 @@ body {
 }
 
 .votecell .vote-count-post {
-    color: #435963 !important;
-    line-height: 16px !important;
-    padding: 9px 0 !important;
-    font-size: 22px;
-    display: block;
-    text-align: center;
+  color: #435963 !important;
+  line-height: 16px !important;
+  padding: 9px 0 !important;
+  font-size: 22px;
+  display: block;
+  text-align: center;
 
 }
 

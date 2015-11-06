@@ -12,6 +12,12 @@ urlpatterns = [
     # ex: /papers/index/
     url(r'^index/$', views.index, name='index'),
 
+    # ex: /papers/self_user_profile/
+    url(r'^self_user_profile/$', views.self_user_profile, name='self_user_profile'),
+
+    # ex:
+    url(r'^user_posts/(?P<user_pk>[0-9]+)/$', views.user_posts, name='user_posts'),
+
     # ex: /papers/search/0/
     url(r'^search/(?P<page>[0-9]+)/$', views.search, name='search'),
 

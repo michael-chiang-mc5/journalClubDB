@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block javascript %}
+  {% load staticfiles %}
+  <script src="{% static "/static/js/detail.js" %}"></script>
+  <link rel="stylesheet" href="{% static 'css/user_posts.css' %}">
+{% endblock %}
+
+
+{% block body_block %}
+
+  <table>
+    <tbody>
+
+
+      {% for p in posts %}
+
+        <div class="single_post">
+          {% include "post_template.html" %}
+        </div>
+        <br>
+
+      {% endfor %}
+    </tbody>
+
+  </table>
+{% endblock %}

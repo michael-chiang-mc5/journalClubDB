@@ -1,0 +1,116 @@
+<!-- this template contains html to display a user post -->
+
+{% load templatetags %}
+<div class="post_template">
+
+  <!-- top bar containing username, points, time posted -->
+  <div>
+    <span class="comment-user"><a>{{ p.creator.username }}</a></span>
+    &nbsp; , &nbsp;
+    <span id="commentscore-pk-{{ p.pk }}">{{ p.score }}</span> point{{p.score|pluralize}}
+    &nbsp; , &nbsp;
+    <span class="comment-time" id="comment-time-{{ p.pk }}">
+      {% if p.get_undecoded_textTupleVector|length == 1 %}
+        posted
+      {% else %}
+        edited
+      {% endif %}
+      {{ p.time_created|age }}
+    </span>
+  </div>
+  <hr >
+
+  <!-- middle box containing post content. javascript used to switch between edits -->
+  <div>
+    {% for recent_post in p.get_undecoded_textTupleVector %}
+      <div id="comment-text-{{ p.pk }}-{{ forloop.counter }}" class="comment-target-all-{{ p.pk }} comment-all {% if forloop.last %} comment-last {% endif %}">
+        {{ recent_post.0 | safe}} <!-- text -->
+      </div>
+    {% endfor %}
+  </div>
+  <hr >
+
+
+  <!-- bottom bar containing reply, edit history -->
+  <div>
+    {% if user.is_authenticated %}
+      <!-- reply button -->
+      <span>
+        <a class='submit'>reply</a> &nbsp; &nbsp; &nbsp;
+        <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
+          {% csrf_token %}
+          <input type="hidden" name="citation" value="{{ citation.title }}" />
+          <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
+          <input type="hidden" name="thread_title" value="{{ thread.title }}" />
+          <input type="hidden" name="thread_description" value="{{ thread.description }}" />
+          <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
+          <input type="hidden" name="isReplyToPost" value="1" />
+          <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
+          <input type="hidden" name="current_thread" value="{{ forloop.parentloop.counter }}" />
+          <input type="hidden" name="initial_text" value="{% with p.get_undecoded_textTupleVector|last as recent_post %}
+                                                            {{ recent_post.0 }}
+                                                          {% endwith %}
+                                                          "/>                              <input type="hidden" name="blockquote" value="True" />
+          <input type="hidden" name="post_pk" value="-1" />
+          <input type="hidden" name="edit_or_reply" value="reply" />
+        </form>
+      </span>
+
+      <!-- allow for editing if user created post TODO: security flaw: check user/post identical in view-->
+      {% if user.get_username == p.creator.username %}
+        <!-- edit button -->
+        <span>
+          <a class='submit'>edit</a> &nbsp; &nbsp; &nbsp;
+          <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
+            {% csrf_token %}
+            <input type="hidden" name="citation" value="{{ citation.title }}" />
+            <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
+            <input type="hidden" name="thread_title" value="{{ thread.title }}" />
+            <input type="hidden" name="thread_description" value="{{ thread.description }}" />
+            <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
+            <input type="hidden" name="isReplyToPost" value="1" />
+            <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
+            <input type="hidden" name="current_thread" value="{{ forloop.parentloop.counter }}" />
+            <input type="hidden" name="initial_text" value="{% with p.get_undecoded_textTupleVector|last as recent_post %}
+                                                              {{ recent_post.0 }}
+                                                            {% endwith %}
+                                                            "/>
+            <input type="hidden" name="blockquote" value="False" />
+            <input type="hidden" name="post_pk" value="{{ p.pk }}" />
+            <input type="hidden" name="edit_or_reply" value="edit" />
+          </form>
+        </span>
+      {% endif %}
+
+
+    {% else %}
+      <span>
+        <span class="active modal_item" id="reply-modal"><a id="modal_item1" data-toggle="modal" data-target="#myModal">reply</a></span>
+      </span>
+
+    {% endif %}
+      <!-- dropdown to select post history -->
+      <span>
+        <span class="dropdown">
+             <a href="#" data-toggle="dropdown" class="dropdown-toggle">history <b class="caret"></b></a>
+             <ul class="dropdown-menu">
+               {% for recent_post in p.get_undecoded_textTupleVector %}
+                 <li class="li-dropdown-{{p.pk}} li-dropdown-{{p.pk}}-{{forloop.counter}} {% if forloop.last %} active {% endif %}"><a href="#" id="action-{{ p.pk }}-{{ forloop.counter }}" >
+                   {% if recent_post.3 != p.creator.username %}
+                     recent_post.3
+                   {% endif %}
+                   {% if forloop.counter == 1 %}
+                     posted
+                   {% else %}
+                     edited
+                   {% endif %}
+                   {{ recent_post.2|age }}
+                 </a></li> <!-- time created/edited -->
+               {% endfor %}
+             </ul>
+         </span>
+      </span>
+
+  </div>
+
+</div>

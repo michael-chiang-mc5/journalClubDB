@@ -1,3 +1,4 @@
+<!-- This file contains the base template used for all web pages in papers app -->
 <!-- useful bootstrap examples http://www.tutorialrepublic.com/twitter-bootstrap-examples.php -->
 
 <html>
@@ -164,8 +165,21 @@
           <!-- navbar (right side)-->
           <ul class="nav navbar-nav navbar-right">
             {% if user.is_authenticated %}
-                <li class="active"><a href="#">{{ user.get_username }}</a></li>
-                <li><a id="logout_button" href=".">Logout</a></li>
+
+              <li class="dropdown {% if navbar == 'user_profile' %}active{% endif %}">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ user.get_username }}<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="{% url 'papers:self_user_profile' %}">User Profile</a></li>
+                  <li><a href="{% url 'papers:user_posts' user.pk %}">Your Posts</a></li>
+                  <li><a href="{% url 'papers:user_posts' user.pk %}">Your Library</a></li>
+                  <li><a href="{% url 'papers:user_posts' user.pk %}">Notifications</a></li>                  
+                  <li role="separator" class="divider"></li>
+                  <li><a id="logout_button" href="{% url 'papers:frontpage' %}">Logout</a></li>
+                </ul>
+              </li>
+
+
+
             {% else %}
                 <li class="active modal_item"><a id="modal_item1" data-toggle="modal" data-target="#myModal">Register or log in</a></li>
             {% endif %}

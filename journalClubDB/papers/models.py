@@ -99,6 +99,16 @@ class Post(models.Model):
             tuple_vector = json.loads(tuple_vector_undecoded, object_hook=json_util.object_hook)
         return tuple_vector
 
+    def get_most_recent_edit(self):
+        all_edits = self.get_undecoded_textTupleVector()
+        if all_edits == []:
+            rn = []
+        else:
+            for edit in all_edits:
+                pass
+            rn = []
+        return rn
+
 class Tag(models.Model): # use http://jquery-plugins.net/bootstrap-tags-input
     def __str__(self):
         return self.name

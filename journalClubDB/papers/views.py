@@ -77,12 +77,8 @@ def register(request):
 # landing page
 def frontpage(request):
     paperOfTheWeek_citation,dummy = getCitationOfTheWeek()
-    # if there are no citations of the week in the database, return index
-    if paperOfTheWeek_citation == 0:
-        return index(request)
-    else:
-        context = {'paperOfTheWeek_citation': paperOfTheWeek_citation,'navbar':'home'}
-        return render(request, 'papers/frontpage.html', context)
+    context = {'paperOfTheWeek_citation': paperOfTheWeek_citation,'navbar':'home'}
+    return render(request, 'papers/frontpage.html', context)
 
 # see all citations in database
 def index(request):
@@ -116,7 +112,6 @@ def citationSanitizer(request,field_name):
     return ''
 
 # TODO: check that number of Papers of the Week does not exceed weeks elapsed
-
 def getCitationOfTheWeek():
     t0 = datetime.date(2000, 1, 1)
     today = datetime.date.today()
@@ -124,12 +119,24 @@ def getCitationOfTheWeek():
     weeks_elapsed = math.floor(days_elapsed / 7)
     num_papersOfTheWeek = len(PaperOfTheWeekInfo.objects.all())
     if num_papersOfTheWeek == 0:
-        return 0
+        return 0,0
     else:
         current_index = (weeks_elapsed + PaperOfTheWeek.objects.all()[0].offset) % num_papersOfTheWeek
         citation_pk = PaperOfTheWeekInfo.objects.order_by('order')[current_index].citation.pk
         citation = Citation.objects.get(pk=citation_pk)
         return citation,current_index
+
+# display user profile
+def self_user_profile(request):
+    context = {'user': request.user, 'navbar':'user_profile'}
+    return render(request, 'papers/self_user_profile.html', context)
+
+# display user posts
+def user_posts(request, user_pk):
+    user = User.objects.get(pk=user_pk)
+    posts = Post.objects.filter(creator=user)
+    context = {'posts': posts, 'navbar':'user_profile'}
+    return render(request, 'papers/user_posts.html', context)
 
 # list all papers of the week
 def paperOfTheWeek_list(request):
@@ -269,8 +276,8 @@ def addPost(request):
         post = Post.objects.filter(pk=post_pk).all()[0]
         citation_pk = request.POST.get("citation_pk", False)
         current_thread = request.POST.get("current_thread", False)
-        post.add_post(new_text,request.user.pk,datetime.now(datetime.timezone.utc),request.user.username)
-        setattr(post,'time_created',datetime.now())
+        post.add_post(new_text,request.user.pk,datetime.datetime.now(datetime.timezone.utc),request.user.username)
+        setattr(post,'time_created',datetime.datetime.now())
         post.save()
         return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,current_thread]))
     elif edit_or_reply == "reply":
@@ -329,7 +336,7 @@ def addCitation(request):
         setattr(thread,'description',description)
         thread.save()
         post = Post()
-        post = Post(time_created=datetime.datetime.now(),creator=request.user,thread=thread,
+        post = Post(time_created=datetime.datetime.now(),thread=thread,
                     isReplyToPost=False,text="",node_depth=0)
         post.save()
 

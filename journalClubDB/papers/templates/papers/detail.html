@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load templatetags %} <!-- templatetags cannot be moved to base.html -->
 
 {% block javascript %}
   {% load staticfiles %}
@@ -31,7 +32,6 @@
         <div id="detail_jumbotron" class="jumbotron">
           <h1>{{ citation.title }}</h1>
           <hr >
-          {% load templatetags %} <!-- templatetags cannot be moved to base.html -->
           <p>{{ citation.fullAuthorNames|parse_full_names }}</p>
           <p>{{ citation.fullSource }} </p>
           <hr >
@@ -136,18 +136,15 @@
                             {% else %}
                               <div class="active modal_item" id="downvote-modal"><a class="vote-down-off" id="modal_item1" data-toggle="modal" data-target="#myModal">up vote</a></div>
                             {% endif %}
-
-
-
                           </div>
                         </td>
+
                         <!-- user commment -->
                         <td class="answercell">
                           <span class="comment-user"><a>{{ p.creator.username }}</a></span>
                           , &nbsp;
                           <span id="commentscore-pk-{{ p.pk }}">{{ p.score }}</span> point{{p.score|pluralize}}
                           , &nbsp;
-                          {% load templatetags %} <!-- templatetags cannot be moved to base.html -->
                           <span class="comment-time" id="comment-time-{{ p.pk }}">
                             {% if p.get_undecoded_textTupleVector|length == 1 %}
                               posted
