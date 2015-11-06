@@ -41,11 +41,9 @@ $(document).ready(function() {
 });
 
 
-
-
-// bring up postForm.html
+// submit form following hyperlink of class "hyperlink-submit-form"
 $(document).ready(function() {
-  $("a.submit").click(function() {
+  $("a.hyperlink-submit-form").click(function() {
     $( this ).next('form').submit();
   });
 });

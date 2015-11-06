@@ -171,8 +171,8 @@
                 <ul class="dropdown-menu">
                   <li><a href="{% url 'papers:self_user_profile' %}">User Profile</a></li>
                   <li><a href="{% url 'papers:user_posts' user.pk %}">Your Posts</a></li>
-                  <li><a href="{% url 'papers:user_posts' user.pk %}">Your Library</a></li>
-                  <li><a href="{% url 'papers:user_posts' user.pk %}">Notifications</a></li>                  
+                  <li><a href="{% url 'papers:user_library' %}">Your Library</a></li>
+                  <li><a href="{% url 'papers:user_notifications' %}">Notifications</a></li>
                   <li role="separator" class="divider"></li>
                   <li><a id="logout_button" href="{% url 'papers:frontpage' %}">Logout</a></li>
                 </ul>

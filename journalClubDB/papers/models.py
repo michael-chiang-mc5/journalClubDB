@@ -118,7 +118,7 @@ class Tag(models.Model): # use http://jquery-plugins.net/bootstrap-tags-input
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     education = models.TextField(blank=True)
-    library   = models.ManyToManyField(Citation, blank=True, related_name="citation_library")
+    library   = models.ManyToManyField(Citation, blank=True, related_name="userProfiles") # to access user profiles from Citation instance, citation.userProfiles.all()
     def __str__(self):
         return self.user.username
 

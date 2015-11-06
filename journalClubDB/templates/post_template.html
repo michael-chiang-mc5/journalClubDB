@@ -36,7 +36,7 @@
     {% if user.is_authenticated %}
       <!-- reply button -->
       <span>
-        <a class='submit'>reply</a> &nbsp; &nbsp; &nbsp;
+        <a class='hyperlink-submit-form'>reply</a> &nbsp; &nbsp; &nbsp;
         <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
           {% csrf_token %}
           <input type="hidden" name="citation" value="{{ citation.title }}" />
@@ -60,7 +60,7 @@
       {% if user.get_username == p.creator.username %}
         <!-- edit button -->
         <span>
-          <a class='submit'>edit</a> &nbsp; &nbsp; &nbsp;
+          <a class='hyperlink-submit-form'>edit</a> &nbsp; &nbsp; &nbsp;
           <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
             {% csrf_token %}
             <input type="hidden" name="citation" value="{{ citation.title }}" />

@@ -15,6 +15,14 @@ urlpatterns = [
     # ex: /papers/self_user_profile/
     url(r'^self_user_profile/$', views.self_user_profile, name='self_user_profile'),
 
+    # ex: /papers/self_user_profile/
+    url(r'^add_citation_to_user_library/$', views.add_citation_to_user_library, name='add_citation_to_user_library'),
+
+
+    url(r'^user_notifications/$', views.user_notifications, name='user_notifications'),
+
+    url(r'^user_library/$', views.user_library, name='user_library'),
+
     # ex:
     url(r'^user_posts/(?P<user_pk>[0-9]+)/$', views.user_posts, name='user_posts'),
 

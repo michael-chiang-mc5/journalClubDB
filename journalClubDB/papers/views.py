@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 import logging
 import math
-from .models import Citation, Thread, Post, Tag, PaperOfTheWeek, PaperOfTheWeekInfo
+from .models import Citation, Thread, Post, Tag, PaperOfTheWeek, PaperOfTheWeekInfo, UserProfile
 #from .forms import UserForm #, UserProfileForm
 from .Pubmed import PubmedInterface
 logger = logging.getLogger(__name__)
@@ -17,6 +17,16 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 #from datetime import datetime, timedelta, timezone
 import datetime
+
+
+
+def user_notifications(request):
+    context = {'navbar':'user_profile'}
+    return render(request, 'papers/user_notifications.html', context)
+
+def user_library(request):
+    context = {'navbar':'user_profile'}
+    return render(request, 'papers/user_library.html', context)
 
 def user_logout(request):
     logout(request)
@@ -48,6 +58,26 @@ def user_login(request): # login is taken up by native django function
         print("Invalid login details: {0}, {1}".format(username, password))
         return HttpResponse(False)
 
+# check if user profile exists for user. If not, create it
+# input argument user should be User object
+def get_user_profile(user):
+    try:
+        userProfile =UserProfile.objects.get(user=user)
+    except:
+        userProfile = UserProfile()
+        userProfile.user = user
+        userProfile.save()
+        return userProfile
+    else:
+        return userProfile
+
+# add a citation to user library
+def add_citation_to_user_library(request):
+    citation_pk = request.POST.get("citation_pk")
+    userProfile = get_user_profile(request.user)
+    userProfile.library.add(citation_pk)
+    userProfile.save()
+    return detail(request,citation_pk,0)
 
 # code from: http://stackoverflow.com/questions/1531272/django-ajax-response-for-valid-available-username-email-during-registration
 def is_field_available(request):
@@ -430,9 +460,19 @@ def detail(request,pk,current_thread):
         ordered_posts = ordered_posts[2:-1] # exclude first entry (dummy post) along with indents/dedents
         posts_vector.append(ordered_posts)
         num_depth1_posts.append(len(posts.filter(node_depth=1)))
-
     threadsPostsIndents = zip(threads,posts_vector,num_depth1_posts)
-    context = {'citation': citation,'threads': threads,'posts_vector':posts_vector,'threadsPostsIndents':threadsPostsIndents,'current_thread':int(current_thread),'associated_tags':associated_tags,'unused_tags':unused_tags}
+
+    # check if citation already is in user library
+    # citationIsInLibrary True if user is authenticated and citation is in library, false otherwise
+    try:
+        userProfile = get_user_profile(request.user)
+        userProfile.library.get(pk=pk)
+    except:
+        citationIsInLibrary = False
+    else:
+        citationIsInLibrary = True
+
+    context = {'citation': citation,'threads': threads,'posts_vector':posts_vector,'threadsPostsIndents':threadsPostsIndents,'current_thread':int(current_thread),'associated_tags':associated_tags,'unused_tags':unused_tags, 'citationIsInLibrary':citationIsInLibrary}
     return render(request, 'papers/detail.html', context)
 
 # search is terribly slow.  Use this for development
