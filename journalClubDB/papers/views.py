@@ -81,7 +81,7 @@ def frontpage(request):
     if paperOfTheWeek_citation == 0:
         return index(request)
     else:
-        context = {'paperOfTheWeek_citation': paperOfTheWeek_citation}
+        context = {'paperOfTheWeek_citation': paperOfTheWeek_citation,'navbar':'home'}
         return render(request, 'papers/frontpage.html', context)
 
 # see all citations in database
@@ -104,7 +104,7 @@ def index(request):
         citations = paginator.page(paginator.num_pages)
         active_page = int(paginator.num_pages)
 
-    context = {'citations': citations,'navbar':'home','num_pages':int(paginator.num_pages),'active_page':active_page}
+    context = {'citations': citations,'navbar':'index','num_pages':int(paginator.num_pages),'active_page':active_page}
     return render(request, 'papers/index.html', context)
 
 # returns a string, otherwise returns None
@@ -130,6 +130,12 @@ def getCitationOfTheWeek():
         citation_pk = PaperOfTheWeekInfo.objects.order_by('order')[current_index].citation.pk
         citation = Citation.objects.get(pk=citation_pk)
         return citation,current_index
+
+# list all papers of the week
+def paperOfTheWeek_list(request):
+    paperOfTheWeekInfo_list = PaperOfTheWeekInfo.objects.order_by('order')
+    context = {'paperOfTheWeekInfo_list': paperOfTheWeekInfo_list}
+    return render(request, 'papers/paperOfTheWeek_list.html', context)
 
 # admin interface to set paper of the week
 def paperOfTheWeek_admin(request):
@@ -507,5 +513,5 @@ def search(request,page):
 
     totalPages = min([totalPages,15+1]) # maximum of 15 pages
     pubmed = checkPubmedEntriesForPreexistingCitations(pubmed)
-    context = {'entries': pubmed.entries, 'search_str': search_str, 'totalPages':totalPages, 'totalPagesRange': range(1,totalPages), 'pageNumber': pageNumber, 'freshSearch': freshSearch}
+    context = {'entries': pubmed.entries, 'search_str': search_str, 'totalPages':totalPages, 'totalPagesRange': range(1,totalPages), 'pageNumber': pageNumber, 'freshSearch': freshSearch, 'navbar':'addCitation'}
     return render(request, 'papers/search.html', context)

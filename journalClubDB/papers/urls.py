@@ -6,6 +6,9 @@ urlpatterns = [
     # ex: /papers/
     url(r'^$', views.frontpage, name='frontpage'),
 
+    # ex: /paperOfTheWeek_list/
+    url(r'^paperOfTheWeek_list/$', views.paperOfTheWeek_list, name='paperOfTheWeek_list'),
+
     # ex: /papers/index/
     url(r'^index/$', views.index, name='index'),
 
