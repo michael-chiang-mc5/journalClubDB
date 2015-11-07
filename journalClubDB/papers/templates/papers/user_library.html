@@ -6,6 +6,20 @@
 
 {% block body_block %}
 
-  user library
-  
+  <h1>user library</h1>
+
+
+
+
+
+  {% for citation in citations %}
+
+    <div class="single_citation">
+      {% include "citation_summary_template.html" %}
+    </div>
+    <br>
+
+  {% endfor %}
+
+
 {% endblock %}

@@ -25,7 +25,10 @@ def user_notifications(request):
     return render(request, 'papers/user_notifications.html', context)
 
 def user_library(request):
-    context = {'navbar':'user_profile'}
+
+    user_profile = get_user_profile(request.user)
+    citations = user_profile.library.all()
+    context = {'navbar':'user_profile','citations':citations}
     return render(request, 'papers/user_library.html', context)
 
 def user_logout(request):
@@ -112,7 +115,6 @@ def frontpage(request):
 
 # see all citations in database
 def index(request):
-    template_name = 'papers/index.html'
     citations = Citation.objects.all()
 
     # Paginate
