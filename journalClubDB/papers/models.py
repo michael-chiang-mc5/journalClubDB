@@ -69,15 +69,11 @@ class Post(models.Model):
     isReplyToPost = models.BooleanField()
     mother = models.ForeignKey('self', blank=True, null=True)
     text = models.TextField() # json serialized
-    node_depth = models.PositiveIntegerField()
+    node_depth = models.PositiveIntegerField() # base node posts have a node depth of 0
 
     # to access upvoted posts from User instance, user.upvoted.all()
     upvoters   = models.ManyToManyField(User, blank=True, related_name="upvoted")
     downvoters = models.ManyToManyField(User, blank=True, related_name="downvoted")
-
-    # This must be recalculated every time a new reply is added to subtree
-    #aggregate_score_tmp = models.IntegerField(blank=True, null=True)
-    #ordered_index = models.IntegerField(blank=True,null=True)
 
     # score is a measure of post quality
     # TODO: Make score based on user quality, i.e., professors have more weight
@@ -89,6 +85,28 @@ class Post(models.Model):
         t = (text,editor_pk,date_added,editor_name)
         text_tuple_vector.append(t)
         self.text = json.dumps(text_tuple_vector, default=json_util.default)
+
+    def notify_mother_author(self):
+        # get mother post
+        mother = Post.objects.get(pk=self.mother.pk)
+
+        # if mother is base node, do nothing
+        if mother.node_depth == 0:
+            return
+
+        # get author of mother post
+        mother_author = User.objects.get(pk=mother.creator.pk)
+
+        # if author of the current post is the same as the author of the
+        # mother post (i.e., if somebody replied to himself) then do nothing
+        if mother_author.pk == self.creator.pk:
+            return
+
+        # notify author of mother post that somebody responded
+        mother_user_profile = UserProfile().get_user_profile(mother_author)
+        mother_user_profile.post_reply_notifications.add(self)
+        mother_user_profile.save()
+        return
 
     # v[i] = (text , editor/creator.pk , date)
     def get_undecoded_textTupleVector(self):
@@ -119,8 +137,23 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User)
     education = models.TextField(blank=True)
     library   = models.ManyToManyField(Citation, blank=True, related_name="userProfiles") # to access user profiles from Citation instance, citation.userProfiles.all()
+    post_reply_notifications = models.ManyToManyField(Post, blank=True)
+
     def __str__(self):
         return self.user.username
+
+    # check if user profile exists for user, if not then create one and save to database. Input argument user should be User object
+    # Example usage: userProfile = UserProfile().get_user_profile(user)
+    def get_user_profile(self,user):
+        try:
+            userProfile = UserProfile.objects.get(user=user)
+        except:
+            userProfile = UserProfile()
+            userProfile.user = user
+            userProfile.save()
+            return userProfile
+        else:
+            return userProfile
 
 # An object of this class stores an ordered list of citations. SUsed to determine the "Paper of the Week"
 class PaperOfTheWeek(models.Model):

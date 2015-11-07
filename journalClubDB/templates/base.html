@@ -1,5 +1,6 @@
 <!-- This file contains the base template used for all web pages in papers app -->
 <!-- useful bootstrap examples http://www.tutorialrepublic.com/twitter-bootstrap-examples.php -->
+{% load templatetags %}
 
 <html>
   <head>
@@ -16,7 +17,6 @@
     <script>
       url_register = "{% url 'papers:register' %}"
       url_login = "{% url 'papers:user_login' %}"
-      url_logout = "{% url 'papers:user_logout' %}"
       url_is_field_available = "{% url 'papers:is_field_available' %}"
     </script>
     <script src="{% static "/static/js/authentication.js" %}"></script>
@@ -167,14 +167,30 @@
             {% if user.is_authenticated %}
 
               <li class="dropdown {% if navbar == 'user_profile' %}active{% endif %}">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ user.get_username }}<span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ user.get_username }}
+                                                                                                                                    {% if user|reply_notifications|length != 0 %}
+                                                                                                                                      <span class="bold-red">({{ user|reply_notifications|length }})</span>
+                                                                                                                                    {% endif %}
+                                                                                                                                    {% if number_of_post_reply_notifications %}
+                                                                                                                                      <span class="bold-red">({{ number_of_post_reply_notifications }})</span>
+                                                                                                                                    {% endif %}
+                                                                                                                                    <span class="caret"></span>
+                </a>
                 <ul class="dropdown-menu">
                   <li><a href="{% url 'papers:self_user_profile' %}">User Profile</a></li>
                   <li><a href="{% url 'papers:user_posts' user.pk %}">Your Posts</a></li>
                   <li><a href="{% url 'papers:user_library' %}">Your Library</a></li>
-                  <li><a href="{% url 'papers:user_notifications' %}">Notifications</a></li>
+                  <li><a href="{% url 'papers:user_notifications' %}">Notifications
+                                                                      {% if user|reply_notifications|length != 0 %}
+                                                                        <span class="bold-red">({{ user|reply_notifications|length }})</span>
+                                                                      {% endif %}
+                                                                      {% if number_of_post_reply_notifications %}
+                                                                        <span class="bold-red">({{ number_of_post_reply_notifications }})</span>
+                                                                      {% endif %}
+                      </a>
+                  </li>
                   <li role="separator" class="divider"></li>
-                  <li><a id="logout_button" href="{% url 'papers:frontpage' %}">Logout</a></li>
+                  <li><a id="logout_button" href="{% url 'papers:user_logout' %}">Logout</a></li>
                 </ul>
               </li>
 

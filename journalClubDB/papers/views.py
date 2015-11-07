@@ -21,19 +21,27 @@ import datetime
 
 
 def user_notifications(request):
-    context = {'navbar':'user_profile'}
+    # get notifications
+    user_profile = UserProfile().get_user_profile(request.user)
+    posts = list(user_profile.post_reply_notifications.all()) # list is necessary to prevent post_reply_notifications clear from also clearing copy
+
+    # clear notifications
+    user_profile.post_reply_notifications.clear()
+
+    # return html
+    context = {'navbar':'user_profile','posts':posts, 'number_of_post_reply_notifications':len(posts)}
     return render(request, 'papers/user_notifications.html', context)
 
 def user_library(request):
 
-    user_profile = get_user_profile(request.user)
+    user_profile = UserProfile().get_user_profile(request.user)
     citations = user_profile.library.all()
     context = {'navbar':'user_profile','citations':citations}
     return render(request, 'papers/user_library.html', context)
 
 def user_logout(request):
     logout(request)
-    return HttpResponseRedirect('/')
+    return frontpage(request)
 
 # user login.  Code from: http://www.tangowithdjango.com/book17/chapters/login.html
 def user_login(request): # login is taken up by native django function
@@ -63,21 +71,21 @@ def user_login(request): # login is taken up by native django function
 
 # check if user profile exists for user. If not, create it
 # input argument user should be User object
-def get_user_profile(user):
-    try:
-        userProfile =UserProfile.objects.get(user=user)
-    except:
-        userProfile = UserProfile()
-        userProfile.user = user
-        userProfile.save()
-        return userProfile
-    else:
-        return userProfile
+#def get_user_profile(user):
+#    try:
+#        userProfile =UserProfile.objects.get(user=user)
+#    except:
+#        userProfile = UserProfile()
+#        userProfile.user = user
+#        userProfile.save()
+#        return userProfile
+#    else:
+#        return userProfile
 
 # add a citation to user library
 def add_citation_to_user_library(request):
     citation_pk = request.POST.get("citation_pk")
-    userProfile = get_user_profile(request.user)
+    userProfile = UserProfile().get_user_profile(request.user)
     userProfile.library.add(citation_pk)
     userProfile.save()
     return detail(request,citation_pk,0)
@@ -326,7 +334,7 @@ def addPost(request):
         setattr(post,'creator',request.user)
         setattr(post,'thread',Thread.objects.get(pk=thread_pk))
         setattr(post,'isReplyToPost', True) # TODO: pick a better variable name, base_node?
-        if is_reply_to_post: # TODO: change name to is_submission?
+        if is_reply_to_post: # TODO: pick a better name, is_submission?
             setattr(post,'mother',Post.objects.get(pk=mother_pk))
             setattr(post,'node_depth', Post.objects.get(pk=mother_pk).node_depth + 1)
         else:
@@ -336,6 +344,10 @@ def addPost(request):
         post.save() # TODO: This may not be necessary
         post.upvoters.add(request.user)
         post.save()
+
+        # notify author of mother post that you replied to him
+        post.notify_mother_author()
+
         return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,current_thread]))
 
 def addCitation(request):
@@ -467,7 +479,7 @@ def detail(request,pk,current_thread):
     # check if citation already is in user library
     # citationIsInLibrary True if user is authenticated and citation is in library, false otherwise
     try:
-        userProfile = get_user_profile(request.user)
+        userProfile = UserProfile().get_user_profile(request.user)
         userProfile.library.get(pk=pk)
     except:
         citationIsInLibrary = False

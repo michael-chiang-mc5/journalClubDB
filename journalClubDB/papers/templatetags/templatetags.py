@@ -2,7 +2,21 @@ from django.template import Library
 from datetime import datetime, timedelta, timezone
 from django.utils.timesince import timesince
 register = Library()
+from papers.models import UserProfile
 
+
+@register.filter
+def reply_notifications(user):
+  """
+    Usage (in template):
+    {{ user|reply_notifications }}
+
+    Results with the HTML:
+    [post1,post2,post3]
+  """
+  user_profile = UserProfile().get_user_profile(user)
+  notifications = user_profile.post_reply_notifications.all()
+  return notifications
 
 @register.filter
 def age(value):

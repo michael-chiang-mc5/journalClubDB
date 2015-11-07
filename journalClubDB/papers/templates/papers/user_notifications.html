@@ -6,6 +6,17 @@
 
 {% block body_block %}
 
-  user notifications
+  {% if number_of_post_reply_notifications == 0 %}
+    <h1>No user notifications</h1>
+  {% else %}
+    <h1>No user notifications</h1>
+  {% endif %}
+  
+  {% for p in posts %}
+    <div class="single_post">
+      {% include "post_template.html" %}
+    </div>
+    <br>
+  {% endfor %}
 
 {% endblock %}

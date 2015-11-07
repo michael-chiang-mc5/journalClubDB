@@ -63,16 +63,6 @@ $(document).ready(function() {
   });
 });
 
-// log out
-$(document).ready(function() {
-
-  $("#logout_button").click(function() {
-    $.get(url_logout, {},
-        function(data, status){
-          location.reload();
-        });
-  });
-});
 
 // register
 $(document).ready(function() {
