@@ -2,15 +2,13 @@
 
 {% block javascript %}
   {% load staticfiles %}
-  <script src="{% static "/static/js/detail.js" %}"></script>
+  <script src="{% static "/static/js/post_template.js" %}"></script>
   <link rel="stylesheet" href="{% static 'css/user_posts.css' %}">
 {% endblock %}
 
 
 {% block body_block %}
 
-  <table>
-    <tbody>
 
 
       {% for p in posts %}
@@ -21,7 +19,5 @@
         <br>
 
       {% endfor %}
-    </tbody>
 
-  </table>
 {% endblock %}

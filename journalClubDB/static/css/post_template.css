@@ -1,0 +1,57 @@
+.post-voting-interface {
+  background-color: red;
+  vertical-align: top;
+}
+
+
+a[class^="up-arrow"] {
+  font-size: 0px;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  background-position: 0 0;
+  width: 15px;
+  height: 16px; /* this should be 14, but using 16 to add a little space between arrows */
+  background-image: url('/static/images/up-arrow.png'); /* django template tags do not work in css */
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+a[class^="down-arrow"] {
+  font-size: 0px;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  background-position: 0 2; /* this should be 0 0, offset by 2 to account for height = 16 instead of 14 */
+  width: 15px;
+  height: 16px; /* this should be 14, but using 16 to add a little space between arrows */
+  background-image: url('/static/images/down-arrow.png'); /* django template tags do not work in css */
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+a[class^="upvoted-arrow"] {
+  font-size: 0px;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  background-position: 0 0;
+  width: 15px;
+  height: 16px; /* this should be 14, but using 16 to add a little space between arrows */
+  background-image: url('/static/images/upvoted-arrow.png'); /* django template tags do not work in css */
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+a[class^="downvoted-arrow"] {
+  font-size: 0px;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  background-position: 0 0;
+  width: 15px;
+  height: 16px; /* this should be 14, but using 16 to add a little space between arrows */
+  background-image: url('/static/images/downvoted-arrow.png'); /* django template tags do not work in css */
+  background-repeat: no-repeat;
+  overflow: hidden;
+}

@@ -4,6 +4,27 @@ from django.utils.timesince import timesince
 register = Library()
 from papers.models import UserProfile
 
+@register.filter
+def post_upvoted_by_user(post,user_pk):
+    """
+    Usage (in template):
+    {{ post|post_upvoted_by_user:user_pk }}
+
+    Results with the HTML:
+    True
+    """
+    return post.upvoters.filter(id=user_pk).exists()
+
+@register.filter
+def post_downvoted_by_user(post,user_pk):
+    """
+    Usage (in template):
+    {{ post|post_downvoted_by_user:user_pk }}
+
+    Results with the HTML:
+    True
+    """
+    return post.downvoters.filter(id=user_pk).exists()
 
 @register.filter
 def reply_notifications(user):

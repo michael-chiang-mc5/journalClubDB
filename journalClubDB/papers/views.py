@@ -19,6 +19,10 @@ from django.contrib.auth.models import User
 import datetime
 
 
+def add_indent_dedent_to_post_list(post_list):
+    rn =  add_indent_dedent_to_post_list_recursive(post_list,0,0,[])
+    return rn
+
 def add_indent_dedent_to_post_list_recursive(post_list,i,position_post,rn):
     if i>=len(post_list):
         return rn
@@ -68,7 +72,7 @@ def post_context(request,post_pk):
     posts = get_post_chain(post)
 
     # insert indents and dedents to post list
-    posts =  add_indent_dedent_to_post_list_recursive(posts,0,0,[])
+    posts =  add_indent_dedent_to_post_list(posts)
 
     # return html
     context = {'posts':posts}
@@ -568,17 +572,29 @@ def search_development(request,page):
 def upvote(request):
     post_pk = request.POST.get("post_pk")
     post = Post.objects.get(pk=post_pk)
-    post.upvoters.add(request.user)
-    post.downvoters.remove(request.user)
-    post.save()
+
+    # clear upvote if user already upvoted
+    if post.upvoters.filter(id=request.user.pk).exists():
+        post.upvoters.remove(request.user)
+    # upvote if user has not already upvoted
+    else:
+        post.upvoters.add(request.user)
+        post.downvoters.remove(request.user)
+
     return JsonResponse({'score':post.score()})
 
 def downvote(request):
     post_pk = request.POST.get("post_pk")
     post = Post.objects.get(pk=post_pk)
-    post.upvoters.remove(request.user)
-    post.downvoters.add(request.user)
-    post.save()
+
+    # clear downvote if user already downvoted
+    if post.downvoters.filter(id=request.user.pk).exists():
+        post.downvoters.remove(request.user)
+    # downvote if user has not already downvoted
+    else:
+        post.downvoters.add(request.user)
+        post.upvoters.remove(request.user)
+
     return JsonResponse({'score':post.score()})
 
 
