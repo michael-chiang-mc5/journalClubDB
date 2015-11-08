@@ -19,6 +19,60 @@ from django.contrib.auth.models import User
 import datetime
 
 
+def add_indent_dedent_to_post_list_recursive(post_list,i,position_post,rn):
+    if i>=len(post_list):
+        return rn
+    elif i==0:
+        post = post_list[i]
+        rn = ['in-'+str(post.node_depth),post,'out-'+str(post.node_depth)] # note that position of post = 1
+        position_post = 1
+        return add_indent_dedent_to_post_list_recursive(post_list,i+1,position_post,rn)
+    else:
+        post = post_list[i]
+        previous_post = post_list[i-1]
+        insert = ['in-'+str(post.node_depth),post,'out-'+str(post.node_depth)]
+        if post.node_depth == previous_post.node_depth:
+            rn[position_post+2:position_post+2] = insert
+            position_post = (position_post+2) + 1
+        elif post.node_depth > previous_post.node_depth:
+            rn[position_post+1:position_post+1] = insert
+            position_post = (position_post+1) + 1
+        elif post.node_depth < previous_post.node_depth:
+            for j in range(position_post+2,len(post_list)):
+                if post_list[j] == 'out-'+str(post.node_depth):
+                    rn[j+1:j+1] = insert
+                    position_post = (j+1) + 1
+                    break
+        return add_indent_dedent_to_post_list_recursive(post_list,i+1,position_post,rn)
+
+# rn should start an empty list
+def get_post_chain(post):
+    rn = get_post_chain_recursive(post,[])
+    return rn[::-1] # reverse list so that most recent post is at end of the list
+
+# rn should start an empty list
+def get_post_chain_recursive(post,rn):
+    rn.append(post)
+    mother = post.mother
+    if mother.node_depth == 0:
+        return rn
+    else:
+        return get_post_chain_recursive(mother,rn)
+
+def post_context(request,post_pk):
+
+    # get post
+    post = Post.objects.get(pk=post_pk)
+
+    # get mother post chain
+    posts = get_post_chain(post)
+
+    # insert indents and dedents to post list
+    posts =  add_indent_dedent_to_post_list_recursive(posts,0,0,[])
+
+    # return html
+    context = {'posts':posts}
+    return render(request, 'papers/post_context.html', context)
 
 def user_notifications(request):
     # get notifications

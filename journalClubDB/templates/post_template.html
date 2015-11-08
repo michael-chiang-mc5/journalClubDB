@@ -50,7 +50,8 @@
           <input type="hidden" name="initial_text" value="{% with p.get_undecoded_textTupleVector|last as recent_post %}
                                                             {{ recent_post.0 }}
                                                           {% endwith %}
-                                                          "/>                              <input type="hidden" name="blockquote" value="True" />
+                                                          "/>
+          <input type="hidden" name="blockquote" value="True" />
           <input type="hidden" name="post_pk" value="-1" />
           <input type="hidden" name="edit_or_reply" value="reply" />
         </form>
@@ -89,27 +90,31 @@
       </span>
 
     {% endif %}
-      <!-- dropdown to select post history -->
-      <span>
-        <span class="dropdown">
-             <a href="#" data-toggle="dropdown" class="dropdown-toggle">history <b class="caret"></b></a>
-             <ul class="dropdown-menu">
-               {% for recent_post in p.get_undecoded_textTupleVector %}
-                 <li class="li-dropdown-{{p.pk}} li-dropdown-{{p.pk}}-{{forloop.counter}} {% if forloop.last %} active {% endif %}"><a href="#" id="action-{{ p.pk }}-{{ forloop.counter }}" >
-                   {% if recent_post.3 != p.creator.username %}
-                     recent_post.3
-                   {% endif %}
-                   {% if forloop.counter == 1 %}
-                     posted
-                   {% else %}
-                     edited
-                   {% endif %}
-                   {{ recent_post.2|age }}
-                 </a></li> <!-- time created/edited -->
-               {% endfor %}
-             </ul>
-         </span>
-      </span>
+    <!-- dropdown to select post history -->
+    <span>
+      <span class="dropdown">
+           <a href="#" data-toggle="dropdown" class="dropdown-toggle">history <b class="caret"></b></a> &nbsp; &nbsp; &nbsp;
+           <ul class="dropdown-menu">
+             {% for recent_post in p.get_undecoded_textTupleVector %}
+               <li class="li-dropdown-{{p.pk}} li-dropdown-{{p.pk}}-{{forloop.counter}} {% if forloop.last %} active {% endif %}"><a href="#" id="action-{{ p.pk }}-{{ forloop.counter }}" >
+                 {% if recent_post.3 != p.creator.username %}
+                   recent_post.3
+                 {% endif %}
+                 {% if forloop.counter == 1 %}
+                   posted
+                 {% else %}
+                   edited
+                 {% endif %}
+                 {{ recent_post.2|age }}
+               </a></li> <!-- time created/edited -->
+             {% endfor %}
+           </ul>
+       </span>
+    </span>
+
+    <span>
+      <a href="{% url 'papers:post_context' p.pk %}">context</a>
+    </span>
 
   </div>
 
