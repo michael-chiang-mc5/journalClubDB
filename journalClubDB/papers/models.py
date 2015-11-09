@@ -59,6 +59,7 @@ class Thread(models.Model):
     owner = models.ForeignKey(Citation)
     title = models.TextField(blank=True)
     description = models.TextField(blank=True)
+    order = models.PositiveIntegerField()
 
 class Post(models.Model):
     def __str__(self):

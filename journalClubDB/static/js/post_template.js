@@ -1,10 +1,9 @@
 $(document).ready(function() {
 
-  // upvote or clear upvote
+  // this implements upvote functionality
   $( "a[id^='up-'] " ).click(function() {
     post_pk = $( this ).prev('input').val()       // get post private key
     var me = this;
-
     if ( $( me ).hasClass('up-arrow') )  {
       $.ajax({
            type:"POST",
@@ -35,11 +34,10 @@ $(document).ready(function() {
     }
   });
 
-  // downvote or clear downvote
+  // this implements downvote functionality
   $( "a[id^='down-'] " ).click(function() {
     post_pk = $( this ).prev('input').val()       // get post private key
     var me = this;
-
     if ( $( me ).hasClass('down-arrow') )  {
       $.ajax({
            type:"POST",
@@ -68,24 +66,12 @@ $(document).ready(function() {
            }
       });
     }
-
   });
 
-
-
-});
-
-
-
-// TODO: integrate into main ready function
-// view post history using dropdown
-$(document).ready(function() {
-  // only show last post/edit and hide all previous
-  $( ".comment-all").hide()
+  // this implements history button functionality
+  $( ".comment-all").hide()   // only show last post/edit and hide all previous
   $( ".comment-last").show()
-
-  // dropdown to select which revision to view
-  $( "a[id*='action-']" ).click(function(e) {
+  $( "a[id*='action-']" ).click(function(e) {   // dropdown to select which revision to view
     var action_pk_counter = $(this).attr("id")
     var arr = action_pk_counter.split('-')
     var pk = arr[1]
@@ -98,6 +84,9 @@ $(document).ready(function() {
     $( "#comment-text-" + pk + "-" + counter).show()
   });
 
-
+  // this implements reply and edit button functionality
+  $("a.hyperlink-submit-form").click(function() {
+    $( this ).next('form').submit();
+  });
 
 });

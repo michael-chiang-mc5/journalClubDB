@@ -364,6 +364,11 @@ def postForm(request):
     context={'citation':citation,'citation_pk':citation_pk,'thread_title':thread_title,'thread_description':thread_description,'thread_pk':thread_pk,'isReplyToPost':isReplyToPost,'mother_pk':mother_pk,'current_thread':current_thread,'initial_text':initial_text,'post_pk':post_pk,'edit_or_reply':edit_or_reply}
     return render(request, 'papers/postForm.html', context)
 
+def get_thread_number_from_post_pk(post_pk):
+    post = Post.objects.get(pk=post_pk)
+    thread = post.thread
+
+
 # add post
 # TODO: add sanity checks that user is authenticated and is correct user
 def addPost(request):
@@ -371,13 +376,13 @@ def addPost(request):
     if edit_or_reply == "edit":
         new_text = request.POST.get("text", False)
         post_pk = request.POST.get("post_pk", False)
-        post = Post.objects.filter(pk=post_pk).all()[0]
+        post = Post.objects.get(pk=post_pk)
         citation_pk = request.POST.get("citation_pk", False)
-        current_thread = request.POST.get("current_thread", False)
+        thread_number = post.thread.order #request.POST.get("current_thread", False)
         post.add_post(new_text,request.user.pk,datetime.datetime.now(datetime.timezone.utc),request.user.username)
         setattr(post,'time_created',datetime.datetime.now())
         post.save()
-        return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,current_thread]))
+        return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,thread_number]))
     elif edit_or_reply == "reply":
         # get POST data
         thread_pk = int(request.POST.get("thread_pk", False))
@@ -385,8 +390,7 @@ def addPost(request):
         is_reply_to_post = bool(int(request.POST.get("isReplyToPost", False)))
         mother_pk = int(request.POST.get("mother_pk", False))
         text = request.POST.get("text", False)
-        current_thread = request.POST.get("current_thread", False)
-
+        thread_number = Thread.objects.get(pk=thread_pk).order #request.POST.get("current_thread", False)
         post = Post()
         setattr(post,'time_created',datetime.datetime.now())
         setattr(post,'creator',request.user)
@@ -402,11 +406,8 @@ def addPost(request):
         post.save() # TODO: This may not be necessary
         post.upvoters.add(request.user)
         post.save()
-
-        # notify author of mother post that you replied to him
-        post.notify_mother_author()
-
-        return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,current_thread]))
+        post.notify_mother_author()         # notify author of mother post that you replied to him
+        return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,thread_number]))
 
 def addCitation(request):
     # check for duplicate citations.  If citation already exists, return primary key of the citation
@@ -431,11 +432,13 @@ def addCitation(request):
                            "Description of main results of the paper",
                            "How does the paper fit into the pre-existing literature",
                            "Discuss!!"]
-    for title,description in zip(thread_titles,thread_descriptions):
+    ordering = [1,2,3,4,5]
+    for title,description,order in zip(thread_titles,thread_descriptions,ordering):
         thread = Thread()
         setattr(thread,'owner',citation)
         setattr(thread,'title',title)
         setattr(thread,'description',description)
+        setattr(thread,'order',order)
         thread.save()
         post = Post()
         post = Post(time_created=datetime.datetime.now(),thread=thread,

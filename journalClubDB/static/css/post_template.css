@@ -1,10 +1,10 @@
 .post-voting-interface {
-  background-color: red;
+  /* background-color: red; */
   vertical-align: top;
 }
 
 
-a[class^="up-arrow"] {
+.up-arrow {
   font-size: 0px;
   cursor: pointer;
   display: block;
@@ -17,7 +17,7 @@ a[class^="up-arrow"] {
   overflow: hidden;
 }
 
-a[class^="down-arrow"] {
+.down-arrow {
   font-size: 0px;
   cursor: pointer;
   display: block;
@@ -30,7 +30,7 @@ a[class^="down-arrow"] {
   overflow: hidden;
 }
 
-a[class^="upvoted-arrow"] {
+.upvoted-arrow {
   font-size: 0px;
   cursor: pointer;
   display: block;
@@ -43,7 +43,7 @@ a[class^="upvoted-arrow"] {
   overflow: hidden;
 }
 
-a[class^="downvoted-arrow"] {
+.downvoted-arrow {
   font-size: 0px;
   cursor: pointer;
   display: block;

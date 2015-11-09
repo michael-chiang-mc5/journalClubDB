@@ -2,6 +2,7 @@
 {% load templatetags %}
 {% load staticfiles %}
 <link rel="stylesheet" href="{% static 'css/post_template.css' %}">
+<script src="{% static "/static/js/post_template.js" %}"></script>
 <script>
   csrf_js = '{{ csrf_token }}'
   url_upvote = "{% url 'papers:upvote' %}"
@@ -83,14 +84,14 @@
         <a class='hyperlink-submit-form'>reply</a> &nbsp; &nbsp; &nbsp;
         <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
           {% csrf_token %}
-          <input type="hidden" name="citation" value="{{ citation.title }}" />
-          <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
-          <input type="hidden" name="thread_title" value="{{ thread.title }}" />
-          <input type="hidden" name="thread_description" value="{{ thread.description }}" />
-          <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
+          <input type="hidden" name="citation" value="{{ p.thread.owner.title }}" />
+          <input type="hidden" name="citation_pk" value="{{ p.thread.owner.pk }}" />
+          <input type="hidden" name="thread_title" value="{{ p.thread.title }}" />
+          <input type="hidden" name="thread_description" value="{{ p.thread.description }}" />
+          <input type="hidden" name="thread_pk" value="{{ p.thread.pk }}" />
           <input type="hidden" name="isReplyToPost" value="1" />
           <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
-          <input type="hidden" name="current_thread" value="{{ forloop.parentloop.counter }}" />
+          <!--  <input type="hidden" name="current_thread" value="{{ forloop.parentloop.counter }}" /> -->
           <input type="hidden" name="initial_text" value="{% with p.get_undecoded_textTupleVector|last as recent_post %}
                                                             {{ recent_post.0 }}
                                                           {% endwith %}
@@ -108,14 +109,14 @@
           <a class='hyperlink-submit-form'>edit</a> &nbsp; &nbsp; &nbsp;
           <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
             {% csrf_token %}
-            <input type="hidden" name="citation" value="{{ citation.title }}" />
-            <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
-            <input type="hidden" name="thread_title" value="{{ thread.title }}" />
-            <input type="hidden" name="thread_description" value="{{ thread.description }}" />
-            <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
+            <input type="hidden" name="citation" value="{{ p.thread.owner.title }}" />
+            <input type="hidden" name="citation_pk" value="{{ p.thread.owner.pk }}" />
+            <input type="hidden" name="thread_title" value="{{ p.thread.title }}" />
+            <input type="hidden" name="thread_description" value="{{ p.thread.description }}" />
+            <input type="hidden" name="thread_pk" value="{{ p.thread.pk }}" />
             <input type="hidden" name="isReplyToPost" value="1" />
             <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
-            <input type="hidden" name="current_thread" value="{{ forloop.parentloop.counter }}" />
+            <!--  <input type="hidden" name="current_thread" value="{{ forloop.parentloop.counter }}" /> -->
             <input type="hidden" name="initial_text" value="{% with p.get_undecoded_textTupleVector|last as recent_post %}
                                                               {{ recent_post.0 }}
                                                             {% endwith %}
@@ -127,10 +128,10 @@
         </span>
       {% endif %}
 
-
+    <!-- if user is not authenticated -->
     {% else %}
       <span>
-        <span class="active modal_item" id="reply-modal"><a id="modal_item1" data-toggle="modal" data-target="#myModal">reply</a></span>
+        <span class="active modal_item" id="reply-modal"><a id="modal_item1" data-toggle="modal" data-target="#myModal">reply</a>  &nbsp; &nbsp; &nbsp; </span>
       </span>
 
     {% endif %}

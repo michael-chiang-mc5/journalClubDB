@@ -1,0 +1,26 @@
+{% load templatetags %}
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static 'css/post_tree_template.css' %}">
+
+{% for p in posts %}
+  {% if p|is_indent %}
+    {% if p|is_depth_one %}
+      <div class="vertical-spacer-tempaaa"></div>
+      <div class="big-box-depth-is-one-tempaaa">
+    {% elif p|is_depth_divisible_by_two %}
+      <div class="vertical-spacer-tempaaa"></div>
+      <div class="big-box-depth-divisible-by-two-tempaaa">
+    {% else %}
+      <div class="vertical-spacer-tempaaa"></div>
+      <div class="big-box-depth-not-divisible-by-two-tempaaa">
+    {% endif %}
+  {% elif p|is_dedent %}
+    </div>
+  {% else %}
+    <div class="single-post-tempaaa">
+      {% include "post_template.html" %}
+    </div>
+    <br>
+  {% endif %}
+
+{% endfor %}
