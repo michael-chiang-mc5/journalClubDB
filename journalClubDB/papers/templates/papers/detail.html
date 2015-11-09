@@ -1,10 +1,9 @@
 {% extends "base.html" %}
-{% load templatetags %} <!-- templatetags cannot be moved to base.html -->
+{% load templatetags %}
 
 {% block javascript %}
   {% load staticfiles %}
   <script src="{% static 'js/ckeditor/ckeditor.js' %}"></script>
-  <script src="{% static 'js/ckeditor/samples/js/sample.js' %}"></script>
   <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
   <script>
     csrf_js = '{{ csrf_token }}'
@@ -15,7 +14,6 @@
 {% endblock %}
 
 {% block body_block %}
-
   <hr >
   <div class="container">
     <!-- tab bar -->
@@ -58,7 +56,6 @@
               {{ unused_tag }}, &nbsp;
             {% endfor %}
           {% endif %}
-
           <hr >
 
           <!-- buttons to go to pubmed link and add citation to favorites -->
@@ -72,13 +69,8 @@
               <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
             </form>
           {% endif %}
-
-
-
         </div>
       </div>
-
-
 
       <!-- message board tabs (ELI5, methodology, etc) -->
       {% for thread,posts,numDepth1Posts in threadsPostsIndents %}
@@ -109,160 +101,7 @@
               {% endif %}
             </div>
 
-            {% for p in posts %}
-              {% if p|is_indent %}
-                {% if p|is_depth_one %}
-                  <div class="vertical-spacer"></div>
-                  <div class="big-box-depth-is-one">
-                {% elif p|is_depth_divisible_by_two %}
-                  <div class="vertical-spacer"></div>
-                  <div class="big-box-depth-divisible-by-two">
-                {% else %}
-                  <div class="vertical-spacer"></div>
-                  <div class="big-box-depth-not-divisible-by-two">
-                {% endif %}
-              {% elif p|is_dedent %}
-                </div>
-              {% else %}
-                <div id="post_{{ p.pk }}" class="single-post">
-                  <table>
-                    <tbody>
-                      <tr>
-                        <!-- interface to vote up or down a comment -->
-                        <td class="votecell">
-                          <div class="vote">
-                            {% if user.is_authenticated %}
-                              <input type="hidden" name="post_pk" value="{{ p.pk }}">
-                              <a class="vote-up-off" title="This answer is useful" value="{{ p.pk }}">up vote</a>
-                            {% else %}
-                              <div class="active modal_item" id="upvote-modal"><a class="vote-up-off" id="modal_item1" data-toggle="modal" data-target="#myModal">up vote</a></div>
-                            {% endif %}
-                            <!--
-                            <span itemprop="upvoteCount" class="vote-count-post ">{{ p.score }}</span>
-                            -->
-                            {% if user.is_authenticated %}
-                              <input type="hidden" name="post_pk" value="{{ p.pk }}">
-                              <a class="vote-down-off" title="This answer is not useful">down vote</a>
-                            {% else %}
-                              <div class="active modal_item" id="downvote-modal"><a class="vote-down-off" id="modal_item1" data-toggle="modal" data-target="#myModal">up vote</a></div>
-                            {% endif %}
-                          </div>
-                        </td>
-
-                        <!-- user commment -->
-                        <td class="answercell">
-                          <span class="comment-user"><a>{{ p.creator.username }}</a></span>
-                          , &nbsp;
-                          <span id="commentscore-pk-{{ p.pk }}">{{ p.score }}</span> point{{p.score|pluralize}}
-                          , &nbsp;
-                          <span class="comment-time" id="comment-time-{{ p.pk }}">
-                            {% if p.get_undecoded_textTupleVector|length == 1 %}
-                              posted
-                            {% else %}
-                              edited
-                            {% endif %}
-                            {{ p.time_created|age }}
-                          </span>
-                          <hr >
-
-                          {% for recent_post in p.get_undecoded_textTupleVector %}
-                          <div id="comment-text-{{ p.pk }}-{{ forloop.counter }}" class="comment-target-all-{{ p.pk }} comment-all {% if forloop.last %} comment-last {% endif %}">
-                            {{ recent_post.0 | safe}} <!-- text -->
-                          </div>
-                          {% endfor %}
-
-                          <hr >
-
-
-
-                          {% if user.is_authenticated %}
-                          <span style="float:left;">
-                            <a class='hyperlink-submit-form'>reply</a>
-                            <form id='formData' action="{% url 'papers:postForm' %}" method=POST display=inline>
-                              {% csrf_token %}
-                              <input type="hidden" name="citation" value="{{ citation.title }}" />
-                              <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
-                              <input type="hidden" name="thread_title" value="{{ thread.title }}" />
-                              <input type="hidden" name="thread_description" value="{{ thread.description }}" />
-                              <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
-                              <input type="hidden" name="isReplyToPost" value="1" />
-                              <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
-                              <input type="hidden" name="current_thread" value="{{ forloop.parentloop.counter }}" />
-                              <input type="hidden" name="initial_text" value="{% with p.get_undecoded_textTupleVector|last as recent_post %}
-                                                                                {{ recent_post.0 }}
-                                                                              {% endwith %}
-                                                                              "/>                              <input type="hidden" name="blockquote" value="True" />
-                              <input type="hidden" name="post_pk" value="-1" />
-                              <input type="hidden" name="edit_or_reply" value="reply" />
-                            </form>
-                          </span>
-                            <!-- allow for editing if user created post TODO: security flaw: check user/post identical in view-->
-                            {% if user.get_username == p.creator.username %}
-
-                            <span style="float:left;"> &nbsp; &nbsp; &nbsp;</span>
-
-                            <span style="float:left;">
-                              <a class='hyperlink-submit-form'>edit</a>
-                              <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
-                                {% csrf_token %}
-                                <input type="hidden" name="citation" value="{{ citation.title }}" />
-                                <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
-                                <input type="hidden" name="thread_title" value="{{ thread.title }}" />
-                                <input type="hidden" name="thread_description" value="{{ thread.description }}" />
-                                <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
-                                <input type="hidden" name="isReplyToPost" value="1" />
-                                <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
-                                <input type="hidden" name="current_thread" value="{{ forloop.parentloop.counter }}" />
-                                <input type="hidden" name="initial_text" value="{% with p.get_undecoded_textTupleVector|last as recent_post %}
-                                                                                  {{ recent_post.0 }}
-                                                                                {% endwith %}
-                                                                                "/>
-                                <input type="hidden" name="blockquote" value="False" />
-                                <input type="hidden" name="post_pk" value="{{ p.pk }}" />
-                                <input type="hidden" name="edit_or_reply" value="edit" />
-                              </form>
-                            </span>
-                            {% endif %}
-
-
-                          {% else %}
-                          <span style="float:left;">
-                            <div class="active modal_item" id="reply-modal"><a id="modal_item1" data-toggle="modal" data-target="#myModal">reply</a></div>
-                          </span>
-
-                          {% endif %}
-                          <!-- dropdown to select post history -->
-                          <span style="float:left;"> &nbsp; &nbsp; &nbsp;</span>
-                          <span style="float:left;">
-                            <div class="dropdown">
-                                 <a href="#" data-toggle="dropdown" class="dropdown-toggle">history <b class="caret"></b></a>
-                                 <ul class="dropdown-menu">
-                                   {% for recent_post in p.get_undecoded_textTupleVector %}
-                                     <li class="li-dropdown-{{p.pk}} li-dropdown-{{p.pk}}-{{forloop.counter}} {% if forloop.last %} active {% endif %}"><a href="#" id="action-{{ p.pk }}-{{ forloop.counter }}" >
-                                       {% if recent_post.3 != p.creator.username %}
-                                         recent_post.3
-                                       {% endif %}
-                                       {% if forloop.counter == 1 %}
-                                         posted
-                                       {% else %}
-                                         edited
-                                       {% endif %}
-                                       {{ recent_post.2|age }}
-                                     </a></li> <!-- time created/edited -->
-                                   {% endfor %}
-                                 </ul>
-                             </div>
-                          </span>
-
-
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div> <!-- end div id="post_{{ p.pk }}" -->
-              {% endif %}
-            {% endfor %} <!-- end loop over posts -->
-
+            {% include "post_tree_template.html" %}
           </div> <!-- end  <div class="user_comments"> -->
         </div> <!-- div id="thread_{{ forloop.counter }}" -->
       {% endfor %} <!-- end loop over threadsPostsIndents -->

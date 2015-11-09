@@ -382,7 +382,7 @@ def addPost(request):
         post.add_post(new_text,request.user.pk,datetime.datetime.now(datetime.timezone.utc),request.user.username)
         setattr(post,'time_created',datetime.datetime.now())
         post.save()
-        return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,thread_number]))
+        return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,thread_number])+'#post-'+str(post.pk))
     elif edit_or_reply == "reply":
         # get POST data
         thread_pk = int(request.POST.get("thread_pk", False))
@@ -407,7 +407,7 @@ def addPost(request):
         post.upvoters.add(request.user)
         post.save()
         post.notify_mother_author()         # notify author of mother post that you replied to him
-        return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,thread_number]))
+        return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,thread_number])+'#post-'+str(post.pk))
 
 def addCitation(request):
     # check for duplicate citations.  If citation already exists, return primary key of the citation
@@ -524,7 +524,7 @@ def orderGreedyPostlist_with_indents(node_idx, post_list, childrenIdx_list,withI
 # internal citation information
 def detail(request,pk,current_thread):
     citation = Citation.objects.get(pk=pk)
-    threads = Thread.objects.filter(owner=pk)
+    threads = Thread.objects.filter(owner=pk).order_by('order')
     associated_tags = citation.tags.all()
     unused_tags = Tag.objects.exclude(id__in=associated_tags)
     posts_vector = []
