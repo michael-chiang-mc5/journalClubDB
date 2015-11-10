@@ -61,6 +61,31 @@ class Thread(models.Model):
     description = models.TextField(blank=True)
     order = models.PositiveIntegerField()
 
+class PersonalNote(models.Model):
+    def __str__(self):
+        return self.text
+    user = models.ForeignKey(User)
+    citation = models.ForeignKey(Citation)
+    text = models.TextField(default='<p>These are your personal notes. Only you can read them</p>')
+
+    # check if user profile exists for user/citation, if not then create one and save to database. Input argument user should be User object, citation object
+    # Example usage: personalNote = PersonalNote().get_user_profile(user,citation)
+    def get_personal_note(self,user,citation):
+        if user.is_authenticated() == False:         # if user not logged in
+            return "not authenticated"
+        else:
+            try:
+                personalNote = PersonalNote.objects.filter(user=user).get(citation=citation)
+            except:
+                personalNote = PersonalNote()
+                personalNote.user = user
+                personalNote.citation = citation
+                personalNote.save()
+                return personalNote
+            else:
+                return personalNote
+
+
 class Post(models.Model):
     def __str__(self):
         return self.text

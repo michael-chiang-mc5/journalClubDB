@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 import logging
 import math
-from .models import Citation, Thread, Post, Tag, PaperOfTheWeek, PaperOfTheWeekInfo, UserProfile
+from .models import *
 #from .forms import UserForm #, UserProfileForm
 from .Pubmed import PubmedInterface
 logger = logging.getLogger(__name__)
@@ -126,19 +126,6 @@ def user_login(request): # login is taken up by native django function
         # Bad login details were provided. So we can't log the user in.
         print("Invalid login details: {0}, {1}".format(username, password))
         return HttpResponse(False)
-
-# check if user profile exists for user. If not, create it
-# input argument user should be User object
-#def get_user_profile(user):
-#    try:
-#        userProfile =UserProfile.objects.get(user=user)
-#    except:
-#        userProfile = UserProfile()
-#        userProfile.user = user
-#        userProfile.save()
-#        return userProfile
-#    else:
-#        return userProfile
 
 # add a citation to user library
 def add_citation_to_user_library(request):
@@ -331,6 +318,13 @@ def save_object(obj, filename):
     with open(filename, 'wb') as output:
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
+def safe_text(initial_text):
+    initial_text = initial_text.replace("\r","")
+    initial_text = initial_text.replace("\n","")
+    initial_text = initial_text.replace('"',"'")
+    initial_text = initial_text.replace("\\","\\\\")
+    return initial_text
+
 def postForm(request):
     thread_pk = request.POST.get("thread_pk")
     citation_pk = request.POST.get("citation_pk")
@@ -346,28 +340,33 @@ def postForm(request):
 
     blockquote = request.POST.get("blockquote")
     if blockquote == "True":
-        initial_text = initial_text.replace("\r","")
-        initial_text = initial_text.replace("\n","")
+        initial_text = safe_text(initial_text)
         initial_text = "<blockquote>" + initial_text + "</blockquote>" + "<br >"
     else:
-        initial_text = initial_text.replace("\r","")
-        initial_text = initial_text.replace("\n","")
+        initial_text = safe_text(initial_text)
 
-    #initial_text = initial_text.replace("\\","a")
-    initial_text = initial_text.replace('"',"'")
-    initial_text = initial_text.replace("\\","\\\\")
-
-
-    #save_object(initial_text,'asdf.pkl')
-    #return HttpResponse(initial_text)
-    #initial_text = '<p>test comment edited&nbsp;<span class=dfdmath-texsd>a(x = {-b apm asqrt{b^2-4ac} aover 2a}a)</span></p>'
     context={'citation':citation,'citation_pk':citation_pk,'thread_title':thread_title,'thread_description':thread_description,'thread_pk':thread_pk,'isReplyToPost':isReplyToPost,'mother_pk':mother_pk,'current_thread':current_thread,'initial_text':initial_text,'post_pk':post_pk,'edit_or_reply':edit_or_reply}
     return render(request, 'papers/postForm.html', context)
 
-def get_thread_number_from_post_pk(post_pk):
-    post = Post.objects.get(pk=post_pk)
-    thread = post.thread
+def personalNoteForm(request):
+    citation_pk = request.POST.get("citation_pk")
+    citation = Citation.objects.get(pk=citation_pk)
+    user = request.user
+    personal_note = PersonalNote().get_personal_note(user,citation)
+    initial_text = personal_note.text
+    initial_text = safe_text(initial_text)
+    context={'citation':citation,'initial_text':initial_text}
+    return render(request, 'papers/personalNoteForm.html', context)
 
+def editPersonalNote(request):
+    user = request.user
+    citation_pk = request.POST.get("citation_pk")
+    citation = Citation.objects.get(pk=citation_pk)
+    personal_note = PersonalNote().get_personal_note(user,citation)
+    new_text = request.POST.get("text")
+    personal_note.text = new_text
+    personal_note.save()
+    return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,5]))
 
 # add post
 # TODO: add sanity checks that user is authenticated and is correct user
@@ -426,13 +425,12 @@ def addCitation(request):
     citation.save()
 
     # Create threads and master post
-    thread_titles = ["Explain Like I'm Five","Methodology","Results","Historical Context","Discussion"]
+    thread_titles = ["Explain Like I'm Five","Methodology","Results","Historical Context"]
     thread_descriptions = ["Easy to understand summary of the paper",
                            "Description of innovative methodologies",
                            "Description of main results of the paper",
-                           "How does the paper fit into the pre-existing literature",
-                           "Discuss!!"]
-    ordering = [1,2,3,4,5]
+                           "How does the paper fit into the pre-existing literature"]
+    ordering = [1,2,3,4]
     for title,description,order in zip(thread_titles,thread_descriptions,ordering):
         thread = Thread()
         setattr(thread,'owner',citation)
@@ -547,7 +545,10 @@ def detail(request,pk,current_thread):
     else:
         citationIsInLibrary = True
 
-    context = {'citation': citation,'threads': threads,'posts_vector':posts_vector,'threadsPostsIndents':threadsPostsIndents,'current_thread':int(current_thread),'associated_tags':associated_tags,'unused_tags':unused_tags, 'citationIsInLibrary':citationIsInLibrary}
+    # get user's personal note for the citation
+    personalNote = PersonalNote().get_personal_note(request.user,citation)
+
+    context = {'personalNote':personalNote,'citation': citation,'threads': threads,'posts_vector':posts_vector,'threadsPostsIndents':threadsPostsIndents,'current_thread':int(current_thread),'associated_tags':associated_tags,'unused_tags':unused_tags, 'citationIsInLibrary':citationIsInLibrary}
     return render(request, 'papers/detail.html', context)
 
 # search is terribly slow.  Use this for development

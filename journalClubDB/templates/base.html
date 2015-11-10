@@ -12,6 +12,7 @@
     <script src="{% static 'bootstrap-3.3.5-dist/js/bootstrap.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">    
 
     <!-- used for login/registration modal.  TODO: move to separate file? -->
     <script>
@@ -20,6 +21,7 @@
       url_is_field_available = "{% url 'papers:is_field_available' %}"
     </script>
     <script src="{% static "/static/js/authentication.js" %}"></script>
+    <script src="{% static "/static/js/base.js" %}"></script>
 
     {% block javascript %}{% endblock %}
   </head>

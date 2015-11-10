@@ -41,12 +41,6 @@ $(document).ready(function() {
 });
 
 
-// submit form following hyperlink of class "hyperlink-submit-form"
-$(document).ready(function() {
-  $("a.hyperlink-submit-form").click(function() {
-    $( this ).next('form').submit();
-  });
-});
 
 // upvote/downvote with divs
   $(document).ready(function() {

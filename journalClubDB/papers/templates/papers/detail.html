@@ -22,6 +22,9 @@
       {% for thread in threads %}
         <li id="pill_{{ forloop.counter }}" {% if current_thread == forloop.counter %} class="active" {% endif %}><a data-toggle="pill" href="#thread_{{ forloop.counter }}">{{ thread.title }}</a></li>
       {% endfor %}
+      {% if user.is_authenticated %}
+        <li id="pill_{{ threads|length|add:1 }}" {% if current_thread == threads|length|add:1 %} class="active" {% endif %}><a data-toggle="pill" href="#thread_{{ threads|length|add:1 }}">Personal notes</a></li>
+      {% endif %}
     </ul>
 
     <div class="tab-content">
@@ -72,7 +75,7 @@
         </div>
       </div>
 
-      <!-- message board tabs (ELI5, methodology, etc) -->
+      <!-- message boards  (ELI5, methodology, etc) -->
       {% for thread,posts,numDepth1Posts in threadsPostsIndents %}
         <div id="thread_{{ forloop.counter }}" {% if current_thread == forloop.counter %} class="tab-pane fade in active" {% else %} class="tab-pane fade" {% endif %}>
           <div class="user_comments">
@@ -105,6 +108,27 @@
           </div> <!-- end  <div class="user_comments"> -->
         </div> <!-- div id="thread_{{ forloop.counter }}" -->
       {% endfor %} <!-- end loop over threadsPostsIndents -->
+
+      <!-- personal notes -->
+      {% if user.is_authenticated %}
+        <div id="thread_{{ threads|length|add:1 }}" {% if current_thread == threads|length|add:1 %} class="tab-pane fade in active" {% else %} class="tab-pane fade" {% endif %}>
+          <div id="detail_jumbotron" class="jumbotron"> <!-- make id unique -->
+            <div align="right">
+              <a class='hyperlink-submit-form'>edit</a>
+              <form id='formData' action="{% url 'papers:personalNoteForm' %}" method=POST>
+                {% csrf_token %}
+                <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
+              </form>
+            </div>
+            <div>
+              {{ personalNote.text|safe }}
+            </div>
+
+
+          </div>
+        </div>
+      {% endif %}
+
     </div> <!-- end div tab-content -->
   </div> <!-- end div container -->
 
