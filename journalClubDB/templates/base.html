@@ -12,7 +12,6 @@
     <script src="{% static 'bootstrap-3.3.5-dist/js/bootstrap.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">    
 
     <!-- used for login/registration modal.  TODO: move to separate file? -->
     <script>
@@ -29,183 +28,14 @@
   <body>
 
   <!-- admin panel -->
-  {% if user.is_staff %}
-  <div>
-    Admin panel:
-    <a href="{% url 'papers:paperOfTheWeek_admin' %}">PaperOfTheWeek</a>
-  </div>
-  {% endif %}
+  {% include "base-adminPanel.html" %}
 
   <!-- login modal -->
-  <div id="myModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <div id="login-title">put jcdb message here</div>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-              <div class="col-md-6">
-                  <div class="well">
-                      <p><b>Create a new account</b></p>
-                      <form id="register_form" method="POST" action="#">
-                         {% csrf_token %}
-                          <div class="form-group">
-                            <!-- error message if username pre-exists in database -->
-                            <div>
-                              <span id="username_exists" class="glyphicon glyphicon-asterisk red-tooltip" data-toggle="tooltip" title="username already exists, please pick a different one" data-placement="right" style="float:right"></span>
-                              <div style="overflow: hidden; padding-right: 0em;">
-                                <input type="text" required="" class="form-control" id="register_username" name="username" value="" required="" title="username" placeholder="choose a username">
-                              </div>
-                            </div>
-                          </div> <!-- end form-group -->
-                          <div class="form-group">
-                            <!-- error message if passwords do not match -->
-                            <div>
-                              <span id="passwords_match" class="passwords_match glyphicon glyphicon-asterisk red-tooltip" data-toggle="tooltip" title="passwords do not match, please re-type passwords" data-placement="right" style="float:right"></span>
-                              <div style="overflow: hidden; padding-right: 0em;">
-                                <input type="password"  required="" class="form-control" id="register_password1" name="password1" value="" required="" title="password" placeholder="password">
-                              </div>
-                            </div>
-                          </div> <!-- end form-group -->
-                          <div class="form-group">
-                            <!-- error message if passwords do not match -->
-                            <div>
-                              <span id="passwords_match" class="passwords_match glyphicon glyphicon-asterisk red-tooltip" data-toggle="tooltip" title="passwords do not match, please re-type passwords" data-placement="right" style="float:right"></span>
-                              <div style="overflow: hidden; padding-right: 0em;">
-                                <input type="password"  required="" class="form-control" id="register_password2" name="password2" value="" required="" title="verify_password" placeholder="verify password">
-                              </div>
-                            </div>
-                          </div>
-                          <div class="form-group">
-                              <input type="email" class="form-control" id="id_email" name="email" value="" title="email" placeholder="email (optional)">
-                              <span class="help-block"></span>
-                          </div>
-                          <!--
-                          <div class="checkbox">
-                              <label><input type="checkbox" name="remember" id="remember"> Remember me </label>
-                          </div>
-                        -->
-                          <input id="register_button" class="btn btn-success btn-block" type="submit" value="Sign up">
-                      </form>
-                  </div>
-              </div>
-
-              <!-- login half of modal -->
-              <div class="col-md-6">
-                  <div class="well">
-                    <p><b>Log in</b></p>
-                      <form id="login_form" method="POST" action="#" novalidate="novalidate">
-                          {% csrf_token %}
-                          <div class="form-group">
-                            <span class="wrong_id_or_password passwords_match glyphicon glyphicon-asterisk red-tooltip" data-toggle="tooltip" title="wrong username or password" data-placement="right" style="float:right"></span>
-                            <div style="overflow: hidden; padding-right: 0em;">
-                              <input type="text" required="" class="form-control" id="id_username" name="username" value="" required="" title="usernamer" placeholder="username">
-                            </div>
-                          </div>
-                          <div class="form-group">
-                            <span class="wrong_id_or_password passwords_match glyphicon glyphicon-asterisk red-tooltip" data-toggle="tooltip" title="wrong username or password" data-placement="right" style="float:right"></span>
-                            <div style="overflow: hidden; padding-right: 0em;">
-                              <input type="password" required="" class="form-control" id="id_password" name="password" value="" required="" title="Please enter your password" placeholder="password">
-                            </div>
-                          </div>
-                          <a href="{% url 'password_reset' %}" class="c-pull-right">reset password</a>
-                          <div id="loginErrorMsg" class="alert alert-error hide">Wrong username or password</div>
-                          <!--
-                          <div class="checkbox">
-                              <label> <input type="checkbox" name="remember" id="remember">Remember me</label>
-                              <span class="help-block"></span>
-                          </div>
-                          -->
-                          <input id="login_button" class="btn btn-success btn-block" type="submit" value="Log in">
-                      </form>
-                  </div>
-              </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- end login/registration modal -->
-
+  {% include "base-loginInterface.html" %}
 
 
   <!-- creates container in center of the webpage -->
-  <div class="container">
-
-    <!-- navbar -->
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-
-        <a class="navbar-brand" href=".">journalClubDB</a>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <div class="span2"></div>
-            <li class="{% if navbar == 'home' %}active{% endif %}"><a href="{% url 'papers:frontpage' %}">Home</a></li>
-            <li class="{% if navbar == 'index' %}active{% endif %}"><a href="{% url 'papers:index' %}">Paper archive</a></li>
-            <!-- only allow addition of citations if user -->
-            {% if user.is_authenticated %}
-              <li class="{% if navbar == 'addCitation' %}active{% endif %}"><a href="{% url 'papers:search' 0 %}">Import papers from pubmed</a></li> <!-- TODO: change this to real search -->
-            {% endif %}
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">About<span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#">Tell me about this website!</a></li>
-                <li><a href="#">JCDB etiquette</a></li>
-                <li><a href="#">Privacy policy</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="#">About the developers</a></li>
-                <li><a href="#">Contact</a></li>
-              </ul>
-            </li>
-          </ul>
-          <!-- navbar (right side)-->
-          <ul class="nav navbar-nav navbar-right">
-            {% if user.is_authenticated %}
-
-              <li class="dropdown {% if navbar == 'user_profile' %}active{% endif %}">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ user.get_username }}
-                                                                                                                                    {% if user|reply_notifications|length != 0 %}
-                                                                                                                                      <span class="bold-red">({{ user|reply_notifications|length }})</span>
-                                                                                                                                    {% endif %}
-                                                                                                                                    {% if number_of_post_reply_notifications %}
-                                                                                                                                      <span class="bold-red">({{ number_of_post_reply_notifications }})</span>
-                                                                                                                                    {% endif %}
-                                                                                                                                    <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a href="{% url 'papers:self_user_profile' %}">User Profile</a></li>
-                  <li><a href="{% url 'papers:user_posts' user.pk %}">Your Posts</a></li>
-                  <li><a href="{% url 'papers:user_library' %}">Your Library</a></li>
-                  <li><a href="{% url 'papers:user_notifications' %}">Notifications
-                                                                      {% if user|reply_notifications|length != 0 %}
-                                                                        <span class="bold-red">({{ user|reply_notifications|length }})</span>
-                                                                      {% endif %}
-                                                                      {% if number_of_post_reply_notifications %}
-                                                                        <span class="bold-red">({{ number_of_post_reply_notifications }})</span>
-                                                                      {% endif %}
-                      </a>
-                  </li>
-                  <li role="separator" class="divider"></li>
-                  <li><a id="logout_button" href="{% url 'papers:user_logout' %}">Logout</a></li>
-                </ul>
-              </li>
-
-
-
-            {% else %}
-                <li class="active modal_item"><a id="modal_item1" data-toggle="modal" data-target="#myModal">Register or log in</a></li>
-            {% endif %}
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div><!--/.container-fluid -->
-    </nav>
-  </div>
+  {% include "base-navbar.html" %}
 
   <!-- main content -->
   <div class="container">

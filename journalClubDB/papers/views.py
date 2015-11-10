@@ -99,7 +99,7 @@ def user_library(request):
 
 def user_logout(request):
     logout(request)
-    return frontpage(request)
+    return HttpResponseRedirect(reverse('papers:frontpage'))
 
 # user login.  Code from: http://www.tangowithdjango.com/book17/chapters/login.html
 def user_login(request): # login is taken up by native django function

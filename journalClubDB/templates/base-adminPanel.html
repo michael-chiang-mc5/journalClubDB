@@ -1,0 +1,9 @@
+<!-- This should be included in base.html -->
+<!-- Html interface for admin panel -->
+
+{% if user.is_staff %}
+<div>
+  Administrator panel:
+  <a href="{% url 'papers:paperOfTheWeek_admin' %}">PaperOfTheWeek</a> <!-- TODO: check user permissions -->
+</div>
+{% endif %}
