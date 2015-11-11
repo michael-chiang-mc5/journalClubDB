@@ -1,4 +1,9 @@
 {% extends "base.html" %}
+{% load templatetags %}
+
+{% block title %}
+  Personal notes
+{% endblock %}
 
 {% block javascript %}
 {% load staticfiles %}
@@ -10,7 +15,7 @@
 
 
 <div>
-<h2>Personal notes for <b>{{ citation }}</b></h2>
+<h2>Personal notes for <b>{{ citation.author|first_author }}, {{ citation.date|citation_year }}</b></h2>
 </div>
 
 <div>

@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load templatetags %}
 
+{% block title %}
+  {{ citation.author|first_author }}, {{ citation.date|citation_year }}
+{% endblock %}
+
 {% block javascript %}
   {% load staticfiles %}
   <script src="{% static 'js/ckeditor/ckeditor.js' %}"></script>
