@@ -1,6 +1,76 @@
 $(document).ready(function() {
 
-  // this implements reply and edit button functionality
+
+    // this implements upvote functionality. It would be most readable to place this in post_template.js, but multiple scripts will cause race collisions.
+    $( "a[id^='up-'] " ).click(function() {
+      post_pk = $( this ).prev('input').val()       // get post private key
+      var me = this;
+      if ( $( me ).hasClass('up-arrow') )  {
+        $.ajax({
+             type:"POST",
+             url: url_upvote,
+             data: {
+                    csrfmiddlewaretoken: csrf_js,
+                    'post_pk': post_pk,
+                    },
+             success: function(data){
+               $( me ).addClass('upvoted-arrow').removeClass('up-arrow');
+               $( "#down-"+post_pk ).addClass('down-arrow').removeClass('downvoted-arrow');
+               $( "#commentscore-pk-"+post_pk ).html( data.score )
+             }
+        });
+      } else if ( $( me ).hasClass('upvoted-arrow') ) {
+        $.ajax({
+             type:"POST",
+             url: url_upvote,
+             data: {
+                    csrfmiddlewaretoken: csrf_js,
+                    'post_pk': post_pk,
+                    },
+             success: function(data){
+               $( me ).addClass('up-arrow').removeClass('upvoted-arrow');
+               $( "#commentscore-pk-"+post_pk ).html( data.score )
+             }
+        });
+      }
+    });
+
+    // this implements downvote functionality. It would be most readable to place this in post_template.js, but multiple scripts will cause race collisions.
+    $( "a[id^='down-'] " ).click(function() {
+      post_pk = $( this ).prev('input').val()       // get post private key
+      var me = this;
+      if ( $( me ).hasClass('down-arrow') )  {
+        $.ajax({
+             type:"POST",
+             url: url_downvote,
+             data: {
+                    csrfmiddlewaretoken: csrf_js,
+                    'post_pk': post_pk,
+                    },
+             success: function(data){
+               $( me ).addClass('downvoted-arrow').removeClass('down-arrow');
+               $( "#up-"+post_pk ).addClass('up-arrow').removeClass('upvoted-arrow');
+               $( "#commentscore-pk-"+post_pk ).html( data.score )
+             }
+        });
+      } else if ( $( me ).hasClass('downvoted-arrow') ) {
+        $.ajax({
+             type:"POST",
+             url: url_downvote,
+             data: {
+                    csrfmiddlewaretoken: csrf_js,
+                    'post_pk': post_pk,
+                    },
+             success: function(data){
+               $( me ).addClass('down-arrow').removeClass('downvoted-arrow');
+               $( "#commentscore-pk-"+post_pk ).html( data.score )
+             }
+        });
+      }
+    });
+
+
+  // this implements functionality to submit succeeding form with hyperlink is clicked
   $("a.hyperlink-submit-form").click(function() {
     $( this ).next('form').submit();
   });

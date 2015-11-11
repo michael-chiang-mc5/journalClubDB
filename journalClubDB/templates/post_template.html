@@ -28,7 +28,7 @@
         <a id="up-{{ p.pk }}" class="up-arrow" title="This answer is useful">up vote</a>
       {% endif %}
     {% else %}
-        <div class="active pointer" id="upvote-modal"><a id="up-{{ p.pk }}" class="up-arrow" id="modal_item1" data-toggle="modal" data-target="#myModal">up vote</a></div>
+        <div class="active pointer" id="upvote-modal"><a id="up-{{ p.pk }}" class="up-arrow activate-login-modal-vote" data-toggle="modal" data-target="#myModal">up vote</a></div>
     {% endif %}
 
 
@@ -41,7 +41,7 @@
         <a id="down-{{ p.pk }}" class="down-arrow" title="This answer is not useful">down vote</a>
       {% endif %}
     {% else %}
-      <div class="active pointer" id="downvote-modal"><a id="down-{{ p.pk }}" class="down-arrow" id="modal_item1" data-toggle="modal" data-target="#myModal">down vote</a></div>
+      <div class="active pointer" id="downvote-modal"><a id="down-{{ p.pk }}" class="down-arrow activate-login-modal-vote" data-toggle="modal" data-target="#myModal">down vote</a></div>
     {% endif %}
   </div>
 </td>
@@ -131,7 +131,7 @@
     <!-- if user is not authenticated -->
     {% else %}
       <span>
-        <span class="active pointer" id="reply-modal"><a id="modal_item1" data-toggle="modal" data-target="#myModal">reply</a>  &nbsp; &nbsp; &nbsp; </span>
+        <span class="active pointer activate-login-modal-post"><a data-toggle="modal" data-target="#myModal">reply</a>  &nbsp; &nbsp; &nbsp; </span>
       </span>
 
     {% endif %}

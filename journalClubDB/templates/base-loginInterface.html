@@ -45,7 +45,7 @@
                         <div class="form-group">
                           <!-- error message if passwords do not match -->
                           <div>
-                            <span id="passwords_match" class="passwords_match glyphicon glyphicon-asterisk red-tooltip" data-toggle="tooltip" title="passwords do not match, please re-type passwords" data-placement="right" style="float:right"></span>
+                            <span class="passwords_match_register glyphicon glyphicon-asterisk red-tooltip" data-toggle="tooltip" title="passwords do not match, please re-type passwords" data-placement="right" style="float:right"></span>
                             <div style="overflow: hidden; padding-right: 0em;">
                               <input type="password"  required="" class="form-control" id="register_password1" name="password1" value="" required="" title="password" placeholder="password">
                             </div>
@@ -54,7 +54,7 @@
                         <div class="form-group">
                           <!-- error message if passwords do not match -->
                           <div>
-                            <span id="passwords_match" class="passwords_match glyphicon glyphicon-asterisk red-tooltip" data-toggle="tooltip" title="passwords do not match, please re-type passwords" data-placement="right" style="float:right"></span>
+                            <span class="passwords_match_register glyphicon glyphicon-asterisk red-tooltip" data-toggle="tooltip" title="passwords do not match, please re-type passwords" data-placement="right" style="float:right"></span>
                             <div style="overflow: hidden; padding-right: 0em;">
                               <input type="password"  required="" class="form-control" id="register_password2" name="password2" value="" required="" title="verify_password" placeholder="verify password">
                             </div>
@@ -81,13 +81,13 @@
                     <form id="login_form" method="POST" action="#" novalidate="novalidate">
                         {% csrf_token %}
                         <div class="form-group">
-                          <span class="wrong_id_or_password passwords_match glyphicon glyphicon-asterisk red-tooltip" data-toggle="tooltip" title="wrong username or password" data-placement="right" style="float:right"></span>
+                          <span class="passwords_match_login glyphicon glyphicon-asterisk red-tooltip" data-toggle="tooltip" title="wrong username or password" data-placement="right" style="float:right"></span>
                           <div style="overflow: hidden; padding-right: 0em;">
                             <input type="text" required="" class="form-control" id="id_username" name="username" value="" required="" title="usernamer" placeholder="username">
                           </div>
                         </div>
                         <div class="form-group">
-                          <span class="wrong_id_or_password passwords_match glyphicon glyphicon-asterisk red-tooltip" data-toggle="tooltip" title="wrong username or password" data-placement="right" style="float:right"></span>
+                          <span class="passwords_match_login glyphicon glyphicon-asterisk red-tooltip" data-toggle="tooltip" title="wrong username or password" data-placement="right" style="float:right"></span>
                           <div style="overflow: hidden; padding-right: 0em;">
                             <input type="password" required="" class="form-control" id="id_password" name="password" value="" required="" title="Please enter your password" placeholder="password">
                           </div>

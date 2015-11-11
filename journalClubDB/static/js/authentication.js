@@ -1,43 +1,34 @@
 
+// Make login modal pop up and clear error messages
 $(document).ready(function() {
-  $("#modal_item1").click(function() {
-    $('.wrong_id_or_password').hide()
-    $('.wrong_id_or_password').mouseleave()
+  $( "[class^='activate-login-modal-'] " ).click(function() {
     $('#username_exists').hide()
     $('#username_exists').mouseleave()
-    $('.passwords_match').hide()
-    $(".passwords_match").mouseleave();
+    $('.passwords_match_login').hide()
+    $(".passwords_match_login").mouseleave();
+    $('.passwords_match_register').hide()
+    $(".passwords_match_register").mouseleave();
+    $('#user_banned').hide()
+    $('#user_banned').mouseleave();
+  });
+  $(".activate-login-modal-navbar").click(function() {
     $('#login-title').html("Register or log in.  It only takes seconds!")
-    $('#login-title').show()
   });
-
-  $("#comment-modal, #reply-modal").click(function() {
+  $(".activate-login-modal-post").click(function() {
     $('#login-title').html("You must register to post comments.  It only takes seconds!")
-    $('#login-title').show()
   });
-
-  $("#upvote-modal, #downvote").click(function() {
+  $(".activate-login-modal-vote").click(function() {
     $('#login-title').html("You must register to vote on comments.  It only takes seconds!")
-    $('#login-title').show()
   });
-
+  $(".activate-login-modal-library").click(function() {
+    $('#login-title').html("You must register to add papers to your library.  It only takes seconds!")
+  });
 });
 
-
-
-
-// log in
+// submit login form
 $(document).ready(function() {
-  $('#user_banned').hide()
-  $('.wrong_id_or_password').hide()
-  $('.wrong_id_or_password').mouseleave()
-  $('#login-title').hide()
-
   $("#login_form").submit(function(e) {
-    // var f = $( this ).prev('form')
-    //alert("haha")
     e.preventDefault();
-
     var f = $( this )
     $.ajax({
          type:"POST",
@@ -49,41 +40,29 @@ $(document).ready(function() {
              location.reload();
              return true
            } else if (data == "False") {
-             $('.wrong_id_or_password').show()
-             $(".wrong_id_or_password").mouseenter();
+             $('.passwords_match_login').show()
+             $(".passwords_match_login").mouseenter();
              return false
            } else {
              $('#user_banned').show()
              return false
            }
-
          }
     });
-
   });
 });
 
-
-// register
+// submit new user registration form
 $(document).ready(function() {
-  $('#username_exists').hide()
-  $('.passwords_match').hide()
-
   $("#register_form").submit(function(e) {
-    // prevent page from reloading and make sure all warnings are hidden
     e.preventDefault();
-    $('#username_exists').hide()
-    $('#username_exists').mouseleave()
-    $('.passwords_match').hide()
-    $(".passwords_match").mouseleave();
-
 
     // check if passwords match
-    var passwords_match = "True"
+    var passwords_match_register = "True"
     var password1 = $('#register_password1').val();
     var password2 = $('#register_password2').val();
     if (password1 != password2){
-      passwords_match = "False"
+      passwords_match_register = "False"
     }
 
     // check if username pre-exists
@@ -102,15 +81,15 @@ $(document).ready(function() {
      });
 
    // form check
-    if (passwords_match == "False") {
-      $('.passwords_match').show()
-      $(".passwords_match").mouseenter();
+    if (passwords_match_register == "False") {
+      $('.passwords_match_register').show()
+      $(".passwords_match_register").mouseenter();
     }
     if (username_does_not_preexist == "False") {
       $('#username_exists').show()
       $("#username_exists").mouseenter();
     }
-    if (passwords_match == "False" || username_does_not_preexist == "False") {
+    if (passwords_match_register == "False" || username_does_not_preexist == "False") {
       return false
     }
 
@@ -129,18 +108,7 @@ $(document).ready(function() {
   });
 });
 
-$(document).ready(function() {
-  $('[data-toggle="popover"]').popover();
-  $("#span0").popover({
-      title: "000",
-      placement: "top",
-      trigger: "manual"
-  });
-  $(document).ready(function(){
-      $('[data-toggle="tooltip"]').tooltip();
-  });
-
-
-
-
+// Bootstrap tooltips must be initialized with jQuery
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
 });

@@ -62,17 +62,24 @@
           {% endif %}
           <hr >
 
-          <!-- buttons to go to pubmed link and add citation to favorites -->
+          <!-- pubmed link  -->
           <a class="btn btn-primary btn-tiny" href="http://www.ncbi.nlm.nih.gov/pubmed/{{ citation.pubmedID }}" role="button">pubmed link &raquo;</a>
-          {% if citationIsInLibrary == True %}
-            <a class="btn btn-primary btn-tiny" href="{% url 'papers:user_library' %}" role="button">This paper is already in your personal library</a>
+
+          <!--  add citation to library -->
+          {% if user.is_authenticated %}
+            {% if citationIsInLibrary == True %}
+              <a class="btn btn-primary btn-tiny" href="{% url 'papers:user_library' %}" role="button">This paper is already in your personal library</a>
+            {% else %}
+              <a class="btn btn-primary btn-tiny hyperlink-submit-form" role="button">Add paper to your personal library</a>
+              <form id='formData' action="{% url 'papers:add_citation_to_user_library' %}" method=POST>
+                {% csrf_token %}
+                <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
+              </form>
+            {% endif %}
           {% else %}
-            <a class="btn btn-primary btn-tiny hyperlink-submit-form" role="button">Add paper to your personal library</a>
-            <form id='formData' action="{% url 'papers:add_citation_to_user_library' %}" method=POST>
-              {% csrf_token %}
-              <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
-            </form>
+            <div class="active pointer inline activate-login-modal-library"><a data-toggle="modal" data-target="#myModal" class="btn btn-primary btn-tiny" role="button">Add to your library</a></div>
           {% endif %}
+
         </div>
       </div>
 
@@ -101,7 +108,7 @@
                   <input type="hidden" name="edit_or_reply" value="reply" />
                 </form>
               {% else %}
-                <div class="active pointer" id="comment-modal"><a id="modal_item1" data-toggle="modal" data-target="#myModal">Add your own comment!</a></div>
+                <div class="active pointer activate-login-modal-post"><a data-toggle="modal" data-target="#myModal">Add your own comment!</a></div>
               {% endif %}
             </div>
 
@@ -124,8 +131,6 @@
             <div>
               {{ personalNote.text|safe }}
             </div>
-
-
           </div>
         </div>
       {% endif %}
