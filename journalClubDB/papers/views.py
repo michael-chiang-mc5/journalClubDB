@@ -101,6 +101,17 @@ def user_logout(request):
     logout(request)
     return HttpResponseRedirect(reverse('papers:frontpage'))
 
+def about_contact(request):
+    return render_to_response('papers/about_contact.html')
+def about_developers(request):
+    return render_to_response('papers/about_developers.html')
+def about_etiquette(request):
+    return render_to_response('papers/about_etiquette.html')
+def about_jcdb(request):
+    return render_to_response('papers/about_jcdb.html')
+def about_privacy(request):
+    return render_to_response('papers/about_privacy.html')
+
 # user login.  Code from: http://www.tangowithdjango.com/book17/chapters/login.html
 def user_login(request): # login is taken up by native django function
     username = request.POST.get('username')
