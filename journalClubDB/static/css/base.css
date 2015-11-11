@@ -15,3 +15,7 @@ body {
 .pointer {
   cursor: pointer;
 }
+
+.inline {
+  display: inline-block;
+}

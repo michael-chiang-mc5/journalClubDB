@@ -82,7 +82,7 @@
       <!-- reply button -->
       <span>
         <a class='hyperlink-submit-form'>reply</a> &nbsp; &nbsp; &nbsp;
-        <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
+        <form class="inline" id='formData' action="{% url 'papers:postForm' %}" method=POST>
           {% csrf_token %}
           <input type="hidden" name="citation" value="{{ p.thread.owner.title }}" />
           <input type="hidden" name="citation_pk" value="{{ p.thread.owner.pk }}" />
@@ -107,7 +107,7 @@
         <!-- edit button -->
         <span>
           <a class='hyperlink-submit-form'>edit</a> &nbsp; &nbsp; &nbsp;
-          <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
+          <form class="inline" id='formData' action="{% url 'papers:postForm' %}" method=POST>
             {% csrf_token %}
             <input type="hidden" name="citation" value="{{ p.thread.owner.title }}" />
             <input type="hidden" name="citation_pk" value="{{ p.thread.owner.pk }}" />
@@ -138,10 +138,10 @@
     <!-- dropdown to select post history -->
     <span>
       <span class="dropdown">
-           <a href="#" data-toggle="dropdown" class="dropdown-toggle">history <b class="caret"></b></a> &nbsp; &nbsp; &nbsp;
+           <a data-toggle="dropdown" class="dropdown-toggle">history <b class="caret"></b></a> &nbsp; &nbsp; &nbsp;
            <ul class="dropdown-menu">
              {% for recent_post in p.get_undecoded_textTupleVector %}
-               <li class="li-dropdown-{{p.pk}} li-dropdown-{{p.pk}}-{{forloop.counter}} {% if forloop.last %} active {% endif %}"><a href="#" id="action-{{ p.pk }}-{{ forloop.counter }}" >
+               <li class="li-dropdown-{{p.pk}} li-dropdown-{{p.pk}}-{{forloop.counter}} {% if forloop.last %} active {% endif %}"><a id="action-{{ p.pk }}-{{ forloop.counter }}" >
                  {% if recent_post.3 != p.creator.username %}
                    recent_post.3
                  {% endif %}
