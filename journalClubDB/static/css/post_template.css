@@ -1,8 +1,18 @@
+blockquote {
+  border-left: 5px solid black;
+  margin: 1em 10px;
+  padding: 0.1em 10px;
+  font-size: 0.7em;
+}
+
+.answercell {
+  padding-left: 10px;
+}
+
 .post-voting-interface {
   /* background-color: red; */
   vertical-align: top;
 }
-
 
 .up-arrow {
   font-size: 0px;

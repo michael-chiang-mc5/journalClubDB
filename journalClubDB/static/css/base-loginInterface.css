@@ -8,3 +8,27 @@
   font-size: 14px;
   width: 1000px;
 }
+
+#login-title {
+  text-align: center;
+  font-size: 20px;
+}
+
+/* This positions login modal in the center of the screen */
+.modal {
+  text-align: center;
+}
+@media screen and (min-width: 768px) {
+  .modal:before {
+    display: inline-block;
+    vertical-align: middle;
+    content: " ";
+    height: 100%;
+  }
+}
+.modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+  width: 700px;
+}

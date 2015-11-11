@@ -5,6 +5,7 @@
   {% load staticfiles %}
   <script src="{% static 'js/ckeditor/ckeditor.js' %}"></script>
   <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <link rel="stylesheet" href="{% static 'css/detail.css' %}">
   <script>
     csrf_js = '{{ csrf_token }}'
     url_upvote = "{% url 'papers:upvote' %}"
@@ -100,7 +101,7 @@
                   <input type="hidden" name="edit_or_reply" value="reply" />
                 </form>
               {% else %}
-                <div class="active modal_item" id="comment-modal"><a id="modal_item1" data-toggle="modal" data-target="#myModal">Add your own comment!</a></div>
+                <div class="active pointer" id="comment-modal"><a id="modal_item1" data-toggle="modal" data-target="#myModal">Add your own comment!</a></div>
               {% endif %}
             </div>
 
