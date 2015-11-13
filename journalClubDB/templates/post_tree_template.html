@@ -5,19 +5,19 @@
 {% for p in posts %}
   {% if p|is_indent %}
     {% if p|is_depth_one %}
-      <div class="vertical-spacer-tempaaa"></div>
-      <div class="big-box-depth-is-one-tempaaa">
+      <div class="vertical-spacer"></div>
+      <div class="big-box-depth-is-one">
     {% elif p|is_depth_divisible_by_two %}
-      <div class="vertical-spacer-tempaaa"></div>
-      <div class="big-box-depth-divisible-by-two-tempaaa">
+      <div class="vertical-spacer"></div>
+      <div class="big-box-depth-divisible-by-two">
     {% else %}
-      <div class="vertical-spacer-tempaaa"></div>
-      <div class="big-box-depth-not-divisible-by-two-tempaaa">
+      <div class="vertical-spacer"></div>
+      <div class="big-box-depth-not-divisible-by-two">
     {% endif %}
   {% elif p|is_dedent %}
     </div>
   {% else %}
-    <div class="single-post-tempaaa">
+    <div class="single-post">
       {% include "post_template.html" %}
     </div>
     <br>

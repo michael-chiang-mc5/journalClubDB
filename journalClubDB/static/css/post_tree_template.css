@@ -1,4 +1,4 @@
-.big-box-depth-is-one-tempaaa {
+.big-box-depth-is-one {
   border: 1px solid white;
   background-color: white;
   padding-left: 40px;
@@ -7,7 +7,7 @@
   padding-right: 10px;
 }
 
-.big-box-depth-divisible-by-two-tempaaa {
+.big-box-depth-divisible-by-two {
   border: 1px solid grey;
   background-color: #F5F5F5;
   padding-left: 40px;
@@ -16,7 +16,7 @@
   padding-right: 10px;
 }
 
-.big-box-depth-not-divisible-by-two-tempaaa {
+.big-box-depth-not-divisible-by-two {
   border: 1px solid white;
   background-color: white;
   padding-left: 40px;
@@ -25,10 +25,10 @@
   padding-right: 10px;
 }
 
-.single-post-tempaaa {
+.single-post {
   margin-left:-30px
 }
 
-.vertical-spacer-tempaaa {
+.vertical-spacer {
   height: 10px;
 }

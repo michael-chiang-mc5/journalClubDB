@@ -1,16 +1,15 @@
 
-// Make login modal pop up and clear error messages
+// Make login modal show title and clear error messages
 $(document).ready(function() {
-  $( "[class^='activate-login-modal-'] " ).click(function() {
-    $('#username_exists').hide()
-    $('#username_exists').mouseleave()
-    $('.passwords_match_login').hide()
-    $(".passwords_match_login").mouseleave();
-    $('.passwords_match_register').hide()
-    $(".passwords_match_register").mouseleave();
-    $('#user_banned').hide()
-    $('#user_banned').mouseleave();
-  });
+  $('#username_exists').hide()
+  $('#username_exists').mouseleave()
+  $('.passwords_match_login').hide()
+  $(".passwords_match_login").mouseleave();
+  $('.passwords_match_register').hide()
+  $(".passwords_match_register").mouseleave();
+  $('#user_banned').hide()
+  $('#user_banned').mouseleave();
+
   $(".activate-login-modal-navbar").click(function() {
     $('#login-title').html("Register or log in.  It only takes seconds!")
   });

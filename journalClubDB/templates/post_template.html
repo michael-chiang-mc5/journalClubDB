@@ -131,14 +131,14 @@
     <!-- if user is not authenticated -->
     {% else %}
       <span>
-        <span class="active pointer activate-login-modal-post"><a data-toggle="modal" data-target="#myModal">reply</a>  &nbsp; &nbsp; &nbsp; </span>
+        <span><a data-toggle="modal" data-target="#myModal" class="pointer activate-login-modal-post">reply</a>  &nbsp; &nbsp; &nbsp; </span>
       </span>
 
     {% endif %}
     <!-- dropdown to select post history -->
     <span>
       <span class="dropdown">
-           <a data-toggle="dropdown" class="dropdown-toggle">history <b class="caret"></b></a> &nbsp; &nbsp; &nbsp;
+           <a data-toggle="dropdown" class="dropdown-toggle pointer">history <b class="caret"></b></a> &nbsp; &nbsp; &nbsp;
            <ul class="dropdown-menu">
              {% for recent_post in p.get_undecoded_textTupleVector %}
                <li class="li-dropdown-{{p.pk}} li-dropdown-{{p.pk}}-{{forloop.counter}} {% if forloop.last %} active {% endif %}"><a id="action-{{ p.pk }}-{{ forloop.counter }}" >

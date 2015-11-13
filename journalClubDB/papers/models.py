@@ -35,7 +35,7 @@ class Citation(models.Model):
     fullAuthorNames = models.TextField(blank=True)
     pubmedID = models.PositiveIntegerField(blank=True)
     # optional fields
-    link = models.TextField(blank=True,null=True) # link to pdf or something else
+    link = models.TextField(blank=True,null=True) # link to pdf
 
 # Discussion thread for a particular citation
 # Possible categories: ELI5, Methodology, Results, Discussion, Historical context

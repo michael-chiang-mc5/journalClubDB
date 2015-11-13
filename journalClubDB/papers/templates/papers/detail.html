@@ -34,19 +34,22 @@
     <div class="tab-content">
       <!-- Content for summary jumbotron -->
       <div id="thread_0" {% if current_thread == 0 %} class="tab-pane fade in active" {% else %} class="tab-pane fade" {% endif %}>
-        <div id="detail_jumbotron" class="jumbotron">
+        <div id="summary_jumbotron" class="jumbotron">
           <h1>{{ citation.title }}</h1>
           <hr >
           <p>{{ citation.fullAuthorNames|parse_full_names }}</p>
           <p>{{ citation.fullSource }} </p>
           <hr >
-          <p id="detail_abstract"> {{ citation.abstract }} </p>
-          <hr >
-          <p>Tags:
-            {% for associated_tag in associated_tags %}
-              <span class="label label-primary">{{ associated_tag }}</span>
-            {% endfor %}
-          </p>
+          <p id="abstract"> {{ citation.abstract }} </p>
+
+          {% if associated_tags|length != 0 %}
+            <hr >
+            <p>Tags:
+              {% for associated_tag in associated_tags %}
+                <span class="label label-primary">{{ associated_tag }}</span>
+              {% endfor %}
+            </p>
+          {% endif %}
 
           <!-- superuser functionality to add tags -->
           {% if user.is_superuser %}
@@ -71,7 +74,7 @@
           <!--  add citation to library -->
           {% if user.is_authenticated %}
             {% if citationIsInLibrary == True %}
-              <a class="btn btn-primary btn-tiny" href="{% url 'papers:user_library' %}" role="button">This paper is already in your personal library</a>
+              <a class="btn btn-primary btn-tiny" href="{% url 'papers:user_library' %}" role="button">This paper is in your personal library</a>
             {% else %}
               <a class="btn btn-primary btn-tiny hyperlink-submit-form" role="button">Add paper to your personal library</a>
               <form id='formData' action="{% url 'papers:add_citation_to_user_library' %}" method=POST>
@@ -80,7 +83,7 @@
               </form>
             {% endif %}
           {% else %}
-            <div class="active pointer inline activate-login-modal-library"><a data-toggle="modal" data-target="#myModal" class="btn btn-primary btn-tiny" role="button">Add to your library</a></div>
+            <a data-toggle="modal" data-target="#myModal" class="btn btn-primary btn-tiny activate-login-modal-library pointer inline" role="button">Add to your library</a>
           {% endif %}
 
         </div>
@@ -89,11 +92,10 @@
       <!-- message boards  (ELI5, methodology, etc) -->
       {% for thread,posts,numDepth1Posts in threadsPostsIndents %}
         <div id="thread_{{ forloop.counter }}" {% if current_thread == forloop.counter %} class="tab-pane fade in active" {% else %} class="tab-pane fade" {% endif %}>
-          <div class="user_comments">
+          <div class="jumbotron discussion_jumbotron">
             <!-- Display number of depth 1 comments, and link for user to submit their own comment -->
-            <div class="user_comments_header">
-              <h2> {{ numDepth1Posts }} comments </h2>
-
+              <h1> {{ numDepth1Posts }} comments
+              <sup>
               {% if user.is_authenticated %}
                 <a class='hyperlink-submit-form'>Add your own comment!</a>
                 <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
@@ -111,10 +113,11 @@
                   <input type="hidden" name="edit_or_reply" value="reply" />
                 </form>
               {% else %}
-                <div class="active pointer activate-login-modal-post"><a data-toggle="modal" data-target="#myModal">Add your own comment!</a></div>
+                <a data-toggle="modal" data-target="#myModal" class="activate-login-modal-library">Add your own comment!</a>
               {% endif %}
-            </div>
-
+              </sup>
+             </h2>
+             <hr>
             {% include "post_tree_template.html" %}
           </div> <!-- end  <div class="user_comments"> -->
         </div> <!-- div id="thread_{{ forloop.counter }}" -->
