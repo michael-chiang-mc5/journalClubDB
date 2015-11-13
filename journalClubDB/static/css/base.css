@@ -1,4 +1,10 @@
 
+.color-white {
+  color: white;
+}
+.color-black {
+  color: black;
+}
 
 .hyperlink-submit-form {
   cursor: pointer;
@@ -9,7 +15,8 @@
 }
 
 body {
-    background-color: pink;
+    background-color: grey;
+    padding-top: 70px;
 }
 
 .pointer {
