@@ -17,6 +17,7 @@
 <tr>
 
 <!-- interface to vote up or down a comment -->
+<!--
 <td class="post-voting-interface">
   <div>
     {% if user.is_authenticated %}
@@ -45,40 +46,64 @@
     {% endif %}
   </div>
 </td>
+-->
 
-
-  <!-- top bar containing username, points, time posted -->
 <td class="answercell">
-  <div>
-    <span class="comment-user"><a href="{% url 'papers:user_posts' p.creator.pk %}">{{ p.creator.username }}</a></span>
-    &nbsp; , &nbsp;
-    <span id="commentscore-pk-{{ p.pk }}">{{ p.score }}</span> point{{p.score|pluralize}}
-    &nbsp; , &nbsp;
+  <!-- top bar containing username, points, time posted -->
+  <div class="post-top-box">
+    <span class="comment-user"><a class="bold" href="{% url 'papers:user_posts' p.creator.pk %}">{{ p.creator.username }}</a></span>
+    <span>&nbsp;</span>
+    <span id="commentscore-pk-{{ p.pk }}">{{ p.score }}</span><span> point{{p.score|pluralize}}</span>
     <span class="comment-time" id="comment-time-{{ p.pk }}">
-      {% if p.get_undecoded_textTupleVector|length == 1 %}
-        posted
-      {% else %}
-        edited
-      {% endif %}
       {{ p.time_created|age }}
     </span>
   </div>
-  <hr >
 
   <!-- middle box containing post content. javascript used to switch between edits -->
-  <div>
+  <div class="post-middle-box">
     {% for recent_post in p.get_undecoded_textTupleVector %}
       <div id="comment-text-{{ p.pk }}-{{ forloop.counter }}" class="comment-target-all-{{ p.pk }} comment-all {% if forloop.last %} comment-last {% endif %}">
         {{ recent_post.0 | safe}} <!-- text -->
       </div>
     {% endfor %}
   </div>
-  <hr >
 
 
   <!-- bottom bar containing reply, edit history -->
-  <div>
+  <div class="post-bottom-box">
+
+    <!-- upvote button -->
+    <span>
     {% if user.is_authenticated %}
+        <input type="hidden" name="post_pk" value="{{ p.pk }}">
+        {% if p|post_upvoted_by_user:user.pk %}
+          <a id="up-{{ p.pk }}" class="upvoted-arrow pointer active-vote" title="This comment is useful">upvoted</a>
+        {% else %}
+          <a id="up-{{ p.pk }}" class="up-arrow pointer" title="This comment is useful">upvote</a>
+        {% endif %}
+    {% else %}
+      <div class="pointer inline" id="upvote-modal"><a class="activate-login-modal-vote" data-toggle="modal" data-target="#myModal" title="This comment is useful">upvote</a></div>
+    {% endif %}
+    &nbsp; &nbsp; &nbsp;
+    </span>
+
+    <!-- downvote button -->
+    <span>
+    {% if user.is_authenticated %}
+      <input type="hidden" name="post_pk" value="{{ p.pk }}">
+      {% if p|post_downvoted_by_user:user.pk %}
+        <a id="down-{{ p.pk }}" class="downvoted-arrow pointer active-vote" title="This comment not useful">downvoted</a>
+      {% else %}
+        <a id="down-{{ p.pk }}" class="down-arrow pointer" title="This comment not useful">downvote</a>
+      {% endif %}
+    {% else %}
+      <div class="pointer inline" id="downvote-modal"><a class="activate-login-modal-vote" data-toggle="modal" data-target="#myModal" title="This comment is not useful">downvote</a></div>
+    {% endif %}
+    &nbsp; &nbsp; &nbsp;
+    </span>
+
+    {% if user.is_authenticated %}
+
       <!-- reply button -->
       <span>
         <a class='hyperlink-submit-form'>reply</a> &nbsp; &nbsp; &nbsp;

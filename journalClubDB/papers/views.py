@@ -298,7 +298,10 @@ def paperOfTheWeek_admin(request):
         p.save()
     # get order of current paper of the week
     dummy,idx = getCitationOfTheWeek()
-    currentOrder = paperOfTheWeek_list[idx].order
+    if idx==0: # there is no current paper of the week
+        currentOrder=0
+    else:
+        currentOrder = paperOfTheWeek_list[idx].order
 
     # this is a list of all citations not used in Papers of the Week
     nonPaperOfTheWeek_list = Citation.objects.exclude(paperoftheweekinfo__in=paperOfTheWeek_list)

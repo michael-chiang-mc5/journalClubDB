@@ -5,6 +5,7 @@
   padding-top: 10px;
   padding-bottom: 10px;
   padding-right: 10px;
+  border-radius: 10px;
 }
 
 .big-box-depth-divisible-by-two {
@@ -14,6 +15,7 @@
   padding-top: 10px;
   padding-bottom: 10px;
   padding-right: 10px;
+  border-radius: 10px;
 }
 
 .big-box-depth-not-divisible-by-two {
@@ -23,6 +25,7 @@
   padding-top: 10px;
   padding-bottom: 10px;
   padding-right: 10px;
+  border-radius: 10px;
 }
 
 .single-post {

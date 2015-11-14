@@ -26,3 +26,7 @@ body {
 .inline {
   display: inline-block;
 }
+
+.bold {
+  font-weight: bold;
+}

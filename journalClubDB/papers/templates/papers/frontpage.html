@@ -16,40 +16,36 @@
 
 {% block body_block %}
 
-  {% if paperOfTheWeek_citation == 0 %}
-    No paper of the week
-  {% else %}
+  {% if paperOfTheWeek_citation != 0 %}
 
+    <div class="wrap">
 
+        <div id="paper-highlight-background" class="inner">
 
-  <div class="wrap">
+          <div class="wrap">
+            <div class="inner">
+              <div id="paper-highlight-text">
+                <h2 class="color-white">Paper Highlight</h2>
+                <h1 class="color-white">{{ paperOfTheWeek_citation.title }}</h1>
+                <p class="color-white">{{ paperOfTheWeek_citation.author|first_author }}</p>
+                <p class="color-white">{{ paperOfTheWeek_citation.journal }}, {{ paperOfTheWeek_citation.date|citation_year }}</p>
+                <br>
+                <a href="{% url 'papers:detail' paperOfTheWeek_citation.pk 0 %}">
+                  <button type="button" class="btn btn-primary btn-m">Discuss this paper!</button>
+                </a>
+                <a href="{% url 'papers:paperOfTheWeek_list' %}">
+                  <button type="button" class="btn btn-primary btn-m">See past highlights</button>
+                </a>
+            </div>
 
-      <div id="paper-highlight-background" class="inner">
-
-        <div class="wrap">
-          <div class="inner">
-            <div id="paper-highlight-text">
-              <h2 class="color-white">Paper Highlight</h2>
-              <h1 class="color-white">{{ paperOfTheWeek_citation.title }}</h1>
-              <p class="color-white">{{ paperOfTheWeek_citation.author|first_author }}</p>
-              <p class="color-white">{{ paperOfTheWeek_citation.journal }}, {{ paperOfTheWeek_citation.date|citation_year }}</p>
-              <br>
-              <a href="{% url 'papers:detail' paperOfTheWeek_citation.pk 0 %}">
-                <button type="button" class="btn btn-primary btn-m">Discuss this paper!</button>
-              </a>
-              <a href="{% url 'papers:paperOfTheWeek_list' %}">
-                <button type="button" class="btn btn-primary btn-m">See past highlights</button>
-              </a>
+            </div>
           </div>
 
-          </div>
         </div>
 
+
       </div>
-
-
     </div>
-  </div>
 
 
 

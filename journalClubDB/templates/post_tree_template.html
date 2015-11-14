@@ -8,7 +8,6 @@
       <div class="vertical-spacer"></div>
       <div class="big-box-depth-is-one">
     {% elif p|is_depth_divisible_by_two %}
-      <div class="vertical-spacer"></div>
       <div class="big-box-depth-divisible-by-two">
     {% else %}
       <div class="vertical-spacer"></div>
@@ -20,7 +19,6 @@
     <div class="single-post">
       {% include "post_template.html" %}
     </div>
-    <br>
   {% endif %}
 
 {% endfor %}

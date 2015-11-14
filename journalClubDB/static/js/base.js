@@ -14,9 +14,11 @@ $(document).ready(function() {
                     'post_pk': post_pk,
                     },
              success: function(data){
-               $( me ).addClass('upvoted-arrow').removeClass('up-arrow');
-               $( "#down-"+post_pk ).addClass('down-arrow').removeClass('downvoted-arrow');
+               $( me ).addClass('upvoted-arrow').removeClass('up-arrow').addClass('active-vote');
+               $( "#down-"+post_pk ).addClass('down-arrow').removeClass('downvoted-arrow').removeClass('active-vote');
                $( "#commentscore-pk-"+post_pk ).html( data.score )
+               $( "#up-"+post_pk ).html( 'upvoted' )
+               $( "#down-"+post_pk ).html( 'downvote' )                              
              }
         });
       } else if ( $( me ).hasClass('upvoted-arrow') ) {
@@ -28,8 +30,9 @@ $(document).ready(function() {
                     'post_pk': post_pk,
                     },
              success: function(data){
-               $( me ).addClass('up-arrow').removeClass('upvoted-arrow');
+               $( me ).addClass('up-arrow').removeClass('upvoted-arrow').removeClass('active-vote');
                $( "#commentscore-pk-"+post_pk ).html( data.score )
+               $( "#up-"+post_pk ).html( 'upvote' )
              }
         });
       }
@@ -48,9 +51,11 @@ $(document).ready(function() {
                     'post_pk': post_pk,
                     },
              success: function(data){
-               $( me ).addClass('downvoted-arrow').removeClass('down-arrow');
-               $( "#up-"+post_pk ).addClass('up-arrow').removeClass('upvoted-arrow');
+               $( me ).addClass('downvoted-arrow').removeClass('down-arrow').addClass('active-vote');;
+               $( "#up-"+post_pk ).addClass('up-arrow').removeClass('upvoted-arrow').removeClass('active-vote');;
                $( "#commentscore-pk-"+post_pk ).html( data.score )
+               $( "#down-"+post_pk ).html( 'downvoted' )
+               $( "#up-"+post_pk ).html( 'upvote' )
              }
         });
       } else if ( $( me ).hasClass('downvoted-arrow') ) {
@@ -62,8 +67,9 @@ $(document).ready(function() {
                     'post_pk': post_pk,
                     },
              success: function(data){
-               $( me ).addClass('down-arrow').removeClass('downvoted-arrow');
+               $( me ).addClass('down-arrow').removeClass('downvoted-arrow').removeClass('active-vote');;
                $( "#commentscore-pk-"+post_pk ).html( data.score )
+               $( "#down-"+post_pk ).html( 'downvote' )
              }
         });
       }

@@ -35,16 +35,16 @@
       <!-- Content for summary jumbotron -->
       <div id="thread_0" {% if current_thread == 0 %} class="tab-pane fade in active" {% else %} class="tab-pane fade" {% endif %}>
         <div id="summary_jumbotron" class="jumbotron">
-          <h1>{{ citation.title }}</h1>
+          <h1 id="summary-title">{{ citation.title }}</h1>
           <hr >
-          <p>{{ citation.fullAuthorNames|parse_full_names }}</p>
-          <p>{{ citation.fullSource }} </p>
+          <p id="summary-author">{{ citation.fullAuthorNames|parse_full_names }}</p>
+          <p id="summary-source">{{ citation.fullSource }} </p>
           <hr >
-          <p id="abstract"> {{ citation.abstract }} </p>
+          <p id="summary-abstract"> {{ citation.abstract }} </p>
 
           {% if associated_tags|length != 0 %}
             <hr >
-            <p>Tags:
+            <p id="summary-tags">Tags:
               {% for associated_tag in associated_tags %}
                 <span class="label label-primary">{{ associated_tag }}</span>
               {% endfor %}
@@ -92,30 +92,31 @@
       <!-- message boards  (ELI5, methodology, etc) -->
       {% for thread,posts,numDepth1Posts in threadsPostsIndents %}
         <div id="thread_{{ forloop.counter }}" {% if current_thread == forloop.counter %} class="tab-pane fade in active" {% else %} class="tab-pane fade" {% endif %}>
-          <div class="jumbotron discussion_jumbotron">
+          <div class="detail-tab-box">
             <!-- Display number of depth 1 comments, and link for user to submit their own comment -->
-              <h1> {{ numDepth1Posts }} comments
-              <sup>
-              {% if user.is_authenticated %}
-                <a class='hyperlink-submit-form'>Add your own comment!</a>
-                <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
-                  {% csrf_token %}
-                  <input type="hidden" name="citation" value="{{ citation.title }}" />
-                  <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
-                  <input type="hidden" name="thread_title" value="{{ thread.title }}" />
-                  <input type="hidden" name="thread_description" value="{{ thread.description }}" />
-                  <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
-                  <input type="hidden" name="isReplyToPost" value="0" />
-                  <input type="hidden" name="mother_pk" value="-1" />
-                  <input type="hidden" name="current_thread" value="{{ forloop.counter }}" />
-                  <input type="hidden" name="initial_text" value="" />
-                  <input type="hidden" name="blockquote" value="False" />
-                  <input type="hidden" name="edit_or_reply" value="reply" />
-                </form>
-              {% else %}
-                <a data-toggle="modal" data-target="#myModal" class="activate-login-modal-library">Add your own comment!</a>
-              {% endif %}
-              </sup>
+              <div class="message-board-number-comments"><h1> {{ numDepth1Posts }} comments
+                <sup>
+                {% if user.is_authenticated %}
+                  <a class='hyperlink-submit-form'>Add your own comment!</a>
+                  <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
+                    {% csrf_token %}
+                    <input type="hidden" name="citation" value="{{ citation.title }}" />
+                    <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
+                    <input type="hidden" name="thread_title" value="{{ thread.title }}" />
+                    <input type="hidden" name="thread_description" value="{{ thread.description }}" />
+                    <input type="hidden" name="thread_pk" value="{{ thread.pk }}" />
+                    <input type="hidden" name="isReplyToPost" value="0" />
+                    <input type="hidden" name="mother_pk" value="-1" />
+                    <input type="hidden" name="current_thread" value="{{ forloop.counter }}" />
+                    <input type="hidden" name="initial_text" value="" />
+                    <input type="hidden" name="blockquote" value="False" />
+                    <input type="hidden" name="edit_or_reply" value="reply" />
+                  </form>
+                {% else %}
+                  <a data-toggle="modal" data-target="#myModal" class="activate-login-modal-library pointer">Add your own comment!</a>
+                {% endif %}
+                </sup>
+              </div>
              </h2>
              <hr>
             {% include "post_tree_template.html" %}

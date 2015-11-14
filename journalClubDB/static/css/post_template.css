@@ -1,3 +1,35 @@
+
+.active-vote {
+  font-weight: bolder;
+  color: green !important;
+}
+
+.post-top-box * {
+    line-height: 1.4em;
+    font-size: 15px;
+}
+
+.post-middle-box * {
+  line-height: 1.4em;
+  font-size: 15px;
+}
+
+.post-bottom-box * {
+  line-height: 1.4em;
+  font-size: 13px;
+
+}
+
+.post-top-box {
+  color: #999;
+}
+
+.post-bottom-box a {
+  color: #999;
+}
+
+
+
 blockquote {
   border-left: 5px solid black;
   margin: 1em 10px;
@@ -14,6 +46,7 @@ blockquote {
   vertical-align: top;
 }
 
+/*
 .up-arrow {
   font-size: 0px;
   cursor: pointer;
@@ -21,8 +54,8 @@ blockquote {
   margin: 0 auto;
   background-position: 0 0;
   width: 15px;
-  height: 16px; /* this should be 14, but using 16 to add a little space between arrows */
-  background-image: url('/static/images/up-arrow.png'); /* django template tags do not work in css */
+  height: 15px;
+  background-image: url('/static/images/up-arrow.png');
   background-repeat: no-repeat;
   overflow: hidden;
 }
@@ -32,10 +65,10 @@ blockquote {
   cursor: pointer;
   display: block;
   margin: 0 auto;
-  background-position: 0 2; /* this should be 0 0, offset by 2 to account for height = 16 instead of 14 */
+  background-position: 0 1;
   width: 15px;
-  height: 16px; /* this should be 14, but using 16 to add a little space between arrows */
-  background-image: url('/static/images/down-arrow.png'); /* django template tags do not work in css */
+  height: 15px;
+  background-image: url('/static/images/down-arrow.png');
   background-repeat: no-repeat;
   overflow: hidden;
 }
@@ -47,8 +80,8 @@ blockquote {
   margin: 0 auto;
   background-position: 0 0;
   width: 15px;
-  height: 16px; /* this should be 14, but using 16 to add a little space between arrows */
-  background-image: url('/static/images/upvoted-arrow.png'); /* django template tags do not work in css */
+  height: 16px;
+  background-image: url('/static/images/upvoted-arrow.png');
   background-repeat: no-repeat;
   overflow: hidden;
 }
@@ -60,8 +93,9 @@ blockquote {
   margin: 0 auto;
   background-position: 0 0;
   width: 15px;
-  height: 16px; /* this should be 14, but using 16 to add a little space between arrows */
-  background-image: url('/static/images/downvoted-arrow.png'); /* django template tags do not work in css */
+  height: 16px;
+  background-image: url('/static/images/downvoted-arrow.png');
   background-repeat: no-repeat;
   overflow: hidden;
 }
+*/

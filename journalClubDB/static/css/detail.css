@@ -1,39 +1,60 @@
 
-#summary_jumbotron h1 {
+/* These are font sizes used in the "Summary" box of detail.html */
+#summary-title {
     font-size: 2em;
 }
-#summary_jumbotron p {
-    font-size: 0.9em;
+#summary-author, #summary-source {
+    font-size: 1em;
     margin-bottom: 0px;
 }
-#summary_jumbotron #abstract {
+#summary-abstract {
     font-size: 1.1em;
 }
+#summary-tags {
+  font-size: 1em;
+}
 
-
-.discussion_jumbotron h1{
+/* This is the grey box where tab content is placed */
+.detail-tab-box {
+    padding-top: 1px;
+    padding-bottom: 20px;
+    min-height: 40em;
+    background-color: #F5F5F5;
+    padding-right: 60px;
+    padding-left: 60px;
+    border-radius: 10px;
+}
+.detail-tab-box h1 {
   font-size: 1.5em;
 }
-.discussion_jumbotron p {
-    font-size: 0.9em;
-    margin-bottom: 0px;
-}
-.discussion_jumbotron {
-    padding-top: 1px;
-    padding-bottom: 48px;
+.detail-tab-box hr {
+  height: 1px;
+  color: #123455;
+  background-color: #123455;
+  border: none;
 }
 
-
-.big-box-depth-divisible-by-two * {
-  -webkit-transform:scale(0.9);
-  -moz-transform:scale(0.9);
-  -ms-transform:scale(0.9);
-  transform:scale(0.9);
+/* Reply boxes have smaller font */
+.big-box-depth-divisible-by-two .post-top-box * {
+    line-height: 1em !important;
+    font-size: 11px !important;
+}
+.big-box-depth-divisible-by-two .post-middle-box * {
+  line-height: 1em !important;
+  font-size: 11px !important;
+}
+.big-box-depth-divisible-by-two .post-bottom-box * {
+  line-height: 1em;
+  font-size: 11px;
 }
 
-.big-box-depth-not-divisible-by-two * {
-  -webkit-transform:scale(0.9);
-  -moz-transform:scale(0.9);
-  -ms-transform:scale(0.9);
-  transform:scale(0.9);
+/* make all replies embedded in grey background */
+.big-box-depth-not-divisible-by-two {
+  border: 0px !important;
+  background-color: #F5F5F5 !important;
+  padding-left: 40px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-right: 10px;
+  border-radius: 10px;
 }
