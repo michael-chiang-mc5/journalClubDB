@@ -2,10 +2,10 @@
   border: 1px solid white;
   background-color: white;
   padding-left: 40px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-right: 10px;
-  border-radius: 10px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-right: 0px;
+  border-radius: 0px;
 }
 
 .big-box-depth-divisible-by-two {
@@ -29,7 +29,7 @@
 }
 
 .single-post {
-  margin-left:-30px
+  margin-left:-40px
 }
 
 .vertical-spacer {

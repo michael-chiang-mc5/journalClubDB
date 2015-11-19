@@ -1,8 +1,6 @@
 <!-- this template contains html to display a single citation -->
-{% load staticfiles %}
-<script src="{% static "/static/js/citation_summary_template.js" %}"></script>
+<!-- requires template variable: citation -->
 {% load templatetags %}
-
 <div>
   <a id="citation-toggle-{{ citation.pk }}" class="list-group-item" data-toggle="collapse" data-target="#citation-item-{{ citation.pk }}" data-parent="#menu"> <!-- TODO: color this (active?) -->
     <h4 class="list-group-item-heading">{{ citation.title }}</h4>
@@ -12,15 +10,28 @@
   <div id="citation-item-{{ citation.pk }}" class="citation-index-all sublinks collapse {% if forloop.counter == 1 %}in{% endif %}"> <!-- start with first entry not collapsed -->
     <a class="list-group-item small">{{ citation.abstract }}</a>
 
-    {% if citation.tags.all|length != 0 %}
-      <a class="list-group-item small">Tags:
-      {% for tag in citation.tags.all %}
-        <span class="label label-primary">{{ tag }}</span>
-      {% endfor %}
+    {% if is_search_results %}
+      {% if citation.preexistingEntry %}
+        <a class="list-group-item" href="{% url 'papers:detail' citation.pk  0 %}">
+          <button type="button" class="btn btn-primary btn-xs">Import to JCDB</button>
+        </a>
+      {% else %}
+        <a class="list-group-item" href="{% url 'papers:detail' citation.pk  0 %}">
+          <button type="button" class="btn btn-primary btn-xs">Discuss in JCDB</button>
+        </a>
+      {% endif %}
+    {% else %}
+      {% if citation.tags.all|length != 0 %}
+        <a class="list-group-item small">Tags:
+        {% for tag in citation.tags.all %}
+          <span class="label label-primary">{{ tag }}</span>
+        {% endfor %}
+        </a>
+      {% endif %}
+      <a class="list-group-item" href="{% url 'papers:detail' citation.pk  0 %}">
+        <button type="button" class="btn btn-primary btn-xs">Click to discuss this paper!</button>
       </a>
     {% endif %}
-    <a class="list-group-item" href="{% url 'papers:detail' citation.pk  0 %}">
-      <button type="button" class="btn btn-danger btn-xs">Click to discuss this paper!</button>
-    </a>
+
   </div>
 </div>

@@ -91,7 +91,6 @@ def user_notifications(request):
     return render(request, 'papers/user_notifications.html', context)
 
 def user_library(request):
-
     user_profile = UserProfile().get_user_profile(request.user)
     citations = user_profile.library.all()
     context = {'navbar':'user_profile','citations':citations}
@@ -102,15 +101,20 @@ def user_logout(request):
     return HttpResponseRedirect(reverse('papers:frontpage'))
 
 def about_contact(request):
-    return render_to_response('papers/about_contact.html')
+    context = {'navbar':'about'}
+    return render(request,'papers/about_contact.html', context)
 def about_developers(request):
-    return render_to_response('papers/about_developers.html')
+    context = {'navbar':'about'}
+    return render(request,'papers/about_developers.html', context)
 def about_etiquette(request):
-    return render_to_response('papers/about_etiquette.html')
+    context = {'navbar':'about'}
+    return render(request,'papers/about_etiquette.html', context)
 def about_jcdb(request):
-    return render_to_response('papers/about_jcdb.html')
+    context = {'navbar':'about'}
+    return render(request,'papers/about_jcdb.html', context)
 def about_privacy(request):
-    return render_to_response('papers/about_privacy.html')
+    context = {'navbar':'about'}
+    return render(request,'papers/about_privacy.html', context)
 
 # user login.  Code from: http://www.tangowithdjango.com/book17/chapters/login.html
 def user_login(request): # login is taken up by native django function
@@ -178,7 +182,7 @@ def frontpage(request):
     return render(request, 'papers/frontpage.html', context)
 
 # see all citations in database
-def index(request):
+def index_deprecated(request):
     citations = Citation.objects.all()
 
     # Paginate
@@ -197,6 +201,12 @@ def index(request):
         active_page = int(paginator.num_pages)
 
     context = {'citations': citations,'navbar':'index','num_pages':int(paginator.num_pages),'active_page':active_page}
+    return render(request, 'papers/index.html', context)
+
+# see all citations in database
+def index(request):
+    citations = Citation.objects.all()
+    context = {'citations': citations,'navbar':'search','show_detail_link':True}
     return render(request, 'papers/index.html', context)
 
 # returns a string, otherwise returns None
@@ -351,6 +361,7 @@ def postForm(request):
     initial_text = request.POST.get("initial_text")
     post_pk = request.POST.get("post_pk")
     edit_or_reply = request.POST.get("edit_or_reply")
+
 
     blockquote = request.POST.get("blockquote")
     if blockquote == "True":
@@ -565,26 +576,6 @@ def detail(request,pk,current_thread):
     context = {'personalNote':personalNote,'citation': citation,'threads': threads,'posts_vector':posts_vector,'threadsPostsIndents':threadsPostsIndents,'current_thread':int(current_thread),'associated_tags':associated_tags,'unused_tags':unused_tags, 'citationIsInLibrary':citationIsInLibrary}
     return render(request, 'papers/detail.html', context)
 
-# search is terribly slow.  Use this for development
-def search_development(request,page):
-    with open('/Users/mcah5a/Desktop/projects/journalClubDB/journalClubDB/pubmedObject.pkl','rb') as input:
-        pubmed = pickle.load(input)
-    search_str = 'asdf'
-    totalPages=0
-    pageNumber=0
-    searchInitiated = "True"
-    search_str = 'asdf'
-    numberSearchResults = 4
-    totalPages = math.ceil(numberSearchResults/10)
-    pageNumber=1
-    retMin = 0
-    retMax = 10
-    freshSearch=False
-    totalPages = min([totalPages,15+1]) # maximum of 15 pages
-    pubmed = checkPubmedEntriesForPreexistingCitations(pubmed)
-    context = {'navbar':'addCitation','entries': pubmed.entries, 'search_str': search_str, 'totalPages':totalPages, 'totalPagesRange': range(1,totalPages), 'pageNumber': pageNumber, 'freshSearch': freshSearch}
-    return render(request, 'papers/search.html', context)
-
 # upvote comment
 # assumes that user is authenticated
 def upvote(request):
@@ -631,7 +622,7 @@ def checkPubmedEntriesForPreexistingCitations(pubmed):
     return pubmed
 
 # search interface
-def search(request,page):
+def search0(request,page):
     pubmed = PubmedInterface()
     search_str = ''
     totalPages=0
@@ -663,4 +654,48 @@ def search(request,page):
     totalPages = min([totalPages,15+1]) # maximum of 15 pages
     pubmed = checkPubmedEntriesForPreexistingCitations(pubmed)
     context = {'entries': pubmed.entries, 'search_str': search_str, 'totalPages':totalPages, 'totalPagesRange': range(1,totalPages), 'pageNumber': pageNumber, 'freshSearch': freshSearch, 'navbar':'addCitation'}
+    return render(request, 'papers/search0.html', context)
+
+# search interface
+def search(request,page):
+
+    pubmed = PubmedInterface()
+    search_str = ''
+    totalPages=0
+    pageNumber=0
+    if request.method == 'POST': # either search initiated or page change
+        searchInitiated = request.POST.get("searchInitiated")
+        return HttpResponse("hihi")
+
+        if searchInitiated == "True": # search initiated
+            search_str = request.POST.get("search_str")
+            pubmed.countNumberSearchResults(search_str)
+            numberSearchResults = pubmed.numberSearchResults
+            totalPages = math.ceil(numberSearchResults/10)
+            pageNumber=1
+            retMin = 0
+            retMax = 10
+            citations = Citation.objects.all()
+            pubmed.getRecords(search_str,retMin,retMax)
+        else: # page change
+            search_str = request.POST.get("search_str")
+            pageNumber = int(request.POST.get("pageNumber"))
+            retMin = (pageNumber - 1)*10
+            retMax = 10
+            citations = Citation.objects.all()
+            pubmed.getRecords(search_str,retMin,retMax)
+            totalPages = int(request.POST.get("totalPages"))
+        freshSearch=False
+    else:
+        freshSearch=True
+
+    totalPages = min([totalPages,15+1]) # maximum of 15 pages
+    #pubmed = checkPubmedEntriesForPreexistingCitations(pubmed)
+    citations = pubmed.getCitationList()
+
+
+    context = {'citations':citations, 'entries': pubmed.entries, 'search_str': search_str, 'totalPages':totalPages, 'totalPagesRange': range(1,totalPages), 'pageNumber': pageNumber, 'freshSearch': freshSearch, 'navbar':'addCitation'}
+
+
+
     return render(request, 'papers/search.html', context)

@@ -19,13 +19,22 @@
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
           <div class="span2"></div>
+          <!-- home button -->
           <li class="{% if navbar == 'home' %}active{% endif %}"><a href="{% url 'papers:frontpage' %}">Home</a></li>
-          <li class="{% if navbar == 'index' %}active{% endif %}"><a href="{% url 'papers:index' %}">Paper archive</a></li>
-          <!-- only allow addition of citations if user -->
+
+          <!-- search button -->
           {% if user.is_authenticated %}
-            <li class="{% if navbar == 'addCitation' %}active{% endif %}"><a href="{% url 'papers:search' 0 %}">Import papers from pubmed</a></li> <!-- TODO: change this to real search -->
+            <li class="dropdown {% if navbar == 'search' %}active{% endif %}">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Explore<span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url 'papers:index' %}">Search JCDB</a></li>
+                <li><a href="{% url 'papers:search' 0 %}">Import papers from pubmed</a></li>
+              </ul>
+            </li>
+          {% else %}
+            <li class="{% if navbar == 'search' %}active{% endif %}"><a href="{% url 'papers:index' %}">Explore</a></li>
           {% endif %}
-          <li class="dropdown">
+          <li class="dropdown {% if navbar == 'about' %}active{% endif %}">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">About<span class="caret"></span></a>
             <ul class="dropdown-menu">
               <li><a href="{% url 'papers:about_jcdb' %}">Tell me about this website!</a></li>

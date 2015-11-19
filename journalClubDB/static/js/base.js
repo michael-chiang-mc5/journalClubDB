@@ -18,7 +18,7 @@ $(document).ready(function() {
                $( "#down-"+post_pk ).addClass('down-arrow').removeClass('downvoted-arrow').removeClass('active-vote');
                $( "#commentscore-pk-"+post_pk ).html( data.score )
                $( "#up-"+post_pk ).html( 'upvoted' )
-               $( "#down-"+post_pk ).html( 'downvote' )                              
+               $( "#down-"+post_pk ).html( 'downvote' )
              }
         });
       } else if ( $( me ).hasClass('upvoted-arrow') ) {
@@ -80,5 +80,6 @@ $(document).ready(function() {
   $("a.hyperlink-submit-form").click(function() {
     $( this ).next('form').submit();
   });
+
 
 });

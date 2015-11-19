@@ -34,7 +34,7 @@
   border: none;
 }
 
-/* Reply boxes have smaller font */
+/* Reply boxes have smaller font
 .big-box-depth-divisible-by-two .post-top-box * {
     line-height: 1em !important;
     font-size: 11px !important;
@@ -48,7 +48,7 @@
   font-size: 11px;
 }
 
-/* make all replies embedded in grey background */
+/* make all replies embedded in grey background
 .big-box-depth-not-divisible-by-two {
   border: 0px !important;
   background-color: #F5F5F5 !important;
@@ -58,3 +58,4 @@
   padding-right: 10px;
   border-radius: 10px;
 }
+*/

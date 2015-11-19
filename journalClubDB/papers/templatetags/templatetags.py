@@ -104,6 +104,16 @@ def is_depth_one( text ):
         depth = int(text[len(dedent_prefix):])
     return depth == 1
 
+@register.filter
+def is_depth_two( text ):
+    indent_prefix = 'in-'
+    dedent_prefix = 'out-'
+    if text.startswith(indent_prefix):
+        depth = int(text[len(indent_prefix):])
+    elif text.startswith(dedent_prefix):
+        depth = int(text[len(dedent_prefix):])
+    return depth == 2
+
 # returns True if text is indent
 @register.filter
 def is_indent( text ):

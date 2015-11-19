@@ -1,0 +1,22 @@
+{% load templatetags %}
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static 'css/post_tree_template_quoraStyle.css' %}">
+
+{% for p in posts %}
+  {% if p|is_indent %}
+    {% if p|is_depth_one %}
+      <div class="big-box-depth-is-one">
+    {% elif p|is_depth_two %}
+      <div class="big-box-depth-is-two big-box-is-reply">
+    {% else %}
+      <div class="big-box-is-reply">
+    {% endif %}
+  {% elif p|is_dedent %}
+    </div>
+  {% else %}
+    <div class="single-post">
+      {% include "post_template.html" %}
+    </div>
+  {% endif %}
+
+{% endfor %}

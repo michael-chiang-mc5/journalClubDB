@@ -34,7 +34,7 @@
     <div class="tab-content">
       <!-- Content for summary jumbotron -->
       <div id="thread_0" {% if current_thread == 0 %} class="tab-pane fade in active" {% else %} class="tab-pane fade" {% endif %}>
-        <div id="summary_jumbotron" class="jumbotron">
+        <div class="jumbotron">
           <h1 id="summary-title">{{ citation.title }}</h1>
           <hr >
           <p id="summary-author">{{ citation.fullAuthorNames|parse_full_names }}</p>
@@ -119,7 +119,7 @@
               </div>
              </h2>
              <hr>
-            {% include "post_tree_template.html" %}
+            {% include "post_tree_template_quoraStyle.html" %}
           </div> <!-- end  <div class="user_comments"> -->
         </div> <!-- div id="thread_{{ forloop.counter }}" -->
       {% endfor %} <!-- end loop over threadsPostsIndents -->
@@ -127,9 +127,10 @@
       <!-- personal notes -->
       {% if user.is_authenticated %}
         <div id="thread_{{ threads|length|add:1 }}" {% if current_thread == threads|length|add:1 %} class="tab-pane fade in active" {% else %} class="tab-pane fade" {% endif %}>
-          <div id="detail_jumbotron" class="jumbotron"> <!-- make id unique -->
-            <div align="right">
-              <a class='hyperlink-submit-form'>edit</a>
+          <div class="detail-tab-box"> <!-- make id unique -->
+            <div align="left">
+              <br>
+              <a class='hyperlink-submit-form'>edit your personal notes</a>
               <form id='formData' action="{% url 'papers:personalNoteForm' %}" method=POST>
                 {% csrf_token %}
                 <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />

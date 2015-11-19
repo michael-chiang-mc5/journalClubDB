@@ -3,9 +3,11 @@
 # from Pubmed import PubmedInterface
 # x = PubmedInterface()
 # x.getRecords("Cell cycle adaptations of embryonic stem cells",10)
+# better way
 
 from Bio import Entrez
 from Bio import Medline
+from papers.models import Citation
 
 class PubmedInterface():
 
@@ -52,6 +54,39 @@ class PubmedInterface():
         for row in record["eGQueryResult"]:
             if row["DbName"]=="pubmed":
                 self.numberSearchResults = int(row["Count"])
+
+    # create list of citations
+    def getCitationList(self):
+        entries = self.entries
+        citations = []
+        for i,entry in enumerate(entries):
+            citation = Citation()
+            field_list = ["title", "author", "journal", "volume","number","pages","date","fullSource","keywords","abstract","doi","fullAuthorNames","pubmedID"]
+            for f in field_list:
+                field_entry = str(getattr(entry,f))
+                setattr(citation,f,field_entry)
+            pk = self.checkPreexistingCitations(i)
+            if pk == -1:
+                citation.preexistingEntry = False
+                setattr(citation,"pk",-i) # hacky way to make sure pk is unique
+            else:
+                citation.preexistingEntry = True
+                setattr(citation,"pk",pk)
+            citations.append(citation)
+        return citations
+
+    # check pubmed search results against internal database
+    # returns -1 if no prexisting entry, otherwise returns pk of citation
+    def checkPreexistingCitations(self,i):
+        entry = self.entries[i]
+        pubmedID = entry.pubmedID
+        try:
+            pk = Citation.objects.get(pubmedID=pubmedID).pk
+        except:
+            return -1
+        else:
+            return pk
+
 
 class PubmedEntry():
 

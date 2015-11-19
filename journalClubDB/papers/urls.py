@@ -61,9 +61,6 @@ urlpatterns = [
     # ex: /papers/detail/0/0/
     url(r'^detail/(?P<pk>[0-9]+)/(?P<current_thread>[0-9]+)/$', views.detail, name='detail'),
 
-    # ex: /papers/search/0/
-    url(r'^search_development/(?P<page>[0-9]+)/$', views.search_development, name='search_development'),
-
     url(r'^register/$', views.register, name='register'), # ADD NEW PATTERN!
     url(r'^user_login/$', views.user_login, name='user_login'),
     url(r'^is_field_available/$', views.is_field_available, name='is_field_available'),

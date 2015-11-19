@@ -2,6 +2,8 @@
 {% load templatetags %} <!-- templatetags cannot be moved to base.html -->
 
 {% block javascript %}
+  {% load staticfiles %}
+  <script src="{% static "/static/js/citation_summary_template.js" %}"></script>
 {% endblock %}
 
 {% block title %}
@@ -14,45 +16,22 @@
 
 {% if citations %}
 
-<div>
+<div class="container">
+
+  <div>
+
+
+
   {% for citation in citations %}
-
-  <!-- single citation entry -->
-
-      <div>
-        {% include "citation_summary_template.html" %}
-      </div>
-      <br>
-    {% endfor %}
+    <div>
+      {% include "citation_summary_template.html" %}
+    </div>
+    <br>
+  {% endfor %}
 
   </div>
 
-  <!-- page bar -->
-  <div class="col-md-2 col-md-offset-5">
-      <ul id="indexPagebar" class="pagination">
-          <!-- decrement page -->
-          <li>
-          {% if active_page == 1 %}
-          <a href="{% url 'papers:index' %}?page=1">&laquo;</a>
-          {% else %}
-          <a href="{% url 'papers:index' %}?page={{ active_page|decrement }}">&laquo;</a>
-          {% endif %}
-          </li>
-          <!-- page enumeration -->
-          {% for page in num_pages|get_range %}
-            <li {% if active_page == page|increment %} class="active" {% endif %}>
-            <a href="{% url 'papers:index' %}?page={{ page|increment }}">{{ page|increment }}</a></li>
-          {% endfor %}
-          <!-- increment page-->
-          <li>
-          {% if active_page == num_pages %}
-          <a href="{% url 'papers:index' %}?page={{ num_pages }}">&raquo;</a>
-          {% else %}
-          <a href="{% url 'papers:index' %}?page={{ active_page|increment }}">&raquo;</a>
-          {% endif %}
-          </li>
-      </ul>
-  </div>
+</div>
 
 {% endif %}
 {% endblock %}

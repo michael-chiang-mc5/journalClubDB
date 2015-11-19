@@ -1,19 +1,75 @@
 {% extends "base.html" %}
-
+<!-- http://www.alexhadik.com/blog/2014/6/12/create-pubmed-citations-automatically-using-pubmed-api -->
 
 {% block javascript %}
   <!-- custom javascript -->
   {% load staticfiles %}
-  <script src="{% static "/static/js/jquery-2.1.4.min.js" %}"></script>
   <script>
     url_js = "{% url 'papers:addCitation' %}"
     csrf_js = '{{ csrf_token }}'
     url2_js = "{% url 'papers:detail' 0 0 %}"
   </script>
   <script src="{% static "/static/js/search.js" %}"></script>
+  <script src="{% static "/static/js/citation_summary_template.js" %}"></script>
+  <link rel="stylesheet" href="{% static 'css/search.css' %}">
+
 {% endblock %}
 
 {% block body_block %}
+
+
+<div class="container">
+
+  <!-- search bar -->
+  <div class="row">
+    <div id="custom-search-input">
+      <div class="input-group col-md-12">
+
+
+        <div id="custom-search-input">
+          <div class="input-group col-md-12">
+            <input type="text" class="search-query form-control text-search" placeholder="Search" />
+            <span class="input-group-btn">
+              <button class="btn btn-danger" type="button">
+                <span class=" glyphicon glyphicon-search"></span>
+              </button>
+            </span>
+          </div>
+        </div>
+        <form method="POST">
+          {% csrf_token %}
+        </form>
+
+
+
+
+      </div>
+    </div>
+  </div>
+
+
+
+</div>
+
+
+
+
+<div class="container">
+	<div class="row">
+		<h2>Stylish Search Box</h2>
+           <div id="custom-search-input">
+                            <div class="input-group col-md-12">
+                                <input type="text" class="  search-query form-control" placeholder="Search" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-danger" type="button">
+                                        <span class=" glyphicon glyphicon-search"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+	</div>
+</div>
+
 
 <!-- Search bar -->
 <form action="{% url 'papers:search' 1 %}" method=POST>
@@ -23,76 +79,23 @@
   <input type="submit">
 </form>
 
-{% if freshSearch == False %}
-<h1>Search Results</h1>
-{% for entry in entries %}
-  <li>
+<div class="container">
+  <div>
+  {% for citation in citations %}
+    <div>
+      {% include "citation_summary_template.html" %}
+    </div>
+    <br>
+  {% endfor %}
+  </div>
 
-    <!-- button to go to detail page, initially hidden-->
-    {% if not entry.preexistingEntry %} <!-- Brand new entry that we can import -->
-      <a href="dummy_url" id="a_{{ forloop.counter }}"> <!-- dummy_url will get replaced by ajax -->
-        <button id="b_{{ forloop.counter }}" style="display:none;">Import</button>
-      </a>
-    {% else %}  <!-- Entry already exists -->
-      <a href="{% url 'papers:detail' entry.preexistingEntry_pk 0 %}" id="a_{{ forloop.counter }}">
-        <button id="b_{{ forloop.counter }}">View</button>
-      </a>
-    {% endif %}
+  <div>
+    {% for entry in entries %}
+      {{ entry.title }}
+    {% endfor %}
 
-    <!-- button to add pubmed citation to internal database-->
-    {% if entry.preexistingEntry %}
-    <form method='post' id="f_{{ forloop.counter }}" style="display:none;">
-    {% else %}
-    <form method='post' id="f_{{ forloop.counter }}">
-    {% endif %}
-       {% csrf_token %}
-       <input type="hidden" id="title_{{ forloop.counter }}" value="{{ entry.title }}"/>
-       <input type="hidden" id="author_{{ forloop.counter }}" value="{{ entry.author }}"/>
-       <input type="hidden" id="journal_{{ forloop.counter }}" value="{{ entry.journal }}"/>
-       <input type="hidden" id="volume_{{ forloop.counter }}" value="{{ entry.volume }}"/>
-       <input type="hidden" id="number_{{ forloop.counter }}" value="{{ entry.number }}"/>
-       <input type="hidden" id="pages_{{ forloop.counter }}" value="{{ entry.pages }}"/>
-       <input type="hidden" id="date_{{ forloop.counter }}" value="{{ entry.date }}"/>
-       <input type="hidden" id="fullSource_{{ forloop.counter }}" value="{{ entry.fullSource }}"/>
-       <input type="hidden" id="keywords_{{ forloop.counter }}" value="{{ entry.keywords }}"/>
-       <input type="hidden" id="abstract_{{ forloop.counter }}" value="{{ entry.abstract }}"/>
-       <input type="hidden" id="doi_{{ forloop.counter }}" value="{{ entry.doi }}"/>
-       <input type="hidden" id="fullAuthorNames_{{ forloop.counter }}" value="{{ entry.fullAuthorNames }}"/>
-       <input type="hidden" id="pubmedID_{{ forloop.counter }}" value="{{ entry.pubmedID }}"/>
-       <input type='submit' id="s_{{ forloop.counter }}" value='Import'/>
-    </form>
+</div>
 
-    <!-- title with pubmed link -->
-    <p><a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ entry.pubmedID }}">{{ entry.title }}</a></p>
-    <!-- author list -->
-    <p>
-      {% for author in entry.author %}
-        {% if forloop.last %}
-          and {{ author }}
-        {% else %}
-          {{ author }},
-        {% endif %}
-      {% endfor %}
-    </p>
-    <!-- journal information -->
-    <p>{{ entry.fullSource }}</p>
-  </li>
-{% endfor %}
 
-<!-- Next/Prev page links  -->
-{% for page in totalPagesRange %}
-  {% if page == pageNumber %}
-    {{ page }}
-  {% else %}
-    <form action="{% url 'papers:search' page %}" method=POST>
-        {% csrf_token %}
-        <input type="hidden" name="search_str" value="{{ search_str }}" />
-        <input type="hidden" name="pageNumber" value="{{ page }}" />
-        <input type="hidden" name="totalPages" value="{{ totalPages }}"/>
-        <button>{{ page }}</button>
-    </form>
-  {% endif %}
-{% endfor %}
-{% endif %}
 
 {% endblock %}

@@ -9,7 +9,7 @@
   url_downvote = "{% url 'papers:downvote' %}"
 </script>
 
-<div id="post-{{ p.pk }}">
+<div id="post-{{ p.pk }}" class="post-wrapper">
 
 
 <table>
@@ -51,9 +51,9 @@
 <td class="answercell">
   <!-- top bar containing username, points, time posted -->
   <div class="post-top-box">
-    <span class="comment-user"><a class="bold" href="{% url 'papers:user_posts' p.creator.pk %}">{{ p.creator.username }}</a></span>
+    <span><a class="bold comment-user" href="{% url 'papers:user_posts' p.creator.pk %}">{{ p.creator.username }}</a></span>
     <span>&nbsp;</span>
-    <span id="commentscore-pk-{{ p.pk }}">{{ p.score }}</span><span> point{{p.score|pluralize}}</span>
+    <span id="commentscore-pk-{{ p.pk }}" class="comment-score">{{ p.score }}</span><span class="comment-score"> point{{p.score|pluralize}}</span>
     <span class="comment-time" id="comment-time-{{ p.pk }}">
       {{ p.time_created|age }}
     </span>
@@ -62,7 +62,7 @@
   <!-- middle box containing post content. javascript used to switch between edits -->
   <div class="post-middle-box">
     {% for recent_post in p.get_undecoded_textTupleVector %}
-      <div id="comment-text-{{ p.pk }}-{{ forloop.counter }}" class="comment-target-all-{{ p.pk }} comment-all {% if forloop.last %} comment-last {% endif %}">
+      <div id="comment-text-{{ p.pk }}-{{ forloop.counter }}" class="comment-text comment-target-all-{{ p.pk }} comment-all {% if forloop.last %} comment-last {% endif %}">
         {{ recent_post.0 | safe}} <!-- text -->
       </div>
     {% endfor %}
@@ -84,7 +84,7 @@
     {% else %}
       <div class="pointer inline" id="upvote-modal"><a class="activate-login-modal-vote" data-toggle="modal" data-target="#myModal" title="This comment is useful">upvote</a></div>
     {% endif %}
-    &nbsp; &nbsp; &nbsp;
+    &nbsp;
     </span>
 
     <!-- downvote button -->
@@ -99,14 +99,14 @@
     {% else %}
       <div class="pointer inline" id="downvote-modal"><a class="activate-login-modal-vote" data-toggle="modal" data-target="#myModal" title="This comment is not useful">downvote</a></div>
     {% endif %}
-    &nbsp; &nbsp; &nbsp;
+    &nbsp;
     </span>
 
     {% if user.is_authenticated %}
 
       <!-- reply button -->
       <span>
-        <a class='hyperlink-submit-form'>reply</a> &nbsp; &nbsp; &nbsp;
+        <a class='hyperlink-submit-form'>reply</a> &nbsp;
         <form class="inline" id='formData' action="{% url 'papers:postForm' %}" method=POST>
           {% csrf_token %}
           <input type="hidden" name="citation" value="{{ p.thread.owner.title }}" />
@@ -116,12 +116,13 @@
           <input type="hidden" name="thread_pk" value="{{ p.thread.pk }}" />
           <input type="hidden" name="isReplyToPost" value="1" />
           <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
-          <!--  <input type="hidden" name="current_thread" value="{{ forloop.parentloop.counter }}" /> -->
+          <!--
           <input type="hidden" name="initial_text" value="{% with p.get_undecoded_textTupleVector|last as recent_post %}
                                                             {{ recent_post.0 }}
                                                           {% endwith %}
-                                                          "/>
-          <input type="hidden" name="blockquote" value="True" />
+                                                          "/> -->
+          <input type="hidden" name="initial_text" value="" />
+          <input type="hidden" name="blockquote" value="False" />
           <input type="hidden" name="post_pk" value="-1" />
           <input type="hidden" name="edit_or_reply" value="reply" />
         </form>
@@ -131,7 +132,7 @@
       {% if user.get_username == p.creator.username %}
         <!-- edit button -->
         <span>
-          <a class='hyperlink-submit-form'>edit</a> &nbsp; &nbsp; &nbsp;
+          <a class='hyperlink-submit-form'>edit</a> &nbsp;
           <form class="inline" id='formData' action="{% url 'papers:postForm' %}" method=POST>
             {% csrf_token %}
             <input type="hidden" name="citation" value="{{ p.thread.owner.title }}" />
@@ -156,14 +157,14 @@
     <!-- if user is not authenticated -->
     {% else %}
       <span>
-        <span><a data-toggle="modal" data-target="#myModal" class="pointer activate-login-modal-post">reply</a>  &nbsp; &nbsp; &nbsp; </span>
+        <span><a data-toggle="modal" data-target="#myModal" class="pointer activate-login-modal-post">reply</a>  &nbsp; </span>
       </span>
 
     {% endif %}
     <!-- dropdown to select post history -->
     <span>
       <span class="dropdown">
-           <a data-toggle="dropdown" class="dropdown-toggle pointer">history <b class="caret"></b></a> &nbsp; &nbsp; &nbsp;
+           <a data-toggle="dropdown" class="dropdown-toggle pointer">history <b class="caret"></b></a> &nbsp;
            <ul class="dropdown-menu">
              {% for recent_post in p.get_undecoded_textTupleVector %}
                <li class="li-dropdown-{{p.pk}} li-dropdown-{{p.pk}}-{{forloop.counter}} {% if forloop.last %} active {% endif %}"><a id="action-{{ p.pk }}-{{ forloop.counter }}" >
@@ -182,9 +183,11 @@
        </span>
     </span>
 
-    <span>
-      <a href="{% url 'papers:post_context' p.pk %}">context</a>
-    </span>
+    {% if post_context %}
+      <span>
+        <a href="{% url 'papers:post_context' p.pk %}">context</a>
+      </span>
+    {% endif %}
 
   </div>
 </td>
