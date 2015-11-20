@@ -10,8 +10,8 @@
     <a class="list-group-item small">{{ citation.abstract }}</a>
 
     {% if is_search_results %}
-      {% if citation.preexistingEntry %}
-        <a class="list-group-item" href="{% url 'papers:detail' citation.pk  0 %}">
+      {% if citation.preExistingEntryExists != -1 %}
+        <a class="list-group-item" href="{% url 'papers:detail' citation.preExistingEntryExists  0 %}">
           <button type="button" class="btn btn-primary btn-xs">Discuss in JCDB</button>
         </a>
       {% else %} <!-- functionality to import citations into JCDB. Submission handled by javascript in search.js -->

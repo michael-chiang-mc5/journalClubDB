@@ -43,13 +43,43 @@ class Citation(models.Model):
             else:
                 full_name = authors['first_name'] + ' ' + authors['last_name']
             return full_name
-        else:   # case where there are multiple authors
+        else:   # case where there are multiple authors TODO: implement this
             return authors[0]['last_name'] + ' et al'
 
+    def filled_field(self,fieldname):
+        if not getattr(self,fieldname): # check if NoneType
+            return False
+        if len(getattr(self,fieldname))==0: # entry is ''
+            return False
+        return True
+
+    # Returns -1 if no preexisting Citation object with matching pubmed ID
+    # Returns pk of preexisting object otherwise
+    def preExistingEntryExists(self):
+        my_pk = self.eval('pubmedID')
+        try:
+            citation = Citation.objects.get(pubmedID=my_pk)
+        except:
+            return -1
+        else:
+            return citation.pk
+
+    def get_source(self):
+        source = "<i>" + self.journal +"</i>"
+        if self.filled_field('volume'):
+            source += ' ' + self.volume
+        if self.filled_field('number'):
+            source += ", no. " + self.number
+        source += " (" + self.get_year_published() + ')'
+        if self.filled_field('pages'):
+            source += ": " + self.pages
+        source += "."
+        return source
     def get_journal(self):
         return self.journal
     def get_year_published(self):
-        return self.pubDate['Year']
+        date_dict = self.eval('pubDate')
+        return date_dict['Year']
     def serialize(self):
         d = self.__dict__
         d.pop("_state", None)
@@ -60,7 +90,12 @@ class Citation(models.Model):
             if key == 'id' or key == 'pk' or key == '_state':
                 continue
             setattr(self,key,d[key])
-
+    def eval(self,fieldname):
+        try:
+            rn = ast.literal_eval(getattr(self,fieldname))
+        except:
+            rn = getattr(self,fieldname)
+        return rn
 
     def create_associated_threads_posts(self):
         # TODO: add error checking to make sure not already created
@@ -250,7 +285,7 @@ class Post(models.Model):
     mother = models.ForeignKey('self', blank=True, null=True)
     text = models.TextField() # json serialized
     node_depth = models.PositiveIntegerField() # base node posts have a node depth of 0
-
+    deleted = models.NullBooleanField(blank=True, null=True)   # TODO: implement
     # to access upvoted posts from User instance, user.upvoted.all()
     upvoters   = models.ManyToManyField(User, blank=True, related_name="upvoted")
     downvoters = models.ManyToManyField(User, blank=True, related_name="downvoted")

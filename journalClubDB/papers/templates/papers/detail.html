@@ -38,7 +38,7 @@
           <h1 id="summary-title">{{ citation.title }}</h1>
           <hr >
           <p id="summary-author">{{ citation.get_author_list }}</p>
-          <p id="summary-source">{{ citation.fullSource }} </p>
+          <p id="summary-source">{{ citation.get_source | safe }} </p>
           <hr >
           <p id="summary-abstract"> {{ citation.abstract }} </p>
 
