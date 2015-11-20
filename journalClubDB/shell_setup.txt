@@ -18,3 +18,21 @@ python manage.py createsuperuser
 
 python manage.py sqlclear papers | python manage.py dbshell
 python manage.py syncdb
+
+from papers.models import *
+from papers.views import *
+json_str = load_object('deleteMe.pkl')
+json_object = json.loads(json_str)
+articles_json = json_object['PubmedArticle']
+
+try:    # multiple articles
+  citations = []
+  for article_json in articles_json:
+      citation = Citation()
+      citation.parse_pubmedJson(article_json)
+      citations.append(citation)
+except: # single article
+    citations = []
+    citation = Citation()
+    citation.parse_pubmedJson(articles_json)
+    citations.append(citation)

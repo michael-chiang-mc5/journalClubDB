@@ -17,6 +17,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 #from datetime import datetime, timedelta, timezone
 import datetime
+import json
 
 
 def add_indent_dedent_to_post_list(post_list):
@@ -338,9 +339,13 @@ def add_tag(request):
             tag.save()
         return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,current_thread]))
 
+# To open: import pickle; favorite_color = pickle.load( open( "save.p", "rb" ) )
 def save_object(obj, filename):
     with open(filename, 'wb') as output:
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
+
+def load_object(filename):
+    return pickle.load( open( filename, "rb" ) )
 
 def safe_text(initial_text):
     initial_text = initial_text.replace("\r","")
@@ -433,7 +438,7 @@ def addPost(request):
         post.notify_mother_author()         # notify author of mother post that you replied to him
         return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,thread_number])+'#post-'+str(post.pk))
 
-def addCitation(request):
+def addCitation_deprecated(request):
     # check for duplicate citations.  If citation already exists, return primary key of the citation
     pubmedID = request.POST['pubmedID']
     citations = Citation.objects.filter(pubmedID=pubmedID)
@@ -472,7 +477,14 @@ def addCitation(request):
     new_citation_url = reverse('papers:detail',args=[citation.pk,0])
     return JsonResponse({'new_citation_url':new_citation_url})
 
-
+def addCitation(request):
+    citation_data_serialized = request.POST['citation_serialized']
+    citation = Citation()
+    citation.deserialize(citation_data_serialized)
+    citation_pk = citation.save_if_unique()
+    # Return url to new citation detail page
+    new_citation_url = reverse('papers:detail',args=[citation_pk,0])
+    return HttpResponse(new_citation_url)
 
 # returns ordered list of posts.  Ordering is greedy
 # Input post_list should constitute a full tree with a single base node (no error checking)
@@ -656,46 +668,49 @@ def search0(request,page):
     context = {'entries': pubmed.entries, 'search_str': search_str, 'totalPages':totalPages, 'totalPagesRange': range(1,totalPages), 'pageNumber': pageNumber, 'freshSearch': freshSearch, 'navbar':'addCitation'}
     return render(request, 'papers/search0.html', context)
 
+
 # search interface
 def search(request,page):
 
-    pubmed = PubmedInterface()
-    search_str = ''
-    totalPages=0
-    pageNumber=0
-    if request.method == 'POST': # either search initiated or page change
-        searchInitiated = request.POST.get("searchInitiated")
-        return HttpResponse("hihi")
 
-        if searchInitiated == "True": # search initiated
-            search_str = request.POST.get("search_str")
-            pubmed.countNumberSearchResults(search_str)
-            numberSearchResults = pubmed.numberSearchResults
-            totalPages = math.ceil(numberSearchResults/10)
-            pageNumber=1
-            retMin = 0
-            retMax = 10
-            citations = Citation.objects.all()
-            pubmed.getRecords(search_str,retMin,retMax)
-        else: # page change
-            search_str = request.POST.get("search_str")
-            pageNumber = int(request.POST.get("pageNumber"))
-            retMin = (pageNumber - 1)*10
-            retMax = 10
-            citations = Citation.objects.all()
-            pubmed.getRecords(search_str,retMin,retMax)
-            totalPages = int(request.POST.get("totalPages"))
-        freshSearch=False
-    else:
-        freshSearch=True
+    json_str = load_object('deleteMe.pkl')
+    json_object = json.loads(json_str)
+    articles_json = json_object['PubmedArticle']
 
-    totalPages = min([totalPages,15+1]) # maximum of 15 pages
-    #pubmed = checkPubmedEntriesForPreexistingCitations(pubmed)
-    citations = pubmed.getCitationList()
+    try:    # multiple articles
+        citations = []
+        for article_json in articles_json:
+            citation = Citation()
+            citation.parse_pubmedJson(article_json)
+            citations.append(citation)
+    except: # single article
+        citations = []
+        citation = Citation()
+        citation.parse_pubmedJson(articles_json)
+        citations.append(citation)
 
+    search_bar_placeholder = "Search pubmed ... "
 
-    context = {'citations':citations, 'entries': pubmed.entries, 'search_str': search_str, 'totalPages':totalPages, 'totalPagesRange': range(1,totalPages), 'pageNumber': pageNumber, 'freshSearch': freshSearch, 'navbar':'addCitation'}
+    # client has passed us POST data containing Pubmed xml
+    # we will create list of citation objects from post data and pass it back
+    if request.method == 'POST':
+        search_bar_placeholder = request.POST.get("search_bar_placeholder")
+        json_str = request.POST.get("json_str")
+        #save_object(json_str, 'deleteMe.pkl')
+        json_object = json.loads(json_str)
+        articles_json = json_object['PubmedArticle']
 
+        try:    # multiple articles
+            citations = []
+            for article_json in articles_json:
+                citation = Citation()
+                citation.parse_pubmedJson(article_json)
+                citations.append(citation)
+        except: # single article
+            citations = []
+            citation = Citation()
+            citation.parse_pubmedJson(articles_json)
+            citations.append(citation)
 
-
+    context = {'navbar':'search','is_search_results':True,'citations':citations,'search_bar_placeholder':search_bar_placeholder}
     return render(request, 'papers/search.html', context)

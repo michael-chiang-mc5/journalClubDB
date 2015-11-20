@@ -8,93 +8,60 @@
     url_js = "{% url 'papers:addCitation' %}"
     csrf_js = '{{ csrf_token }}'
     url2_js = "{% url 'papers:detail' 0 0 %}"
+    url_search = "{% url 'papers:search' 1 %}"
   </script>
+  <script src="{% static "/static/js/xml2json.js" %}"></script> <!-- must be called before search.js -->
   <script src="{% static "/static/js/search.js" %}"></script>
   <script src="{% static "/static/js/citation_summary_template.js" %}"></script>
   <link rel="stylesheet" href="{% static 'css/search.css' %}">
-
 {% endblock %}
 
 {% block body_block %}
 
+  <div class="container">
 
-<div class="container">
-
-  <!-- search bar -->
-  <div class="row">
-    <div id="custom-search-input">
-      <div class="input-group col-md-12">
-
-
-        <div id="custom-search-input">
-          <div class="input-group col-md-12">
-            <input type="text" class="search-query form-control text-search" placeholder="Search" />
-            <span class="input-group-btn">
-              <button class="btn btn-danger" type="button">
-                <span class=" glyphicon glyphicon-search"></span>
-              </button>
-            </span>
+    <!-- search bar -->
+    <div class="row">
+      <div id="custom-search-input">
+        <div class="input-group col-md-12">
+          <div id="custom-search-input">
+            <div class="input-group col-md-12">
+              <input type="text" class="search-query form-control text-search" placeholder="{{ search_bar_placeholder }}" />
+              <span class="input-group-btn">
+                <button class="btn btn-danger" type="button">
+                  <span class=" glyphicon glyphicon-search"></span>
+                </button>
+              </span>
+            </div>
           </div>
         </div>
-        <form method="POST">
-          {% csrf_token %}
-        </form>
-
-
-
-
       </div>
     </div>
-  </div>
 
+    {% if citations|length > 0 %}
+      <br />
+      <hr class="grey" />
+      <br />
+    {% endif %}
 
-
-</div>
-
-
-
-
-<div class="container">
-	<div class="row">
-		<h2>Stylish Search Box</h2>
-           <div id="custom-search-input">
-                            <div class="input-group col-md-12">
-                                <input type="text" class="  search-query form-control" placeholder="Search" />
-                                <span class="input-group-btn">
-                                    <button class="btn btn-danger" type="button">
-                                        <span class=" glyphicon glyphicon-search"></span>
-                                    </button>
-                                </span>
-                            </div>
-                        </div>
-	</div>
-</div>
-
-
-<!-- Search bar -->
-<form action="{% url 'papers:search' 1 %}" method=POST>
-  {% csrf_token %}
-  <input type="text" value="{{ search_str }}" name="search_str">
-  <input type="hidden" name="searchInitiated" value="True" />
-  <input type="submit">
-</form>
-
-<div class="container">
-  <div>
-  {% for citation in citations %}
-    <div>
-      {% include "citation_summary_template.html" %}
-    </div>
-    <br>
-  {% endfor %}
-  </div>
-
-  <div>
-    {% for entry in entries %}
-      {{ entry.title }}
+    <!-- search results -->
+    {% for citation in citations %}
+      <div class="row">
+        {% include "citation_summary_template.html" %}
+      </div>
     {% endfor %}
+  </div>
 
-</div>
+  <!-- this is a hidden form that holds pubmed xml string  -->
+  <form method="POST" id="pubmed-search-form">
+    {% csrf_token %}
+    <input type="hidden" id="pubmed-search-text" name="json_str" value="placeholder" />
+    <input type="hidden" id="search-bar-placeholder" name="search_bar_placeholder" value="placeholder" />
+  </form>
+
+
+
+
 
 
 

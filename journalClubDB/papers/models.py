@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 import json
 from bson import json_util
+import ast
+import datetime
 
 # This is internal journalclubDB citation data (as opposed to external pubmed citation data)
 class Citation(models.Model):
@@ -21,20 +23,154 @@ class Citation(models.Model):
                     tMax = t.time_last_post()
         return tMax
 
-    title = models.TextField(blank=True)
-    author = models.TextField(blank=True)
-    journal = models.TextField(blank=True)
-    volume = models.TextField(blank=True)
-    number = models.TextField(blank=True)
-    pages = models.TextField(blank=True)
-    date = models.TextField(blank=True)
-    fullSource = models.TextField(blank=True)
-    keywords = models.TextField(blank=True)
-    abstract = models.TextField(blank=True)
-    doi = models.TextField(blank=True)
-    fullAuthorNames = models.TextField(blank=True)
-    pubmedID = models.PositiveIntegerField(blank=True)
-    # optional fields
+    def get_author_list_truncated(self):
+        if type(self.authors) is dict: # case where there is only one author
+            return self.authors['initials'] + ' ' + self.authors['last_name']
+        else:   # case where there are multiple authors
+            return self.authors[0]['last_name'] + ' et al'
+    def get_journal(self):
+        return self.journal
+    def get_year_published(self):
+        return self.pubDate['Year']
+    def serialize(self):
+        d = self.__dict__
+        d.pop("_state", None)
+        return str(d)
+    def deserialize(self,str):
+        d = ast.literal_eval(str)
+        for key in d.keys():
+            if key == 'id' or key == 'pk' or key == '_state':
+                continue
+            setattr(self,key,d[key])
+
+
+    def create_associated_threads_posts(self):
+        # TODO: add error checking to make sure not already created
+        thread_titles = ["Explain Like I'm Five","Methodology","Results","Historical Context"]
+        thread_descriptions = ["Easy to understand summary of the paper",
+                               "Description of innovative methodologies",
+                               "Description of main results of the paper",
+                               "How does the paper fit into the pre-existing literature"]
+        ordering = [1,2,3,4]
+        for title,description,order in zip(thread_titles,thread_descriptions,ordering):
+            thread = Thread()
+            setattr(thread,'owner',self)
+            setattr(thread,'title',title)
+            setattr(thread,'description',description)
+            setattr(thread,'order',order)
+            thread.save()
+            post = Post()
+            post = Post(time_created=datetime.datetime.now(),thread=thread,
+                        isReplyToPost=False,text="",node_depth=0)
+            post.save()
+
+    # saves object if it does not already exist in database (based on pubmed ID)
+    # also creates associated threads and posts
+    # returns pk of self, or of matching db entry
+    def save_if_unique(self):
+        try:
+            citation = Citation.objects.get(pubmedID=self.pubmedID)
+        except: # does not exist in database
+            self.save()
+            self.create_associated_threads_posts()
+            return self.pk
+        else:
+            return citation.pk
+
+
+    # parses a json string from pubmed into self
+    def parse_pubmedJson(self,json_object):
+        parsed_data = self.pubmedJson_to_dict(json_object)
+
+        fieldnames = list(self.__dict__.keys())
+        for fieldname in fieldnames:
+            try:
+                setattr(self,fieldname,parsed_data[fieldname])
+            except:
+                pass
+
+    def pubmedJson_to_dict(self,json_object):
+        parsed_data = {}
+
+        # There is no try/except because we want to be sure we are working with a proper pubmed json object
+        medline_data = json_object['MedlineCitation']
+        parsed_data.update({'pubmedID':medline_data['PMID']})
+        citation_data = medline_data['Article']
+
+        try:
+            parsed_data.update({'keywords':medline_data['KeywordList']})
+        except:
+            pass
+        try:
+            parsed_data.update({'mesh_keywords':medline_data['MeshHeadingList']['MeshHeading']})
+        except:
+            pass
+        try:
+            parsed_data.update({'PublicationType':citation_data['PublicationTypeList']['PublicationType']})
+        except:
+            pass
+        try:
+            parsed_data.update({'doi':citation_data['ELocationID']})
+        except:
+            pass
+        try:
+            parsed_data.update({'abstract':citation_data['Abstract']['AbstractText']})
+        except:
+            pass
+        try:
+            parsed_data.update({'pages':citation_data['Pagination']['MedlinePgn']})
+        except:
+            pass
+        try:
+            parsed_data.update({'number':citation_data['Journal']['JournalIssue']['Issue']})
+        except:
+            pass
+        try:
+            parsed_data.update({'volume':citation_data['Journal']['JournalIssue']['Volume']})
+        except:
+            pass
+        try:
+            parsed_data.update({'pubDate':citation_data['Journal']['JournalIssue']['PubDate']})
+        except:
+            pass
+        try:
+            parsed_data.update({'journal':citation_data['Journal']['Title']})
+        except:
+            pass
+        try:
+            parsed_data.update({'journalAbbreviated':citation_data['Journal']['ISOAbbreviation']})
+        except:
+            pass
+        try:
+            parsed_data.update({'title':citation_data['ArticleTitle']})
+        except:
+            pass
+        try:
+            authors = citation_data['AuthorList']['Author']
+            parsed_author_data = {}
+            for author in authors:
+                first_name = author['ForeName'] # this includes middle initial
+                initials = author['Initials'] # first initial, middle initial
+                last_name = author['LastName']
+                parsed_author_data.update({'first_name':first_name,'initials':initials,'last_name':last_name})
+            parsed_data.update({'authors':parsed_author_data})
+        except:
+            pass
+        return parsed_data
+
+    title = models.TextField(blank=True,null=True)
+    authors = models.TextField(blank=True,null=True)
+    journal = models.TextField(blank=True,null=True)
+    journalAbbreviated = models.TextField(blank=True,null=True)
+    volume = models.TextField(blank=True,null=True)
+    number = models.TextField(blank=True,null=True)
+    pages = models.TextField(blank=True,null=True)
+    pubDate = models.TextField(blank=True,null=True)
+    keywords = models.TextField(blank=True,null=True)
+    mesh_keywords = models.TextField(blank=True,null=True)
+    abstract = models.TextField(blank=True,null=True)
+    doi = models.TextField(blank=True,null=True)
+    pubmedID = models.PositiveIntegerField(blank=True,null=True)
     link = models.TextField(blank=True,null=True) # link to pdf
 
 # Discussion thread for a particular citation
@@ -92,7 +228,7 @@ class Post(models.Model):
     time_created = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, blank=True, null=True)
     thread = models.ForeignKey(Thread)
-    isReplyToPost = models.BooleanField()
+    isReplyToPost = models.BooleanField()   # TODO: This may be unnecessary
     mother = models.ForeignKey('self', blank=True, null=True)
     text = models.TextField() # json serialized
     node_depth = models.PositiveIntegerField() # base node posts have a node depth of 0
