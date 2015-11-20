@@ -24,10 +24,28 @@ class Citation(models.Model):
         return tMax
 
     def get_author_list_truncated(self):
-        if type(self.authors) is dict: # case where there is only one author
-            return self.authors['initials'] + ' ' + self.authors['last_name']
+        authors = self.authors
+        if type(authors) is str:
+            authors = ast.literal_eval(authors)
+
+        if type(authors) is dict: # case where there is only one author
+            return authors['initials'] + ' ' + authors['last_name']
         else:   # case where there are multiple authors
-            return self.authors[0]['last_name'] + ' et al'
+            return authors[0]['last_name'] + ' et al'
+    def get_author_list(self):
+        authors = self.authors
+        if type(authors) is str:
+            authors = ast.literal_eval(authors)
+
+        if type(authors) is dict: # case where there is only one author
+            if authors['first_name'][-2] == ' ':
+                full_name = authors['first_name'] + '. ' + authors['last_name']
+            else:
+                full_name = authors['first_name'] + ' ' + authors['last_name']
+            return full_name
+        else:   # case where there are multiple authors
+            return authors[0]['last_name'] + ' et al'
+
     def get_journal(self):
         return self.journal
     def get_year_published(self):
