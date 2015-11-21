@@ -2,7 +2,7 @@
 {% load templatetags %}
 
 {% block title %}
-  {{ citation.author|first_author }}, {{ citation.date|citation_year }}
+  {{ citation.get_author_list_truncated }}, {{ citation.get_year_published }}
 {% endblock %}
 
 {% block javascript %}

@@ -672,11 +672,10 @@ def search0(request,page):
 # search interface
 def search(request,page):
 
-
+    ## This is to debug without repeatedly querying pubmed
     json_str = load_object('deleteMe.pkl')
     json_object = json.loads(json_str)
     articles_json = json_object['PubmedArticle']
-
     try:    # multiple articles
         citations = []
         for article_json in articles_json:
@@ -696,10 +695,9 @@ def search(request,page):
     if request.method == 'POST':
         search_bar_placeholder = request.POST.get("search_bar_placeholder")
         json_str = request.POST.get("json_str")
-        #save_object(json_str, 'deleteMe.pkl')
+        save_object(json_str, 'deleteMe.pkl')
         json_object = json.loads(json_str)
         articles_json = json_object['PubmedArticle']
-
         try:    # multiple articles
             citations = []
             for article_json in articles_json:

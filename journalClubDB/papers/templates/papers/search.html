@@ -10,11 +10,13 @@
     url2_js = "{% url 'papers:detail' 0 0 %}"
     url_search = "{% url 'papers:search' 1 %}"
   </script>
+  <script src="{% static "/static/js/jquery-2.1.4.min.js" %}"></script>
   <script src="{% static "/static/js/xml2json.js" %}"></script> <!-- must be called before search.js -->
   <script src="{% static "/static/js/search.js" %}"></script>
   <script src="{% static "/static/js/citation_summary_template.js" %}"></script>
   <link rel="stylesheet" href="{% static 'css/search.css' %}">
 {% endblock %}
+
 
 {% block body_block %}
 
@@ -49,6 +51,7 @@
       <div class="row">
         {% include "citation_summary_template.html" %}
       </div>
+      <br />
     {% endfor %}
   </div>
 

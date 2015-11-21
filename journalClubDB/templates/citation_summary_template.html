@@ -2,11 +2,20 @@
 <!-- requires template variable: citation -->
 {% load templatetags %}
 <div>
-  <a id="citation-toggle-{{ citation.pk }}" class="list-group-item" data-toggle="collapse" data-target="#citation-item-{{ citation.pk }}" data-parent="#menu"> <!-- TODO: color this (active?) -->
+  {% if is_search_results %}
+    <a id="citation-toggle-{{ forloop.counter }}" class="list-group-item" data-toggle="collapse" data-target="#citation-item-{{ forloop.counter }}" data-parent="#menu"> <!-- TODO: color this (active?) -->
+  {% else %}
+    <a id="citation-toggle-{{ citation.pk }}" class="list-group-item" data-toggle="collapse" data-target="#citation-item-{{ citation.pk }}" data-parent="#menu"> <!-- TODO: color this (active?) -->
+  {% endif %}
     <h4 class="list-group-item-heading">{{ citation.title }}</h4>
     <p class="list-group-item-text">{{ citation.get_author_list_truncated }} ({{ citation.get_year_published }}). {{ citation.get_journal }}.</p>
   </a>
-  <div id="citation-item-{{ citation.pk }}" class="citation-index-all sublinks collapse {% if forloop.counter == 1 %}in{% endif %}"> <!-- start with first entry not collapsed -->
+
+  {% if is_search_results %}
+    <div id="citation-item-{{ forloop.counter }}" class="citation-index-all sublinks collapse {% if forloop.counter == 1 %}in{% endif %}"> <!-- start with first entry not collapsed -->
+  {% else %}
+    <div id="citation-item-{{ citation.pk }}" class="citation-index-all sublinks collapse {% if forloop.counter == 1 %}in{% endif %}"> <!-- start with first entry not collapsed -->
+  {% endif %}
     <a class="list-group-item small">{{ citation.abstract }}</a>
 
     {% if is_search_results %}

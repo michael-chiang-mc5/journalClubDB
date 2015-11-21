@@ -27,7 +27,6 @@ class Citation(models.Model):
         authors = self.authors
         if type(authors) is str:
             authors = ast.literal_eval(authors)
-
         if type(authors) is dict: # case where there is only one author
             return authors['initials'] + ' ' + authors['last_name']
         else:   # case where there are multiple authors
@@ -79,7 +78,11 @@ class Citation(models.Model):
         return self.journal
     def get_year_published(self):
         date_dict = self.eval('pubDate')
-        return date_dict['Year']
+        try:
+            year = date_dict['Year']
+        except:
+             year = date_dict['MedlineDate']
+        return year
     def serialize(self):
         d = self.__dict__
         d.pop("_state", None)
@@ -143,70 +146,71 @@ class Citation(models.Model):
                 pass
 
     def pubmedJson_to_dict(self,json_object):
-        parsed_data = {}
+        parsed_data = dict()
 
         # There is no try/except because we want to be sure we are working with a proper pubmed json object
         medline_data = json_object['MedlineCitation']
-        parsed_data.update({'pubmedID':medline_data['PMID']})
+        parsed_data['pubmedID'] = medline_data['PMID']
         citation_data = medline_data['Article']
 
         try:
-            parsed_data.update({'keywords':medline_data['KeywordList']})
+            parsed_data['keywords'] = medline_data['KeywordList']
         except:
             pass
         try:
-            parsed_data.update({'mesh_keywords':medline_data['MeshHeadingList']['MeshHeading']})
+            parsed_data['mesh_keywords'] = medline_data['MeshHeadingList']['MeshHeading']
         except:
             pass
         try:
-            parsed_data.update({'PublicationType':citation_data['PublicationTypeList']['PublicationType']})
+            parsed_data['PublicationType'] = citation_data['PublicationTypeList']['PublicationType']
         except:
             pass
         try:
-            parsed_data.update({'doi':citation_data['ELocationID']})
+            parsed_data['doi'] = citation_data['ELocationID']
         except:
             pass
         try:
-            parsed_data.update({'abstract':citation_data['Abstract']['AbstractText']})
+            parsed_data['abstract'] = citation_data['Abstract']['AbstractText']
         except:
             pass
         try:
-            parsed_data.update({'pages':citation_data['Pagination']['MedlinePgn']})
+            parsed_data['pages'] = citation_data['Pagination']['MedlinePgn']
         except:
             pass
         try:
-            parsed_data.update({'number':citation_data['Journal']['JournalIssue']['Issue']})
+            parsed_data['number'] = citation_data['Journal']['JournalIssue']['Issue']
         except:
             pass
         try:
-            parsed_data.update({'volume':citation_data['Journal']['JournalIssue']['Volume']})
+            parsed_data['volume'] = citation_data['Journal']['JournalIssue']['Volume']
         except:
             pass
         try:
-            parsed_data.update({'pubDate':citation_data['Journal']['JournalIssue']['PubDate']})
+            parsed_data['pubDate'] = citation_data['Journal']['JournalIssue']['PubDate']
         except:
             pass
         try:
-            parsed_data.update({'journal':citation_data['Journal']['Title']})
+            parsed_data['journal'] = citation_data['Journal']['Title']
         except:
             pass
         try:
-            parsed_data.update({'journalAbbreviated':citation_data['Journal']['ISOAbbreviation']})
+            parsed_data['journalAbbreviated'] = citation_data['Journal']['ISOAbbreviation']
         except:
             pass
         try:
-            parsed_data.update({'title':citation_data['ArticleTitle']})
+            parsed_data['title'] = citation_data['ArticleTitle']
         except:
             pass
         try:
             authors = citation_data['AuthorList']['Author']
-            parsed_author_data = {}
+            parsed_author_data = []
             for author in authors:
-                first_name = author['ForeName'] # this includes middle initial
-                initials = author['Initials'] # first initial, middle initial
-                last_name = author['LastName']
-                parsed_author_data.update({'first_name':first_name,'initials':initials,'last_name':last_name})
-            parsed_data.update({'authors':parsed_author_data})
+                single_author = dict()
+                single_author['first_name'] = author['ForeName'] # this includes middle initial
+                single_author['initials'] = author['Initials'] # this includes middle initial
+                single_author['last_name'] = author['LastName']
+                parsed_author_data.append(single_author)
+            parsed_data['authors'] = parsed_author_data
         except:
             pass
         return parsed_data
