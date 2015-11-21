@@ -671,31 +671,42 @@ def search0(request,page):
 
 # search interface
 def search(request,page):
+    # hard-coded parameters
+    results_per_page = 10
+    max_number_of_pages = 20
+
+    # initialize
+    citations = []
+    search_bar_placeholder = "Search pubmed ... "
+    total_number_search_results = 0
+    current_page = 0
+    total_pages = 0
 
     ## This is to debug without repeatedly querying pubmed
-    json_str = load_object('deleteMe.pkl')
-    json_object = json.loads(json_str)
-    articles_json = json_object['PubmedArticle']
-    try:    # multiple articles
-        citations = []
-        for article_json in articles_json:
-            citation = Citation()
-            citation.parse_pubmedJson(article_json)
-            citations.append(citation)
-    except: # single article
-        citations = []
-        citation = Citation()
-        citation.parse_pubmedJson(articles_json)
-        citations.append(citation)
-
-    search_bar_placeholder = "Search pubmed ... "
+    #json_str = load_object('deleteMe.pkl')
+    #json_object = json.loads(json_str)
+    #articles_json = json_object['PubmedArticle']
+    #try:    # multiple articles
+    #    citations = []
+    #    for article_json in articles_json:
+    #        citation = Citation()
+    #        citation.parse_pubmedJson(article_json)
+    #        citations.append(citation)
+    #except: # single article
+    #    citations = []
+    #    citation = Citation()
+    #    citation.parse_pubmedJson(articles_json)
+    #    citations.append(citation)
+    #search_bar_placeholder = "mouse"
+    #total_pages = 3
+    #current_page = 2
 
     # client has passed us POST data containing Pubmed xml
     # we will create list of citation objects from post data and pass it back
     if request.method == 'POST':
         search_bar_placeholder = request.POST.get("search_bar_placeholder")
         json_str = request.POST.get("json_str")
-        save_object(json_str, 'deleteMe.pkl')
+        #save_object(json_str, 'deleteMe.pkl')
         json_object = json.loads(json_str)
         articles_json = json_object['PubmedArticle']
         try:    # multiple articles
@@ -709,6 +720,9 @@ def search(request,page):
             citation = Citation()
             citation.parse_pubmedJson(articles_json)
             citations.append(citation)
+        total_number_search_results = int(request.POST.get("count"))
+        total_pages = min(math.ceil(total_number_search_results/results_per_page),max_number_of_pages)
+        current_page = request.POST.get("new_page")
 
-    context = {'navbar':'search','is_search_results':True,'citations':citations,'search_bar_placeholder':search_bar_placeholder}
+    context = {'navbar':'search','is_search_results':True,'citations':citations,'search_bar_placeholder':search_bar_placeholder,'total_pages':total_pages,'current_page':current_page,'results_per_page':results_per_page}
     return render(request, 'papers/search.html', context)

@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 <!-- http://www.alexhadik.com/blog/2014/6/12/create-pubmed-citations-automatically-using-pubmed-api -->
 
+{% load templatetags %} <!-- templatetags cannot be moved to base.html -->
+
+
 {% block javascript %}
   <!-- custom javascript -->
   {% load staticfiles %}
@@ -9,6 +12,7 @@
     csrf_js = '{{ csrf_token }}'
     url2_js = "{% url 'papers:detail' 0 0 %}"
     url_search = "{% url 'papers:search' 1 %}"
+    max_results_per_page = {{ results_per_page }}
   </script>
   <script src="{% static "/static/js/jquery-2.1.4.min.js" %}"></script>
   <script src="{% static "/static/js/xml2json.js" %}"></script> <!-- must be called before search.js -->
@@ -43,23 +47,40 @@
     {% if citations|length > 0 %}
       <br />
       <hr class="grey" />
-      <br />
     {% endif %}
 
     <!-- search results -->
     {% for citation in citations %}
+      <br />
       <div class="row">
         {% include "citation_summary_template.html" %}
       </div>
-      <br />
     {% endfor %}
+
+    <!-- pagination -->
+    <div class="text-center">
+      <ul class="pagination">
+        {% for i in total_pages|get_range %}
+          {% if i|increment == current_page|add:"0" %} <!-- add:"0" to cast string to int -->
+            <li class="active"><a>{{ i|increment }}</a></li>
+          {% else %}
+            <li>
+              <a class="page">{{ i|increment }}</a>
+              <input type="hidden" name="number" value="{{ i|increment }}" class=".inline" />
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
   </div>
 
   <!-- this is a hidden form that holds pubmed xml string  -->
   <form method="POST" id="pubmed-search-form">
     {% csrf_token %}
-    <input type="hidden" id="pubmed-search-text" name="json_str" value="placeholder" />
+    <input type="hidden" id="pubmed-search-text" name="json_str" value="{{ search_bar_placeholder }}" />
     <input type="hidden" id="search-bar-placeholder" name="search_bar_placeholder" value="placeholder" />
+    <input type="hidden" id="pubmed-search-count" name="count" value="placeholder" />
+    <input type="hidden" id="new-page" name="new_page" value="placeholder" />
   </form>
 
 
