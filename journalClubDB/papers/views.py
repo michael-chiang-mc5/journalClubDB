@@ -248,8 +248,12 @@ def user_posts(request, user_pk):
 # list all papers of the week
 def paperOfTheWeek_list(request):
     paperOfTheWeekInfo_list = PaperOfTheWeekInfo.objects.order_by('order')
-    context = {'paperOfTheWeekInfo_list': paperOfTheWeekInfo_list}
-    return render(request, 'papers/paperOfTheWeek_list.html', context)
+    citations = []
+    for paperOfTheWeekInfo in paperOfTheWeekInfo_list:
+        citation = Citation.objects.get(pk=paperOfTheWeekInfo.citation.pk)
+        citations.append(citation)
+    context = {'citations': citations}
+    return render(request, 'papers/index.html', context)
 
 # admin interface to set paper of the week
 def paperOfTheWeek_admin(request):
@@ -706,7 +710,7 @@ def search(request,page):
     if request.method == 'POST':
         search_bar_placeholder = request.POST.get("search_bar_placeholder")
         json_str = request.POST.get("json_str")
-        #save_object(json_str, 'deleteMe.pkl')
+        save_object(json_str, 'deleteMe.pkl')
         json_object = json.loads(json_str)
         articles_json = json_object['PubmedArticle']
         try:    # multiple articles
