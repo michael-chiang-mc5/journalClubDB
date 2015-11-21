@@ -41,6 +41,11 @@ blockquote {
   vertical-align: top;
 }
 
+.deleted {
+  padding-top: 5px;
+  padding-bottom: 0px;
+}
+
 /*
 .up-arrow {
   font-size: 0px;

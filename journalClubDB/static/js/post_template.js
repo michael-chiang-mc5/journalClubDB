@@ -20,5 +20,29 @@ $(document).ready(function() {
     $( "#comment-text-" + pk + "-" + counter).show()
   });
 
+  // this implements delete post functionality
+  $('.delete-post-are-you-sure').hide()
+  $('.delete-post-confirmation').hide()
+  $('.delete-post-button').click(function(e) {
+    $(this).hide()
+    $(this).next('.delete-post-are-you-sure').show()
+  });
+  $('.delete-post-no').click(function(e) {
+    $(this).parent().prev('.delete-post-button').show()
+    $(this).parent('.delete-post-are-you-sure').hide()
+  });
+  $(".delete-post-yes").click(function() {
+    f = $(this).next('form');
+    var url = f.attr( 'action' );
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: f.serialize(),
+      success: function(data) { // update post to be deleted
+        f.parent('.delete-post-are-you-sure').hide()
+        f.parent('.delete-post-are-you-sure').next('.delete-post-confirmation').show()
+      }
+    });
+  });
 
 });

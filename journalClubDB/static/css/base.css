@@ -1,9 +1,13 @@
 
+.color-red {
+  color: red !important;
+}
+
 .color-white {
-  color: white;
+  color: white !important;
 }
 .color-black {
-  color: black;
+  color: black !important;
 }
 
 .hyperlink-submit-form {

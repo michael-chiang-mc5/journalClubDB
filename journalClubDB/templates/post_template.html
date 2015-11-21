@@ -48,6 +48,14 @@
 </td>
 -->
 
+{% if p.deleted %}
+
+<div class="deleted">
+  [[ deleted ]]
+</div>
+
+{% else %}
+
 <td class="answercell">
   <!-- top bar containing username, points, time posted -->
   <div class="post-top-box">
@@ -107,7 +115,7 @@
       <!-- reply button -->
       <span>
         <a class='hyperlink-submit-form'>reply</a> &nbsp;
-        <form class="inline" id='formData' action="{% url 'papers:postForm' %}" method=POST>
+        <form class="inline" action="{% url 'papers:postForm' %}" method=POST>
           {% csrf_token %}
           <input type="hidden" name="citation" value="{{ p.thread.owner.title }}" />
           <input type="hidden" name="citation_pk" value="{{ p.thread.owner.pk }}" />
@@ -128,12 +136,12 @@
         </form>
       </span>
 
-      <!-- allow for editing if user created post TODO: security flaw: check user/post identical in view-->
+      <!-- edit/delete only shown if user created post) -->
       {% if user.get_username == p.creator.username %}
         <!-- edit button -->
         <span>
           <a class='hyperlink-submit-form'>edit</a> &nbsp;
-          <form class="inline" id='formData' action="{% url 'papers:postForm' %}" method=POST>
+          <form class="inline" action="{% url 'papers:postForm' %}" method=POST>
             {% csrf_token %}
             <input type="hidden" name="citation" value="{{ p.thread.owner.title }}" />
             <input type="hidden" name="citation_pk" value="{{ p.thread.owner.pk }}" />
@@ -142,7 +150,6 @@
             <input type="hidden" name="thread_pk" value="{{ p.thread.pk }}" />
             <input type="hidden" name="isReplyToPost" value="1" />
             <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
-            <!--  <input type="hidden" name="current_thread" value="{{ forloop.parentloop.counter }}" /> -->
             <input type="hidden" name="initial_text" value="{% with p.get_undecoded_textTupleVector|last as recent_post %}
                                                               {{ recent_post.0 }}
                                                             {% endwith %}
@@ -152,7 +159,25 @@
             <input type="hidden" name="edit_or_reply" value="edit" />
           </form>
         </span>
+
+        <!-- delete button -->
+        <a class='delete-post-button pointer'>delete</a>
+        <div class='delete-post-are-you-sure color-red inline'>
+          are you sure?
+          <a class='delete-post-yes pointer'>yes</a>
+          <form class="inline" action="{% url 'papers:deletePost' %}" method=POST>
+            {% csrf_token %}
+            <input type="hidden" name="post_pk" value="{{ p.pk }}" />
+          </form>
+          /
+          <a class='delete-post-no pointer'>no</a>
+        </div>
+        <div class='delete-post-confirmation color-black inline'>deleted</div>
+         &nbsp;
+      </span>
+
       {% endif %}
+
 
     <!-- if user is not authenticated -->
     {% else %}
@@ -192,6 +217,7 @@
   </div>
 </td>
 
+{% endif %}
 
 </tr>
 </tbody>

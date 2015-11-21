@@ -77,7 +77,7 @@
               <a class="btn btn-primary btn-tiny" href="{% url 'papers:user_library' %}" role="button">This paper is in your personal library</a>
             {% else %}
               <a class="btn btn-primary btn-tiny hyperlink-submit-form" role="button">Add paper to your personal library</a>
-              <form id='formData' action="{% url 'papers:add_citation_to_user_library' %}" method=POST>
+              <form action="{% url 'papers:add_citation_to_user_library' %}" method=POST>
                 {% csrf_token %}
                 <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
               </form>
@@ -98,7 +98,7 @@
                 <sup>
                 {% if user.is_authenticated %}
                   <a class='hyperlink-submit-form'>Add your own comment!</a>
-                  <form id='formData' action="{% url 'papers:postForm' %}" method=POST>
+                  <form action="{% url 'papers:postForm' %}" method=POST>
                     {% csrf_token %}
                     <input type="hidden" name="citation" value="{{ citation.title }}" />
                     <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
@@ -131,7 +131,7 @@
             <div align="left">
               <br>
               <a class='hyperlink-submit-form'>edit your personal notes</a>
-              <form id='formData' action="{% url 'papers:personalNoteForm' %}" method=POST>
+              <form action="{% url 'papers:personalNoteForm' %}" method=POST>
                 {% csrf_token %}
                 <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
               </form>

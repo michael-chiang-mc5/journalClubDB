@@ -299,7 +299,7 @@ class Post(models.Model):
     mother = models.ForeignKey('self', blank=True, null=True)
     text = models.TextField() # json serialized
     node_depth = models.PositiveIntegerField() # base node posts have a node depth of 0
-    deleted = models.NullBooleanField(blank=True, null=True)   # TODO: implement
+    deleted = models.BooleanField(default=False)
     # to access upvoted posts from User instance, user.upvoted.all()
     upvoters   = models.ManyToManyField(User, blank=True, related_name="upvoted")
     downvoters = models.ManyToManyField(User, blank=True, related_name="downvoted")
@@ -307,7 +307,10 @@ class Post(models.Model):
     # score is a measure of post quality
     # TODO: Make score based on user quality, i.e., professors have more weight
     def score(self):
-        return len(self.upvoters.all()) - len(self.downvoters.all())
+        if self.deleted:
+            return -999999
+        else:
+            return len(self.upvoters.all()) - len(self.downvoters.all())
 
     def add_post(self,text,editor_pk,date_added,editor_name):
         text_tuple_vector = self.get_undecoded_textTupleVector()

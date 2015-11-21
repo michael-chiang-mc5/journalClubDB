@@ -402,8 +402,22 @@ def editPersonalNote(request):
     personal_note.save()
     return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,5]))
 
+# delete post
+# TODO: add sanity checks that user is authenticated and is correct user
+def deletePost(request):
+    post_pk = request.POST.get("post_pk")
+    post = Post.objects.get(pk=post_pk)
+    # make sure that user that is deleting post matches post user
+    if request.user.pk != post.creator.pk:
+        return HttpResponse("Invalid user")
+    else:
+        post.deleted = True
+        post.save()
+        return HttpResponse("deleted")
+
 # add post
 # TODO: add sanity checks that user is authenticated and is correct user
+# TODO: split into two different methods. To do this, postForm should accept edit/reply flag, then pass appropriate edit/reply view to template
 def addPost(request):
     edit_or_reply = request.POST.get("edit_or_reply", False)
     if edit_or_reply == "edit":
@@ -710,7 +724,7 @@ def search(request,page):
     if request.method == 'POST':
         search_bar_placeholder = request.POST.get("search_bar_placeholder")
         json_str = request.POST.get("json_str")
-        save_object(json_str, 'deleteMe.pkl')
+        #save_object(json_str, 'deleteMe.pkl')
         json_object = json.loads(json_str)
         articles_json = json_object['PubmedArticle']
         try:    # multiple articles

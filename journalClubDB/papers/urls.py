@@ -45,6 +45,7 @@ urlpatterns = [
     url(r'^addCitation/$', views.addCitation, name='addCitation'),
 
     # ex:
+    url(r'^deletePost/$', views.deletePost, name='deletePost'),
     url(r'^addPost/$', views.addPost, name='addPost'),
     url(r'^editPersonalNote/$', views.editPersonalNote, name='editPersonalNote'),
     url(r'^postForm/$', views.postForm, name='postForm'),
