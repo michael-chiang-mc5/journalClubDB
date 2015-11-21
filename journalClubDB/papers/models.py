@@ -24,18 +24,13 @@ class Citation(models.Model):
         return tMax
 
     def get_author_list_truncated(self):
-        authors = self.authors
-        if type(authors) is str:
-            authors = ast.literal_eval(authors)
+        authors = self.eval('authors')
         if type(authors) is dict: # case where there is only one author
             return authors['initials'] + ' ' + authors['last_name']
         else:   # case where there are multiple authors
             return authors[0]['last_name'] + ' et al'
     def get_author_list(self):
-        authors = self.authors
-        if type(authors) is str:
-            authors = ast.literal_eval(authors)
-
+        authors = self.eval('authors')
         if type(authors) is dict: # case where there is only one author
             if authors['first_name'][-2] == ' ':
                 full_name = authors['first_name'] + '. ' + authors['last_name']
@@ -43,7 +38,22 @@ class Citation(models.Model):
                 full_name = authors['first_name'] + ' ' + authors['last_name']
             return full_name
         else:   # case where there are multiple authors TODO: implement this
-            return authors[0]['last_name'] + ' et al'
+            rn = ''
+            for author in authors[:-1]:
+                if author['first_name'][-2] == ' ':
+                    rn += author['first_name'] + '. ' + author['last_name']
+                else:
+                    rn += author['first_name'] + ' ' + author['last_name']
+                rn += ", "
+            # last name is special case
+            rn += "and "
+            author = authors[-1]
+            if author['first_name'][-2] == ' ':
+                rn += author['first_name'] + '. ' + author['last_name']
+            else:
+                rn += author['first_name'] + ' ' + author['last_name']
+            rn += '.'
+            return rn
 
     def filled_field(self,fieldname):
         if not getattr(self,fieldname): # check if NoneType
