@@ -3,11 +3,13 @@
 
 {% block javascript %}
   {% load staticfiles %}
-
-
 {% endblock %}
 
 {% block body_block %}
-  <h1>Post context</h1>
-  {% include "post_tree_template.html" %}
+  <div class="container">
+    <h1 class="color-white">Post context</h1>
+    <a href="{% url 'papers:detail' post.thread.owner.pk post.thread.order %}#post-{{ post.pk }}" class="pointer"><h4 class="color-grey">Click to see complete discussion in <i>{{ post.thread.owner }}</i></h4></a>
+    <hr />
+    {% include "post_tree_template.html" %}
+  </div>
 {% endblock %}

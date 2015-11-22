@@ -205,11 +205,9 @@
        </span>
     </span>
 
-    {% if post_context %}
-      <span>
-        <a href="{% url 'papers:post_context' p.pk %}">context</a>
-      </span>
-    {% endif %}
+    <span>
+      <a href="{% url 'papers:post_context' p.pk %}">context</a>
+    </span>
 
   </div>
 </td>

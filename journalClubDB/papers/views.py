@@ -85,7 +85,7 @@ def post_context(request,post_pk):
     posts =  add_indent_dedent_to_post_list(posts)
 
     # return html
-    context = {'posts':posts}
+    context = {'posts':posts,'post':post}
     return render(request, 'papers/post_context.html', context)
 
 def user_notifications(request):
