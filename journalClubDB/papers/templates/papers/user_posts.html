@@ -8,15 +8,20 @@
 
 {% block body_block %}
 
+<div class="container">
+
+  {% for p in posts %}
+    {% if not p.deleted %}
+      <div class="single_post">
+        {% include "post_template.html" %}
+      </div>
+      <br>
+    {% endif %}
+  {% endfor %}
+
+</div>
 
 
-      {% for p in posts %}
 
-        <div class="single_post">
-          {% include "post_template.html" %}
-        </div>
-        <br>
-
-      {% endfor %}
 
 {% endblock %}
