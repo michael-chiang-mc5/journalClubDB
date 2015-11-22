@@ -1,28 +1,21 @@
 {% extends "base.html" %}
 
 {% block javascript %}
-{% load staticfiles %}
-<script src="{% static 'js/ckeditor/ckeditor.js' %}"></script>
-<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-<!-- custom javascript -->
-<!--
-<script>
-  csrf_js = '{{ csrf_token }}'
-  url_upvote = "{% url 'papers:upvote' %}"
-  url_downvote = "{% url 'papers:downvote' %}"
-</script>
-<script src="{% static "/static/js/detail.js" %}"></script>
--->
-
+  {% load staticfiles %}
+  <script src="{% static 'js/ckeditor/ckeditor.js' %}"></script>
+  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 {% endblock %}
 
 {% block body_block %}
 
 
-<div>
-<h2>{{ citation }}</h2>
-<h4>{{ thread_title }} - {{ thread_description }}</h4>
-</div>
+
+<div id="postform-container" class="height100 container">
+
+  <div id="postform-header">
+      <h2 class="color-white">{{ citation }}</h2>
+      <h4 class="color-grey">{{ thread_title }} - {{ thread_description }}</h4>
+  </div>
 
 <div>
   <form role="form" action="{% url 'papers:addPost' %}" method=POST>
@@ -37,24 +30,22 @@
     <input type="hidden" name="edit_or_reply" value="{{ edit_or_reply }}" />
 
     <!-- WYSIWYG text editor -->
-    <textarea cols="10" id="editor{{ thread.pk }}" name="text" rows="10" ></textarea>
+    <textarea cols="10" id="editor{{ thread.pk }}" name="text" rows="10" style="display:none;"></textarea>
+    <!-- submit button -->
     <script>
     	CKEDITOR.replace( 'editor{{ thread.pk }}', {
     		extraPlugins: 'mathjax',
     		mathJaxLib: 'http://cdn.mathjax.org/mathjax/2.2-latest/MathJax.js?config=TeX-AMS_HTML',
-    		height: 320
+        height: $("#postform-container").height() - $("#postform-header").height() - CKEDITOR.config.height
     	} );
-    	if ( CKEDITOR.env.ie && CKEDITOR.env.version == 8 ) {
-  	  	document.getElementById( 'ie8-warning' ).className = 'tip alert';
-  	  }
       var e = CKEDITOR.instances.editor{{ thread.pk }};
       e.setData("{{ initial_text|safe }}")
-
     </script>
+    <button type="submit" class="btn btn-primary">Submit your post</button>
 
-    <!-- submit button -->
-    <button type="submit" class="btn btn-default">Submit</button>
+
   </form>
+</div>
 </div>
 
 {% endblock %}
