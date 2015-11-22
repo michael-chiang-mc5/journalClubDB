@@ -3,6 +3,7 @@
  * For licensing, see LICENSE.md or http://ckeditor.com/license
  */
 
+/*
 CKEDITOR.editorConfig = function( config ) {
 	// Define changes to default configuration here.
 	// For complete reference see:
@@ -35,4 +36,33 @@ CKEDITOR.editorConfig = function( config ) {
 
 	// Simplify the dialog windows.
 	config.removeDialogTabs = 'image:advanced;link:advanced';
+};
+*/
+
+CKEDITOR.editorConfig = function( config ) {
+	config.toolbarGroups = [
+		{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+		{ name: 'insert', groups: [ 'insert' ] },
+		{ name: 'forms', groups: [ 'forms' ] },
+		{ name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+		{ name: 'links', groups: [ 'links' ] },
+		{ name: 'styles', groups: [ 'styles' ] },
+		{ name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
+		{ name: 'tools', groups: [ 'tools' ] },
+		{ name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+		{ name: 'others', groups: [ 'others' ] },
+		'/',
+		{ name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+		{ name: 'colors', groups: [ 'colors' ] },
+		{ name: 'about', groups: [ 'about' ] }
+	];
+
+	config.removeButtons = 'Cut,Undo,Copy,Redo,Paste,PasteText,PasteFromWord,Scayt,Unlink,Anchor,Maximize,RemoveFormat,Outdent,Indent,About,Source';
+	config.format_tags = 'p;h1;h2;pre';
+	config.removeDialogTabs = 'image:advanced;image:Link;link:advanced;link:target';
+	config.stylesSet = [
+		{ name: 'Code',   element: 'pre' ,    styles: { 'color': '#c7254e' , 'background-color': '#f9f2f4' , 'font-size': '90%'}},
+    { name: 'Highlight',   element: 'span',    styles: { 'background-color': 'Yellow' } },
+	];
+
 };

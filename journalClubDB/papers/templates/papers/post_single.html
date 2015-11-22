@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block javascript %}
+  {% load staticfiles %}
+  <link rel="stylesheet" href="{% static 'css/post_tree_template_quoraStyle.css' %}">
+{% endblock %}
+
+{% block body_block %}
+
+
+  <div class="container">
+    <div class="jumbotron">
+      <h5>Posted in:</h5>
+      <h4>{{ p.thread }}</h4>
+      <hr />
+      <div class="big-box-depth-is-one">
+        {% include "post_template.html" %}
+      </div>
+    </div>
+  </div>
+
+
+{% endblock %}

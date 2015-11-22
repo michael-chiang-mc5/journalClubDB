@@ -13,8 +13,14 @@
 <div id="postform-container" class="height100 container">
 
   <div id="postform-header">
+    {% if edit_or_reply == "edit" or edit_or_reply == "add" %}
       <h2 class="color-white">{{ citation }}</h2>
       <h4 class="color-grey">{{ thread_title }} - {{ thread_description }}</h4>
+    {% elif edit_or_reply == "reply" %}
+      <h4 class="color-grey">
+        <a type="button" href="{% url 'papers:post_single' mother_pk %}" target="_blank" class="btn btn-lg btn-danger">Click to read post you are replying to</a>
+      </h4>
+    {% endif %}
   </div>
 
 <div>
@@ -34,16 +40,51 @@
     <!-- submit button -->
     <script>
     	CKEDITOR.replace( 'editor{{ thread.pk }}', {
-    		extraPlugins: 'mathjax',
+    		extraPlugins: 'mathjax,devtools',
     		mathJaxLib: 'http://cdn.mathjax.org/mathjax/2.2-latest/MathJax.js?config=TeX-AMS_HTML',
         height: $("#postform-container").height() - $("#postform-header").height() - CKEDITOR.config.height
     	} );
+
       var e = CKEDITOR.instances.editor{{ thread.pk }};
-      e.setData("{{ initial_text|safe }}")
+      {% if edit_or_reply == "edit" %}
+        e.setData("{{ initial_text|safe }}")
+      {% endif %}
+
+      CKEDITOR.on( 'dialogDefinition', function( ev )
+         {
+            var dialogName = ev.data.name;
+            var dialogDefinition = ev.data.definition;
+            ev.data.definition.resizable = CKEDITOR.DIALOG_RESIZE_NONE;
+            if ( dialogName == 'link' ) {
+               var infoTab = dialogDefinition.getContents( 'info' );
+               infoTab.remove( 'protocol' );
+               dialogDefinition.removeContents( 'target' );
+               dialogDefinition.removeContents( 'advanced' );
+               // Set the default value for the URL field.
+               //var urlField = infoTab.get( 'url' );
+               //urlField[ 'default' ] = 'www.example.com';
+            }
+            if ( dialogName == 'image' ) {
+              // dialogDefinition.removeContents( 'Link' ); // This is taken care of in config.js
+              // dialogDefinition.removeContents( 'advanced' );
+              var infoTab = dialogDefinition.getContents( 'info' );
+              infoTab.remove( 'txtAlt' );
+              infoTab.remove( 'txtWidth' );
+              infoTab.remove( 'txtHeight' );
+              infoTab.remove( 'txtBorder' );
+              infoTab.remove( 'txtHSpace' );
+              infoTab.remove( 'txtVSpace' );
+              infoTab.remove( 'cmbAlign' );
+              infoTab.remove( 'htmlPreview' );
+              infoTab.remove( 'ratioLock' );
+            }
+
+
+         });
+
+
     </script>
     <button type="submit" class="btn btn-primary">Submit your post</button>
-
-
   </form>
 </div>
 </div>

@@ -34,6 +34,7 @@ urlpatterns = [
 
     # ex:
     url(r'^post_context/(?P<post_pk>[0-9]+)/$', views.post_context, name='post_context'),
+    url(r'^post_single/(?P<post_pk>[0-9]+)/$', views.post_single, name='post_single'),
 
     # ex:
     url(r'^user_posts/(?P<user_pk>[0-9]+)/$', views.user_posts, name='user_posts'),

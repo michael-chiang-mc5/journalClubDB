@@ -9,6 +9,10 @@
 .color-white {
   color: white !important;
 }
+.background-color-white {
+  background-color: white !important;
+}
+
 .color-black {
   color: black !important;
 }

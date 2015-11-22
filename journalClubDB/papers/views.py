@@ -64,6 +64,15 @@ def get_post_chain_recursive(post,rn):
     else:
         return get_post_chain_recursive(mother,rn)
 
+def post_single(request,post_pk):
+
+    # get post
+    post = Post.objects.get(pk=post_pk)
+
+    # return html
+    context = {'p':post}
+    return render(request, 'papers/post_single.html', context)
+
 def post_context(request,post_pk):
 
     # get post
@@ -372,7 +381,7 @@ def postForm(request):
     edit_or_reply = request.POST.get("edit_or_reply")
 
 
-    blockquote = request.POST.get("blockquote")
+    blockquote = request.POST.get("blockquote") # TODO: remove blockquote
     if blockquote == "True":
         initial_text = safe_text(initial_text)
         initial_text = "<blockquote>" + initial_text + "</blockquote>" + "<br >"
@@ -430,7 +439,7 @@ def addPost(request):
         setattr(post,'time_created',datetime.datetime.now())
         post.save()
         return HttpResponseRedirect(reverse('papers:detail', args=[citation_pk,thread_number])+'#post-'+str(post.pk))
-    elif edit_or_reply == "reply":
+    elif edit_or_reply == "reply" or edit_or_reply == "add":
         # get POST data
         thread_pk = int(request.POST.get("thread_pk", False))
         citation_pk = request.POST.get("citation_pk", False)
