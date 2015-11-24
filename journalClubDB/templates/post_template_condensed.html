@@ -1,0 +1,187 @@
+<!-- this template contains html to display a user post -->
+{% load templatetags %}
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static 'css/post_template.css' %}">
+<script src="{% static "/static/js/post_template_condensed.js" %}"></script>
+<script>
+  csrf_js = '{{ csrf_token }}'
+  url_upvote = "{% url 'papers:upvote' %}"
+  url_downvote = "{% url 'papers:downvote' %}"
+</script>
+
+<div id="post-{{ p.pk }}" class="post-wrapper">
+
+
+<table>
+  <tbody>
+    <tr>
+
+      {% if p.deleted %}
+
+        <div class="deleted">
+          [[ deleted ]]
+        </div>
+
+      {% else %}
+
+        <td class="answercell">
+          <!-- box containing post content. javascript used to switch between edits -->
+          <div class="post-middle-box">
+            {% for recent_post in p.get_undecoded_textTupleVector %}
+              <div id="comment-text-{{ p.pk }}-{{ forloop.counter }}" class="comment-text comment-target-all-{{ p.pk }} comment-all {% if forloop.last %} comment-last {% endif %}">
+                {{ recent_post.0 | safe}} <!-- text -->
+              </div>
+            {% endfor %}
+          </div>
+
+          <!-- username, points, time posted -->
+          <div class="post-top-box">
+            &mdash;
+            <span><a class="bold comment-user" href="{% url 'papers:user_posts' p.creator.pk %}">{{ p.creator.username }}</a></span>
+            <span>&nbsp;</span>
+            <span id="commentscore-pk-{{ p.pk }}" class="comment-score">{{ p.score }}</span><span class="comment-score"> point{{p.score|pluralize}}</span>
+            <span class="comment-time" id="comment-time-{{ p.pk }}">
+              {{ p.time_created|age }}
+            </span> &nbsp;
+
+            <!-- dropdown to select post history -->
+            <span class="dropdown">
+              <a data-toggle="dropdown" class="dropdown-toggle pointer"><b class="caret"></b></a> &nbsp;
+              <ul class="dropdown-menu">
+                 <!-- upvote button -->
+                 <li>
+                    {% if user.is_authenticated %}
+                    <input type="hidden" name="post_pk" value="{{ p.pk }}">
+                      {% if p|post_upvoted_by_user:user.pk %}
+                        <a id="up-{{ p.pk }}" class="upvoted-arrow pointer active-vote" title="This comment is useful">upvoted</a>
+                        {% else %}
+                        <a id="up-{{ p.pk }}" class="up-arrow pointer" title="This comment is useful">upvote</a>
+                      {% endif %}
+                    {% else %}
+                      <a class="activate-login-modal-vote pointer" data-toggle="modal" data-target="#myModal" title="This comment is useful">upvote</a>
+                    {% endif %}
+                  </li>
+                  <!-- downvote button -->
+                  <li>
+                    {% if user.is_authenticated %}
+                      <input type="hidden" name="post_pk" value="{{ p.pk }}">
+                      {% if p|post_downvoted_by_user:user.pk %}
+                        <a id="down-{{ p.pk }}" class="downvoted-arrow pointer active-vote" title="This comment not useful">downvoted</a>
+                      {% else %}
+                        <a id="down-{{ p.pk }}" class="down-arrow pointer" title="This comment not useful">downvote</a>
+                      {% endif %}
+                    {% else %}
+                      <a class="activate-login-modal-vote pointer" data-toggle="modal" data-target="#myModal" title="This comment is not useful">downvote</a>
+                    {% endif %}
+                  </li>
+                  <li class="divider"></li>
+
+
+                  <!-- reply button -->
+                  <li>
+                    {% if user.is_authenticated %}
+                      <a class='hyperlink-submit-form inline'>reply</a>
+                      <form class="inline" action="{% url 'papers:postForm' %}" style="display: none;" method=POST>
+                        {% csrf_token %}
+                        <input type="hidden" name="citation" value="{{ p.thread.owner.title }}" />
+                        <input type="hidden" name="citation_pk" value="{{ p.thread.owner.pk }}" />
+                        <input type="hidden" name="thread_title" value="{{ p.thread.title }}" />
+                        <input type="hidden" name="thread_description" value="{{ p.thread.description }}" />
+                        <input type="hidden" name="thread_pk" value="{{ p.thread.pk }}" />
+                        <input type="hidden" name="isReplyToPost" value="1" />
+                        <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
+                        <input type="hidden" name="initial_text" value="{% with p.get_undecoded_textTupleVector|last as recent_post %}
+                                                                          {{ recent_post.0 }}
+                                                                        {% endwith %}">
+                        <input type="hidden" name="blockquote" value="False" />
+                        <input type="hidden" name="post_pk" value="-1" />
+                        <input type="hidden" name="edit_or_reply" value="reply" />
+                      </form>
+                    {% else %}
+                      <a data-toggle="modal" data-target="#myModal" class="pointer activate-login-modal-post">reply</a>
+                    {% endif %}
+                  </li>
+
+                  <!-- edit button (only shown if user created post) -->
+                  {% if user.get_username == p.creator.username %}
+                  <li>
+                    <a class='hyperlink-submit-form'>edit</a>
+                    <form class="inline" action="{% url 'papers:postForm' %}" style="display: none;" method=POST>
+                      {% csrf_token %}
+                      <input type="hidden" name="citation" value="{{ p.thread.owner.title }}" />
+                      <input type="hidden" name="citation_pk" value="{{ p.thread.owner.pk }}" />
+                      <input type="hidden" name="thread_title" value="{{ p.thread.title }}" />
+                      <input type="hidden" name="thread_description" value="{{ p.thread.description }}" />
+                      <input type="hidden" name="thread_pk" value="{{ p.thread.pk }}" />
+                      <input type="hidden" name="isReplyToPost" value="1" />
+                      <input type="hidden" name="mother_pk" value="{{ p.pk }}" />
+                      <input type="hidden" name="initial_text" value="{% with p.get_undecoded_textTupleVector|last as recent_post %}
+                                                                        {{ recent_post.0 }}
+                                                                      {% endwith %}
+                                                                      "/>
+                      <input type="hidden" name="blockquote" value="False" />
+                      <input type="hidden" name="post_pk" value="{{ p.pk }}" />
+                      <input type="hidden" name="edit_or_reply" value="edit" />
+                    </form>
+                  </li>
+                  {% endif %}
+
+                  <!-- delete button (only shown if user created post) -->
+                  {% if user.get_username == p.creator.username %}
+                  <li>
+                    <a class='delete-post-button pointer'>delete</a>
+                    <div class='delete-post-are-you-sure color-red inline'>
+                      &nbsp; are you sure?
+                      <a class='delete-post-yes pointer'>yes</a>
+                      <form class="inline" action="{% url 'papers:deletePost' %}" method=POST>
+                        {% csrf_token %}
+                        <input type="hidden" name="post_pk" value="{{ p.pk }}" />
+                      </form>
+                      /
+                      <a class='delete-post-no pointer'>no</a>
+                    </div>
+                    <div class='delete-post-confirmation color-black inline'>deleted</div>
+                  </li>
+                  {% endif %}
+
+                  <li class="divider"></li>
+                  <!-- history -->
+                  <li class="dropdown-submenu">
+                    <a>history</a>
+                    <ul class="dropdown-menu">
+                      {% for recent_post in p.get_undecoded_textTupleVector %}
+                        <li class="li-dropdown-{{p.pk}} li-dropdown-{{p.pk}}-{{forloop.counter}} {% if forloop.last %} active {% endif %}"><a id="action-{{ p.pk }}-{{ forloop.counter }}" class="pointer">
+                          {% if recent_post.3 != p.creator.username %}
+                            recent_post.3
+                          {% endif %}
+                          {% if forloop.counter == 1 %}
+                            posted
+                          {% else %}
+                            edited
+                          {% endif %}
+                          {{ recent_post.2|age }}
+                        </a></li> <!-- time created/edited -->
+                      {% endfor %}
+                    </ul>
+                 </li>
+
+                 <!-- context -->
+                 <li>
+                   <a href="{% url 'papers:post_context' p.pk %}">context</a>
+                 </li>
+
+
+
+
+               </ul>
+             </span>
+          </div>
+        </td>
+
+      {% endif %}
+
+    </tr>
+  </tbody>
+</table>
+
+</div>
