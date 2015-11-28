@@ -1,12 +1,14 @@
 
 // Make login modal show title and clear error messages
 $(document).ready(function() {
-  $('#username_exists').hide()
-  $('#username_exists').mouseleave()
+  $('.username_error_message').hide()
+  $('.username_error_message').mouseleave()
+  $('.password_error_message').hide()
+  $(".password_error_message").mouseleave();
+
   $('.passwords_match_login').hide()
   $(".passwords_match_login").mouseleave();
-  $('.passwords_match_register').hide()
-  $(".passwords_match_register").mouseleave();
+
   $('#user_banned').hide()
   $('#user_banned').mouseleave();
 
@@ -56,41 +58,10 @@ $(document).ready(function() {
   $("#register_form").submit(function(e) {
     e.preventDefault();
 
-    // check if passwords match
-    var passwords_match_register = "True"
-    var password1 = $('#register_password1').val();
-    var password2 = $('#register_password2').val();
-    if (password1 != password2){
-      passwords_match_register = "False"
-    }
-
-    // check if username pre-exists
-    var username = $('#register_username').val();
-    var username_does_not_preexist = "True"
-    $.ajax({
-        url : url_is_field_available,
-        data : { 'username': username },
-        type : "get",
-        async: false,
-        success : function(data) {
-          if (data == "False" ) {
-            username_does_not_preexist = "False"
-          }
-        }
-     });
-
-   // form check
-    if (passwords_match_register == "False") {
-      $('.passwords_match_register').show()
-      $(".passwords_match_register").mouseenter();
-    }
-    if (username_does_not_preexist == "False") {
-      $('#username_exists').show()
-      $("#username_exists").mouseenter();
-    }
-    if (passwords_match_register == "False" || username_does_not_preexist == "False") {
-      return false
-    }
+    $('.username_error_message').hide()
+    $('.username_error_message').mouseleave()
+    $('.password_error_message').hide()
+    $('.password_error_message').mouseleave()
 
     // submit registration form
     var me = $( this )
@@ -99,8 +70,44 @@ $(document).ready(function() {
          url: url_register,
          data: me.serialize(),
          success: function(data){
-           $('#myModal').modal('hide')
-           location.reload();
+           var block_modal_closing = false;
+           // check for problems with username
+           if (!data.username_unique) {
+             $(".username_error_message").attr('data-original-title', "username already exists, please pick a different one")
+             $(".username_error_message").show();
+             $(".username_error_message").mouseenter();
+             block_modal_closing = true;
+           } else if (!data.username_long_enough) {
+             $(".username_error_message").attr('data-original-title', "username must be at least six characters long")
+             $(".username_error_message").show();
+             $(".username_error_message").mouseenter();
+             block_modal_closing = true;
+           } else if (!data.username_no_crazy_characters) {
+             $(".username_error_message").attr('data-original-title', "username can only contain alphanumeric characters, underscores, and dashes")
+             $(".username_error_message").show();
+             $(".username_error_message").mouseenter();
+             block_modal_closing = true;
+           }
+           // check for problems with password
+           if (!data.passwords_match) {
+             $(".password_error_message").attr('data-original-title', "passwords do not match, please re-type passwords")
+             $(".password_error_message").show();
+             $(".password_error_message").mouseenter();
+             block_modal_closing = true;
+           } else if (!data.password_long_enough) {
+             $(".password_error_message").attr('data-original-title', "password must be at least six characters long")
+             $(".password_error_message").show();
+             $(".password_error_message").mouseenter();
+             block_modal_closing = true;
+           }
+
+
+           if (block_modal_closing) {
+             return false;
+           }
+
+          $('#myModal').modal('hide')
+          location.reload();
          }
     });
 

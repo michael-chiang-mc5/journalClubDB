@@ -18,6 +18,7 @@ from django.contrib.auth.models import User
 #from datetime import datetime, timedelta, timezone
 import datetime
 import json
+import re
 
 
 def add_indent_dedent_to_post_list(post_list):
@@ -172,18 +173,41 @@ def is_field_available(request):
                 return HttpResponse("True")
     return HttpResponseServerError("Requires username to test")
 
+
 # user registration.  Code from: http://www.tangowithdjango.com/book17/chapters/login.html
 def register(request):
+    # get prospective user data
     username = request.POST.get("username")
     password1 = request.POST.get("password1")
+    password2 = request.POST.get("password2")
     email = request.POST.get("email")
-    user = User.objects.create_user(username, email, password1)
-    #user.set_password(user.password) # I don't think this is necessary, should hash automatically
-    user.save()
-    user = authenticate(username=username, password=password1)
-    login(request, user)
-    message = 'Registration successful'
-    return JsonResponse({'message':message})
+
+    # sanity check on username, password
+    username_unique = True
+    username_long_enough = True
+    username_no_crazy_characters = True
+    passwords_match = True
+    password_long_enough = True
+
+    if User.objects.filter(username__iexact=username):
+        username_unique = False
+    if len(username)<6:
+        username_long_enough = False
+    if not re.match('^[a-zA-Z0-9_-]+$',username):
+        username_no_crazy_characters = False
+    if password1 != password2:
+        passwords_match = False
+    if len(password1)<6 or len(password2)<6:
+        password_long_enough = False
+
+    if username_unique and username_long_enough and username_no_crazy_characters and passwords_match and password_long_enough:
+        user = User.objects.create_user(username, email, password1)
+        user.save()
+        user = authenticate(username=username, password=password1)
+        login(request, user)
+
+    response = {'username_unique':username_unique, 'username_long_enough':username_long_enough,'username_no_crazy_characters':username_no_crazy_characters,'passwords_match':passwords_match,'password_long_enough':password_long_enough}
+    return JsonResponse(response)
 
 # landing page
 def frontpage(request):
