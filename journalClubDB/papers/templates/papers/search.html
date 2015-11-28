@@ -44,18 +44,20 @@
       </div>
     </div>
 
-    {% if citations|length > 0 %}
+    {% if citations == "no results" %} <!-- user searched for results but nothing popped up -->
       <br />
       <hr class="grey" />
-    {% endif %}
-
-    <!-- search results -->
-    {% for citation in citations %}
+      <h2 class="color-white">No articles found</h2>
+    {% elif citations != "fresh search" %}       <!-- search results -->
       <br />
-      <div class="row">
-        {% include "citation_summary_template.html" %}
-      </div>
-    {% endfor %}
+      <hr class="grey" />
+      {% for citation in citations %}
+        <br />
+        <div class="row">
+          {% include "citation_summary_template.html" %}
+        </div>
+      {% endfor %}
+    {% endif %}
 
     <!-- pagination -->
     <div class="text-center">

@@ -703,7 +703,7 @@ def search(request,page):
     max_number_of_pages = 20
 
     # initialize
-    citations = []
+    citations = 'fresh search'
     search_bar_placeholder = "Search pubmed ... "
     total_number_search_results = 0
     current_page = 0
@@ -735,21 +735,26 @@ def search(request,page):
         json_str = request.POST.get("json_str")
         save_object(json_str, 'deleteMe.pkl')
         json_object = json.loads(json_str)
-        articles_json = json_object['PubmedArticle']
-        try:    # multiple articles
-            citations = []
-            for article_json in articles_json:
+
+        try:
+            articles_json = json_object['PubmedArticle']
+        except:
+            citations = 'no results'
+        else: # more than 0 articles in the search results
+            try:    # more than 1 article in search result
+                citations = []
+                for article_json in articles_json:
+                    citation = Citation()
+                    citation.parse_pubmedJson(article_json)
+                    citations.append(citation)
+            except: # single article in search results
+                citations = []
                 citation = Citation()
-                citation.parse_pubmedJson(article_json)
+                citation.parse_pubmedJson(articles_json)
                 citations.append(citation)
-        except: # single article
-            citations = []
-            citation = Citation()
-            citation.parse_pubmedJson(articles_json)
-            citations.append(citation)
-        total_number_search_results = int(request.POST.get("count"))
-        total_pages = min(math.ceil(total_number_search_results/results_per_page),max_number_of_pages)
-        current_page = request.POST.get("new_page")
+            total_number_search_results = int(request.POST.get("count"))
+            total_pages = min(math.ceil(total_number_search_results/results_per_page),max_number_of_pages)
+            current_page = request.POST.get("new_page")
 
     context = {'navbar':'search','is_search_results':True,'citations':citations,'search_bar_placeholder':search_bar_placeholder,'total_pages':total_pages,'current_page':current_page,'results_per_page':results_per_page}
     return render(request, 'papers/search.html', context)
