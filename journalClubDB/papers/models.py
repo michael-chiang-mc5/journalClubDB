@@ -25,17 +25,19 @@ class Citation(models.Model):
 
     def get_author_list_truncated(self):
         authors = self.eval('authors')
-        if type(authors) is dict: # case where there is only one author
-            return authors['initials'] + ' ' + authors['last_name']
+        if len(authors) is 1: # case where there is only one author
+            author = authors[0]
+            return author['initials'] + ' ' + author['last_name']
         else:   # case where there are multiple authors
             return authors[0]['last_name'] + ' et al'
     def get_author_list(self):
         authors = self.eval('authors')
-        if type(authors) is dict: # case where there is only one author
-            if authors['first_name'][-2] == ' ':
-                full_name = authors['first_name'] + '. ' + authors['last_name']
+        if len(authors) is 1: # case where there is only one author
+            author = authors[0]
+            if author['first_name'][-2] == ' ':
+                full_name = author['first_name'] + '. ' + author['last_name']
             else:
-                full_name = authors['first_name'] + ' ' + authors['last_name']
+                full_name = author['first_name'] + ' ' + author['last_name']
             return full_name
         else:   # case where there are multiple authors TODO: implement this
             rn = ''
@@ -211,9 +213,10 @@ class Citation(models.Model):
             parsed_data['title'] = citation_data['ArticleTitle']
         except:
             pass
-        try:
-            authors = citation_data['AuthorList']['Author']
-            parsed_author_data = []
+
+        authors = citation_data['AuthorList']['Author']
+        parsed_author_data = []
+        try: # case with more than one author
             for author in authors:
                 single_author = dict()
                 single_author['first_name'] = author['ForeName'] # this includes middle initial
@@ -221,8 +224,13 @@ class Citation(models.Model):
                 single_author['last_name'] = author['LastName']
                 parsed_author_data.append(single_author)
             parsed_data['authors'] = parsed_author_data
-        except:
-            pass
+        except: # case with only one author
+            single_author = dict()
+            single_author['first_name'] = authors['ForeName'] # this includes middle initial
+            single_author['initials'] = authors['Initials'] # this includes middle initial
+            single_author['last_name'] = authors['LastName']
+            parsed_author_data.append(single_author)
+            parsed_data['authors'] = parsed_author_data
         return parsed_data
 
     title = models.TextField(blank=True,null=True)

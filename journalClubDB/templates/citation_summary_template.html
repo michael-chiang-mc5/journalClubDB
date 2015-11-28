@@ -3,9 +3,9 @@
 {% load templatetags %}
 <div>
   {% if is_search_results %}
-    <a id="citation-toggle-{{ forloop.counter }}" class="list-group-item" data-toggle="collapse" data-target="#citation-item-{{ forloop.counter }}" data-parent="#menu"> <!-- TODO: color this (active?) -->
+    <a id="citation-toggle-{{ forloop.counter }}" class="list-group-item pointer" data-toggle="collapse" data-target="#citation-item-{{ forloop.counter }}" data-parent="#menu"> <!-- TODO: color this (active?) -->
   {% else %}
-    <a id="citation-toggle-{{ citation.pk }}" class="list-group-item" data-toggle="collapse" data-target="#citation-item-{{ citation.pk }}" data-parent="#menu"> <!-- TODO: color this (active?) -->
+    <a id="citation-toggle-{{ citation.pk }}" class="list-group-item pointer" data-toggle="collapse" data-target="#citation-item-{{ citation.pk }}" data-parent="#menu"> <!-- TODO: color this (active?) -->
   {% endif %}
     <h4 class="list-group-item-heading">{{ citation.title }}</h4>
     <p class="list-group-item-text">{{ citation.get_author_list_truncated }} ({{ citation.get_year_published }}). {{ citation.get_journal }}.</p>

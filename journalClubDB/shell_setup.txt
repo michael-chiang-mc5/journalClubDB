@@ -25,6 +25,12 @@ json_str = load_object('deleteMe.pkl')
 json_object = json.loads(json_str)
 articles_json = json_object['PubmedArticle']
 
+json_object = articles_json[1]
+parsed_data = dict()
+medline_data = json_object['MedlineCitation']
+parsed_data['pubmedID'] = medline_data['PMID']
+citation_data = medline_data['Article']
+
 try:    # multiple articles
   citations = []
   for article_json in articles_json:
@@ -36,3 +42,23 @@ except: # single article
     citation = Citation()
     citation.parse_pubmedJson(articles_json)
     citations.append(citation)
+
+
+
+
+authors = citation_data['AuthorList']['Author']
+parsed_author_data = []
+try: # case with more than one author
+    for author in authors:
+        single_author = dict()
+        single_author['first_name'] = author['ForeName'] # this includes middle initial
+        single_author['initials'] = author['Initials'] # this includes middle initial
+        single_author['last_name'] = author['LastName']
+        parsed_author_data.append(single_author)
+    parsed_data['authors'] = parsed_author_data
+except: # case with only one author
+    single_author = dict()
+    single_author['first_name'] = authors['ForeName'] # this includes middle initial
+    single_author['initials'] = authors['Initials'] # this includes middle initial
+    single_author['last_name'] = authors['LastName']
+    parsed_author_data.append(single_author)

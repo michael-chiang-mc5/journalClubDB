@@ -733,7 +733,7 @@ def search(request,page):
     if request.method == 'POST':
         search_bar_placeholder = request.POST.get("search_bar_placeholder")
         json_str = request.POST.get("json_str")
-        #save_object(json_str, 'deleteMe.pkl')
+        save_object(json_str, 'deleteMe.pkl')
         json_object = json.loads(json_str)
         articles_json = json_object['PubmedArticle']
         try:    # multiple articles
