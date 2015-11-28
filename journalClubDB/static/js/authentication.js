@@ -6,11 +6,8 @@ $(document).ready(function() {
   $('.password_error_message').hide()
   $(".password_error_message").mouseleave();
 
-  $('.passwords_match_login').hide()
-  $(".passwords_match_login").mouseleave();
-
-  $('#user_banned').hide()
-  $('#user_banned').mouseleave();
+  $('.login_error_message').hide()
+  $(".login_error_message").mouseleave();
 
   $(".activate-login-modal-navbar").click(function() {
     $('#login-title').html("Register or log in.  It only takes seconds!")
@@ -30,22 +27,26 @@ $(document).ready(function() {
 $(document).ready(function() {
   $("#login_form").submit(function(e) {
     e.preventDefault();
-    var f = $( this )
+    var me = $( this )
+    var url = me.attr('href')
     $.ajax({
          type:"POST",
-         url: url_login,
-         data: f.serialize(),
+         url: url,
+         data: me.serialize(),
          success: function(data){
-           if(data == "True"){
+           if(data == "login_successful"){
              $('#myModal').modal('hide')
              location.reload();
              return true
-           } else if (data == "False") {
-             $('.passwords_match_login').show()
-             $(".passwords_match_login").mouseenter();
+           } else if (data == "login_unsuccessful") {
+             $(".login_error_message").attr('data-original-title', "wrong username or password")
+             $('.login_error_message').show()
+             $(".login_error_message").mouseenter();
              return false
            } else {
-             $('#user_banned').show()
+             $(".login_error_message").attr('data-original-title', "account banned")
+             $('.login_error_message').show()
+             $(".login_error_message").mouseenter();
              return false
            }
          }
@@ -65,9 +66,10 @@ $(document).ready(function() {
 
     // submit registration form
     var me = $( this )
+    var url = me.attr('href')
     $.ajax({
          type:"POST",
-         url: url_register,
+         url: url,
          data: me.serialize(),
          success: function(data){
            var block_modal_closing = false;

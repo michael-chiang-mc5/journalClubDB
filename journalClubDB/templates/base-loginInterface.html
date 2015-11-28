@@ -7,11 +7,6 @@
 
 
 <!-- used for login/registration modal.  TODO: move to separate file? -->
-<script>
-  url_register = "{% url 'papers:register' %}"
-  url_login = "{% url 'papers:user_login' %}"
-  url_is_field_available = "{% url 'papers:is_field_available' %}"
-</script>
 <script src="{% static "/static/js/authentication.js" %}"></script>
 
 
@@ -28,7 +23,7 @@
             <div class="col-md-6">
                 <div class="well">
                     <p class="color-black"><b>Create a new account</b></p>
-                    <form id="register_form" method="POST" action="#">
+                    <form id="register_form" method="POST" href="{% url 'papers:register' %}">
                        {% csrf_token %}
                         <div class="form-group">
                           <!-- error message if username pre-exists in database -->
@@ -75,16 +70,16 @@
             <div class="col-md-6">
                 <div class="well">
                   <p><b>Log in</b></p>
-                    <form id="login_form" method="POST" novalidate="novalidate">
+                    <form id="login_form" href="{% url 'papers:user_login' %}" method="POST" novalidate="novalidate">
                         {% csrf_token %}
                         <div class="form-group">
-                          <span class="passwords_match_login glyphicon glyphicon-asterisk red-tooltip" data-toggle="tooltip" title="wrong username or password" data-placement="right" style="float:right"></span>
+                          <span class="login_error_message glyphicon glyphicon-asterisk red-tooltip" data-toggle="tooltip" data-placement="right" style="float:right"></span>
                           <div style="overflow: hidden; padding-right: 0em;">
-                            <input type="text" required="" class="form-control" id="id_username" name="username" value="" required="" title="usernamer" placeholder="username">
+                            <input type="text" required="" class="form-control" id="id_username" name="username" value="" required="" title="Please enter your username" placeholder="username">
                           </div>
                         </div>
                         <div class="form-group">
-                          <span class="passwords_match_login glyphicon glyphicon-asterisk red-tooltip" data-toggle="tooltip" title="wrong username or password" data-placement="right" style="float:right"></span>
+                          <span class="login_error_message glyphicon glyphicon-asterisk red-tooltip" data-toggle="tooltip" data-placement="right" style="float:right"></span>
                           <div style="overflow: hidden; padding-right: 0em;">
                             <input type="password" required="" class="form-control" id="id_password" name="password" value="" required="" title="Please enter your password" placeholder="password">
                           </div>

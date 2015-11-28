@@ -12,14 +12,6 @@
     <script src="{% static 'bootstrap-3.3.5-dist/js/bootstrap.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'bootstrap-3.3.5-dist/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
-
-
-    <!-- used for login/registration modal.  TODO: move to separate file? -->
-    <script>
-      url_register = "{% url 'papers:register' %}"
-      url_login = "{% url 'papers:user_login' %}"
-      url_is_field_available = "{% url 'papers:is_field_available' %}"
-    </script>
     <script src="{% static "/static/js/base.js" %}"></script>
 
     {% block javascript %}{% endblock %}

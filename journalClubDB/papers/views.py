@@ -144,14 +144,13 @@ def user_login(request): # login is taken up by native django function
             # If the account is valid and active, we can log the user in.
             # We'll send the user back to the homepage.
             login(request, user)
-            return HttpResponse(True)
+            return HttpResponse("login_successful")
         else:
             # An inactive account was used - no logging in!
-            return HttpResponse("Banned")
+            return HttpResponse("banned")
     else:
         # Bad login details were provided. So we can't log the user in.
-        print("Invalid login details: {0}, {1}".format(username, password))
-        return HttpResponse(False)
+        return HttpResponse("login_unsuccessful")
 
 # add a citation to user library
 def add_citation_to_user_library(request):
@@ -160,19 +159,6 @@ def add_citation_to_user_library(request):
     userProfile.library.add(citation_pk)
     userProfile.save()
     return detail(request,citation_pk,0)
-
-# code from: http://stackoverflow.com/questions/1531272/django-ajax-response-for-valid-available-username-email-during-registration
-def is_field_available(request):
-    if request.method == "GET":
-        get = request.GET.copy()
-        if 'username' in get:
-            name = get['username']
-            if User.objects.filter(username__iexact=name):
-                return HttpResponse("False")
-            else:
-                return HttpResponse("True")
-    return HttpResponseServerError("Requires username to test")
-
 
 # user registration.  Code from: http://www.tangowithdjango.com/book17/chapters/login.html
 def register(request):
