@@ -31,34 +31,18 @@ medline_data = json_object['MedlineCitation']
 parsed_data['pubmedID'] = medline_data['PMID']
 citation_data = medline_data['Article']
 
+citation.parse_pubmedJson(articles_json[6])
+
 try:    # multiple articles
   citations = []
-  for article_json in articles_json:
+  for i,article_json in enumerate(articles_json):
       citation = Citation()
+      print(i)
       citation.parse_pubmedJson(article_json)
       citations.append(citation)
 except: # single article
     citations = []
     citation = Citation()
+    print("single article")
     citation.parse_pubmedJson(articles_json)
     citations.append(citation)
-
-
-
-
-authors = citation_data['AuthorList']['Author']
-parsed_author_data = []
-try: # case with more than one author
-    for author in authors:
-        single_author = dict()
-        single_author['first_name'] = author['ForeName'] # this includes middle initial
-        single_author['initials'] = author['Initials'] # this includes middle initial
-        single_author['last_name'] = author['LastName']
-        parsed_author_data.append(single_author)
-    parsed_data['authors'] = parsed_author_data
-except: # case with only one author
-    single_author = dict()
-    single_author['first_name'] = authors['ForeName'] # this includes middle initial
-    single_author['initials'] = authors['Initials'] # this includes middle initial
-    single_author['last_name'] = authors['LastName']
-    parsed_author_data.append(single_author)

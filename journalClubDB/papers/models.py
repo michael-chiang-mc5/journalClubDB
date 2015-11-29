@@ -4,6 +4,7 @@ import json
 from bson import json_util
 import ast
 import datetime
+import pdb # TODO: remove
 
 # This is internal journalclubDB citation data (as opposed to external pubmed citation data)
 class Citation(models.Model):
@@ -159,7 +160,6 @@ class Citation(models.Model):
 
     def pubmedJson_to_dict(self,json_object):
         parsed_data = dict()
-
         # There is no try/except because we want to be sure we are working with a proper pubmed json object
         medline_data = json_object['MedlineCitation']
         parsed_data['pubmedID'] = medline_data['PMID']
@@ -216,20 +216,23 @@ class Citation(models.Model):
 
         authors = citation_data['AuthorList']['Author']
         parsed_author_data = []
-        try: # case with more than one author
-            for author in authors:
-                single_author = dict()
-                single_author['first_name'] = author['ForeName'] # this includes middle initial
-                single_author['initials'] = author['Initials'] # this includes middle initial
-                single_author['last_name'] = author['LastName']
-                parsed_author_data.append(single_author)
-            parsed_data['authors'] = parsed_author_data
-        except: # case with only one author
+        try: # case with only one author
             single_author = dict()
             single_author['first_name'] = authors['ForeName'] # this includes middle initial
             single_author['initials'] = authors['Initials'] # this includes middle initial
             single_author['last_name'] = authors['LastName']
             parsed_author_data.append(single_author)
+            parsed_data['authors'] = parsed_author_data
+        except: # case with more than one author
+            for author in authors:
+                try: # sometimes author list contains groups like {'CollectiveName': 'Italian Pediatric TB Study Group'}. In this case, skip
+                    single_author = dict()
+                    single_author['first_name'] = author['ForeName'] # this includes middle initial
+                    single_author['initials'] = author['Initials'] # this includes middle initial
+                    single_author['last_name'] = author['LastName']
+                    parsed_author_data.append(single_author)
+                except:
+                    pass
             parsed_data['authors'] = parsed_author_data
         return parsed_data
 
