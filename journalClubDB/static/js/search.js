@@ -1,6 +1,5 @@
 $(document).ready(function() {
-
-
+  // import button functionality
   $(".import-button").click(function() {
     var b = $( this )
     var f = b.next('form');
@@ -58,6 +57,8 @@ $(document).ready(function() {
       var pubmed_search_link = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=' + search_str_safe + '&retmode=json&retmax=' + max_results_per_page
       // Execute search
       $.getJSON(pubmed_search_link, function(data){
+        // display loading bar and freeze screen
+        $("body").addClass("loading");
         // Get pubmed ids of search results
         var ids = data.esearchresult.idlist;
         var count = data.esearchresult.count;
