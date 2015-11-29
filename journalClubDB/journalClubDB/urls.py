@@ -15,26 +15,14 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-import registration
-from registration.backends.simple.views import RegistrationView
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^papers/', include('papers.urls', namespace="papers")),
-    url(r'^accounts/', include('registration.backends.simple.urls')),
 
-    # functionality for password reset
-    url(r'^user/password/reset/$',
-        'django.contrib.auth.views.password_reset',
-        {'post_reset_redirect' : '/user/password/reset/done/'},
-        name="password_reset"),
-    url(r'^user/password/reset/done/$',
-        'django.contrib.auth.views.password_reset_done'),
-    url(r'^user/password/reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',
-        'django.contrib.auth.views.password_reset_confirm',
-        {'post_reset_redirect' : '/user/password/done/'}),
-    url(r'^user/password/done/$',
-        'django.contrib.auth.views.password_reset_complete'),
+    # for description of django.contrib.auth.urls, see: https://docs.djangoproject.com/en/1.8/topics/auth/default/#using-the-views for description of django.contrib.auth.urls
+    url('^', include('django.contrib.auth.urls'))
+
 
 
 

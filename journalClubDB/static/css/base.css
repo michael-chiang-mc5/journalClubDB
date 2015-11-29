@@ -12,7 +12,9 @@
 .background-color-white {
   background-color: white !important;
 }
-
+.background-color-grey {
+  background-color: #f5f5f5 !important;
+}
 .color-black {
   color: black !important;
 }

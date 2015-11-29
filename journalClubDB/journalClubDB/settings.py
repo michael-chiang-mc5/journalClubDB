@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['127.0.0.1']
 
 
-# emails.  Run in terminal:
+# emails for test reset password functionality.  Run in terminal:
 # python -m smtpd -n -c DebuggingServer localhost:1025
 if DEBUG:
     EMAIL_HOST = 'localhost'
@@ -49,7 +49,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'papers',
-    'registration', # django-registration-redux, see http://www.tangowithdjango.com/book17/chapters/login_redux.html
 )
 
 MIDDLEWARE_CLASSES = (

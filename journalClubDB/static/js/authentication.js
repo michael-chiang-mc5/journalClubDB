@@ -29,6 +29,7 @@ $(document).ready(function() {
     e.preventDefault();
     var me = $( this )
     var url = me.attr('href')
+    var origin = window.location.pathname;
     $.ajax({
          type:"POST",
          url: url,
@@ -36,8 +37,14 @@ $(document).ready(function() {
          success: function(data){
            if(data == "login_successful"){
              $('#myModal').modal('hide')
-             location.reload();
-             return true
+
+             if (origin.substring(0, 7) == "/reset/" || origin.substring(0, 16) == "/password_reset/" ) {
+               window.location.href = "/papers/";
+               return true
+             } else {
+               location.reload();
+               return true
+             }
            } else if (data == "login_unsuccessful") {
              $(".login_error_message").attr('data-original-title', "wrong username or password")
              $('.login_error_message').show()
