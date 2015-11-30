@@ -118,13 +118,27 @@ WSGI_APPLICATION = 'journalClubDB.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 # TODO: use postgresql in production
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
-
+else:
+    db_password_path = os.path.abspath(os.path.join(BASE_DIR, '..', 'postgre_password.txt'))
+    with open(db_password_path) as f:
+        db_password = f.read().strip()
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'journalClubDB',
+            'USER': 'michaelc',
+            'PASSWORD': db_password, 
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
+        }
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
