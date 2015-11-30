@@ -23,13 +23,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '=#yx!jft^+h52xh&5_#3q5!xz0i63g!z2cgwkympl70y&*mibo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1']
-
+if DEBUG:
+    ALLOWED_HOSTS = ['127.0.0.1']
+else:
+    ALLOWED_HOSTS = ['.journalclubdb.com','127.0.0.1']
 
 # emails for test reset password functionality.  Run in terminal:
 # python -m smtpd -n -c DebuggingServer localhost:1025
+# for real emails:
+# http://www.mangooranges.com/2008/09/15/sending-email-via-gmail-in-django/
 if DEBUG:
     EMAIL_HOST = 'localhost'
     EMAIL_PORT = 1025
@@ -37,7 +41,12 @@ if DEBUG:
     EMAIL_HOST_PASSWORD = ''
     EMAIL_USE_TLS = False
     DEFAULT_FROM_EMAIL = 'testing@example.com'
-
+else:
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_HOST_USER = 'journalclubdb@gmail.com'
+    EMAIL_HOST_PASSWORD = ''
+    EMAIL_PORT = 587
 
 # Application definition
 
@@ -114,6 +123,8 @@ STATICFILES_DIRS = (
 )
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..', 'staticfiles'))
+
 
 # required for django-registration-redux
 REGISTRATION_OPEN = True                # If True, users can register
