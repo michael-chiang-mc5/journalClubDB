@@ -134,7 +134,7 @@ else:
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'journalClubDB',
             'USER': 'michaelc',
-            'PASSWORD': db_password, 
+            'PASSWORD': db_password,
             'HOST': '127.0.0.1',
             'PORT': '5432',
         }
