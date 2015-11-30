@@ -19,22 +19,27 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '=#yx!jft^+h52xh&5_#3q5!xz0i63g!z2cgwkympl70y&*mibo'
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+
+
 if DEBUG:
-    ALLOWED_HOSTS = ['127.0.0.1']
+    SECRET_KEY = '=#yx!jft^+h52xh&5_#3q5!xz0i63g!z2cgwkympl70y&*mibo'
+else:
+    # SECURITY WARNING: keep the secret key used in production secret!
+    secret_key_path = os.path.abspath(os.path.join(BASE_DIR, '..', 'secret_key.txt'))
+    with open(secret_key_path) as f:
+        SECRET_KEY = f.read().strip()
+
+if DEBUG:
+    ALLOWED_HOSTS = ['.journalclubdb.com','127.0.0.1']
 else:
     ALLOWED_HOSTS = ['.journalclubdb.com','127.0.0.1']
 
-# emails for test reset password functionality.  Run in terminal:
-# python -m smtpd -n -c DebuggingServer localhost:1025
-# for real emails:
-# http://www.mangooranges.com/2008/09/15/sending-email-via-gmail-in-django/
 if DEBUG:
+    # Receive emails using:
+    # python -m smtpd -n -c DebuggingServer localhost:1025
     EMAIL_HOST = 'localhost'
     EMAIL_PORT = 1025
     EMAIL_HOST_USER = ''
@@ -42,10 +47,16 @@ if DEBUG:
     EMAIL_USE_TLS = False
     DEFAULT_FROM_EMAIL = 'testing@example.com'
 else:
+    # To test:
+    # from django.core.mail import send_mail
+    # send_mail('test1', 'test2', 'journalclubdb@gmail.com', ['mcah5a@gmail.com',])
     EMAIL_USE_TLS = True
     EMAIL_HOST = 'smtp.gmail.com'
     EMAIL_HOST_USER = 'journalclubdb@gmail.com'
-    EMAIL_HOST_PASSWORD = ''
+    gmail_password_path = os.path.abspath(os.path.join(BASE_DIR, '..', 'gmail_password.txt'))
+    with open(gmail_password_path) as f:
+        password = f.read().strip()
+    EMAIL_HOST_PASSWORD = password
     EMAIL_PORT = 587
 
 # Application definition
@@ -70,14 +81,23 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
 )
+if not DEBUG:
+    X_FRAME_OPTIONS='DENY'
+    CSRF_COOKIE_HTTPONLY=True
+    CSRF_COOKIE_SECURE=True
+    SESSION_COOKIE_SECURE=True
+    SECURE_SSL_REDIRECT=False
+    SECURE_BROWSER_XSS_FILTER=True
+    SECURE_CONTENT_TYPE_NOSNIFF=True
+    SECURE_HSTS_SECONDS=1
+    SECURE_HSTS_INCLUDE_SUBDOMAINS=True
 
 ROOT_URLCONF = 'journalClubDB.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [  os.path.join(BASE_DIR, 'templates/'),
-                   os.path.join(BASE_DIR, 'templates/registration/'),],
+        'DIRS': [  os.path.join(BASE_DIR, 'templates/'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -95,7 +115,7 @@ WSGI_APPLICATION = 'journalClubDB.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-
+# TODO: use postgresql in production
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -123,12 +143,4 @@ STATICFILES_DIRS = (
 )
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..', 'staticfiles'))
-
-
-# required for django-registration-redux
-REGISTRATION_OPEN = True                # If True, users can register
-ACCOUNT_ACTIVATION_DAYS = 7     # One-week activation window; you may, of course, use a different value.
-REGISTRATION_AUTO_LOGIN = True  # If True, the user will be automatically logged in.
-LOGIN_REDIRECT_URL = '/papers/'  # The page you want users to arrive at after they successful log in
-LOGIN_URL = '/accounts/login/'  # The page users are directed to if they are not logged in,
+STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..', 'staticfiles')) # this is used in production. populated with: python manage.py collectstatic
