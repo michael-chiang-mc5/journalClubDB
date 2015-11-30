@@ -2,13 +2,17 @@
   font-size: 15px;
   color: black;
   font-weight: bold;
-  line-height: 1.2em;
+  line-height: 1.4em;
 }
 
 .comment-score,.comment-time {
   font-size: 13px;
   line-height: 1.4em;
   color: #999;
+}
+
+.condensed-comment-text p:last-child {
+  display: inline;
 }
 
 .comment-text p {
@@ -18,7 +22,7 @@
 }
 
 .active-vote {
-  font-weight: bolder;
+  font-weight: bolder !important;
   color: green !important;
 }
 
@@ -35,6 +39,9 @@ blockquote {
   font-size: 0.7em;
 }
 
+.post-top-box-condensed * {
+  color:  #999;;
+}
 
 .post-voting-interface {
   /* background-color: red; */
