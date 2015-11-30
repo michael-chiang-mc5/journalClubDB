@@ -25,7 +25,9 @@ DEBUG = False
 
 
 if DEBUG:
-    SECRET_KEY = '=#yx!jft^+h52xh&5_#3q5!xz0i63g!z2cgwkympl70y&*mibo'
+    secret_key_path = os.path.abspath(os.path.join(BASE_DIR, '..', 'secret_key.txt'))
+    with open(secret_key_path) as f:
+        SECRET_KEY = f.read().strip()
 else:
     # SECURITY WARNING: keep the secret key used in production secret!
     secret_key_path = os.path.abspath(os.path.join(BASE_DIR, '..', 'secret_key.txt'))
