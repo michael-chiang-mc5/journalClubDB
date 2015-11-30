@@ -87,7 +87,7 @@ if not DEBUG:
     X_FRAME_OPTIONS='DENY'
     CSRF_COOKIE_HTTPONLY=True
     CSRF_COOKIE_SECURE=False # this makes cookies only work in SSL
-    SESSION_COOKIE_SECURE=True
+    SESSION_COOKIE_SECURE=False # This needs to be false for authentication to work. Not sure why
     SECURE_SSL_REDIRECT=False # this redirects http to https
     SECURE_BROWSER_XSS_FILTER=True
     SECURE_CONTENT_TYPE_NOSNIFF=True
