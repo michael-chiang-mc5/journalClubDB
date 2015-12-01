@@ -10,8 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
-# required for social auth
-from passwords import *
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
@@ -25,6 +24,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+# hidden variables
+from passwords import *
 
 SECRET_KEY = django_secret_key # imported from passwords.py
 
