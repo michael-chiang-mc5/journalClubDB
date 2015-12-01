@@ -18,9 +18,9 @@
 
         <!-- login with social media -->
         <div class="row center-content social-authentication-rows">
-          <a href="{% url 'social:begin' backend='google-oauth2' %}"><img height="200" src="{% static 'images/google-icon.png'%}" alt="Log in with google!"></a>
-          <a href="{% url 'social:begin' backend='facebook' %}"><img height="200" src="{% static 'images/facebook-icon.png'%}" alt="Log in with facebook!"></a>
-          <a href="{% url 'social:begin' backend='twitter' %}"><img height="200" src="{% static 'images/twitter-icon.png'%}" alt="Log in with twitter!"></a>
+          <a href="{% url 'social:begin' backend='google-oauth2' %}?next={{ request.get_full_path }}"><img height="200" src="{% static 'images/google-icon.png'%}" alt="Log in with google!"></a>
+          <a href="{% url 'social:begin' backend='facebook' %}?next={{ request.get_full_path }}"><img height="200" src="{% static 'images/facebook-icon.png'%}" alt="Log in with facebook!"></a>
+          <a href="{% url 'social:begin' backend='twitter' %}?next={{ request.get_full_path }}"><img height="200" src="{% static 'images/twitter-icon.png'%}" alt="Log in with twitter!"></a>
         </div>
 
         <!-- conventional log in -->
