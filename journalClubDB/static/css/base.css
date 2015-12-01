@@ -1,3 +1,14 @@
+/* This is the background used for a single post in insolation */
+.single-post-background {
+  padding-right: 1.5em;
+  padding-left: 1.5em;
+  padding-top: 1.5em;
+  padding-bottom: 1.5em;
+  background-color: white;
+  border-radius: 25px;
+}
+
+
 .color-grey {
   color: #9D9D9D !important;
 }

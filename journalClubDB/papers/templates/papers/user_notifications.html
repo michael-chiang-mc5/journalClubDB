@@ -6,17 +6,19 @@
 
 {% block body_block %}
 
+<div class="container">
   {% if number_of_post_reply_notifications == 0 %}
-    <h1>No user notifications</h1>
+    <h1 class="color-white">No user notifications</h1>
   {% else %}
-    <h1>User notifications</h1>
+    <h1 class="color-white">Replies to your posts</h1>
   {% endif %}
 
   {% for p in posts %}
-    <div class="single_post">
+    <div class="single-post-background">
       {% include "post_template.html" %}
     </div>
     <br>
   {% endfor %}
+</div>
 
 {% endblock %}

@@ -2,7 +2,6 @@
 
 {% block javascript %}
   {% load staticfiles %}
-  <link rel="stylesheet" href="{% static 'css/user_posts.css' %}">
 {% endblock %}
 
 
@@ -12,7 +11,7 @@
 
   {% for p in posts %}
     {% if not p.deleted %}
-      <div class="single_post">
+      <div class="single-post-background">
         {% include "post_template.html" %}
       </div>
       <br>
