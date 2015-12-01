@@ -49,19 +49,18 @@ $(document).ready(function() {
     ChangeUrl("","../"+id+"/")
   });
 
-  $('img').each(function(index) {
+  $('.post-wrapper img').each(function(index) {
     var img = $(this)
-    var width = img.width()
-    var height = img.height()
-
-    var resized_width_height = getImageDimensions(width,height);
-
-    img.width(resized_width_height[0])
-    img.height(resized_width_height[1])
-
-
-    img.wrap( "<a href='" + img.attr("src") + "'></a>" );
-
-
+    img.hide()
+    $(img).load(function(){
+      var width = img.width()
+      var height = img.height()
+      var resized_width_height = getImageDimensions(width,height);
+      img.width(resized_width_height[0])
+      img.height(resized_width_height[1])
+      img.wrap( "<a href='" + img.attr("src") + "'></a>" );
+      img.show()
+    });
   });
+
 });
