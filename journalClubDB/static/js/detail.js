@@ -35,6 +35,12 @@ function getImageDimensions(width,height) {
 
 $(document).ready(function() {
 
+  if(window.location.hash) {
+    var url = window.location.href
+    var focused_div = url.substring(url.indexOf("#")+1)
+    $('#'+focused_div).addClass("background-color-yellow")
+  }
+
   // Change url when different tabs
   $( "li[id*='pill_']" ).click(function(event){
     var pill_id = $(this).attr("id")
