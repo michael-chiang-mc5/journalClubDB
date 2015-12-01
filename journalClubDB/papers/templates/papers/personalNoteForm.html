@@ -14,34 +14,33 @@
 {% block body_block %}
 
 
-<div>
-<h2>Personal notes for <b>{{ citation.author|first_author }}, {{ citation.date|citation_year }}</b></h2>
-</div>
+<div class="container">
+  <h2 class="color-white">Personal notes for <i>{{ citation.get_author_list_truncated }}, {{ citation.get_year_published }}</i></h2>
+  <div>
+    <form role="form" action="{% url 'papers:editPersonalNote' %}" method=POST>
+      <!-- POST data -->
+      {% csrf_token %}
+      <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
 
-<div>
-  <form role="form" action="{% url 'papers:editPersonalNote' %}" method=POST>
-    <!-- POST data -->
-    {% csrf_token %}
-    <input type="hidden" name="citation_pk" value="{{ citation.pk }}" />
+      <!-- WYSIWYG text editor -->
+      <textarea cols="10" id="editor{{ thread.pk }}" name="text" rows="10" ></textarea>
+      <script>
+      	CKEDITOR.replace( 'editor{{ thread.pk }}', {
+      		extraPlugins: 'mathjax',
+      		mathJaxLib: 'http://cdn.mathjax.org/mathjax/2.2-latest/MathJax.js?config=TeX-AMS_HTML',
+      		height: 320
+      	} );
+      	if ( CKEDITOR.env.ie && CKEDITOR.env.version == 8 ) {
+    	  	document.getElementById( 'ie8-warning' ).className = 'tip alert';
+    	  }
+        var e = CKEDITOR.instances.editor{{ thread.pk }};
+        e.setData("{{ initial_text|safe }}")
+      </script>
 
-    <!-- WYSIWYG text editor -->
-    <textarea cols="10" id="editor{{ thread.pk }}" name="text" rows="10" ></textarea>
-    <script>
-    	CKEDITOR.replace( 'editor{{ thread.pk }}', {
-    		extraPlugins: 'mathjax',
-    		mathJaxLib: 'http://cdn.mathjax.org/mathjax/2.2-latest/MathJax.js?config=TeX-AMS_HTML',
-    		height: 320
-    	} );
-    	if ( CKEDITOR.env.ie && CKEDITOR.env.version == 8 ) {
-  	  	document.getElementById( 'ie8-warning' ).className = 'tip alert';
-  	  }
-      var e = CKEDITOR.instances.editor{{ thread.pk }};
-      e.setData("{{ initial_text|safe }}")
-    </script>
-
-    <!-- submit button -->
-    <button type="submit" class="btn btn-default">Submit</button>
-  </form>
+      <!-- submit button -->
+      <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+  </div>
 </div>
 
 {% endblock %}

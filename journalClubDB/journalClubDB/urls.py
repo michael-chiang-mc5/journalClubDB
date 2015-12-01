@@ -21,8 +21,10 @@ urlpatterns = [
     url(r'^papers/', include('papers.urls', namespace="papers")),
 
     # for description of django.contrib.auth.urls, see: https://docs.djangoproject.com/en/1.8/topics/auth/default/#using-the-views for description of django.contrib.auth.urls
-    url('^', include('django.contrib.auth.urls'))
+    url('^', include('django.contrib.auth.urls')),
 
+    # See https://realpython.com/blog/python/adding-social-authentication-to-django/
+    url('', include('social.apps.django_app.urls', namespace='social')),
 
 
 
