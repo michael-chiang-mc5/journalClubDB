@@ -2,6 +2,4 @@
 .DS_Store
 *.sqlite3
 env/
-journalClubDB/config.py
-gmail_password.txt
-secret_key.txt
+journalClubDB/passwords.py

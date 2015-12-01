@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
 # required for social auth
-from config import *
+from passwords import *
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
@@ -23,20 +23,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 
+SECRET_KEY = django_secret_key # imported from passwords.py
 
-if DEBUG:
-    secret_key_path = os.path.abspath(os.path.join(BASE_DIR, '..', 'secret_key.txt'))
-    with open(secret_key_path) as f:
-        SECRET_KEY = f.read().strip()
-else:
-    # SECURITY WARNING: keep the secret key used in production secret!
-    secret_key_path = os.path.abspath(os.path.join(BASE_DIR, '..', 'secret_key.txt'))
-    with open(secret_key_path) as f:
-        SECRET_KEY = f.read().strip()
-
+# TODO: change this
 if DEBUG:
     ALLOWED_HOSTS = ['.journalclubdb.com','127.0.0.1']
 else:
@@ -59,9 +51,7 @@ else:
     EMAIL_HOST = 'smtp.gmail.com'
     EMAIL_HOST_USER = 'journalclubdb@gmail.com'
     gmail_password_path = os.path.abspath(os.path.join(BASE_DIR, '..', 'gmail_password.txt'))
-    with open(gmail_password_path) as f:
-        password = f.read().strip()
-    EMAIL_HOST_PASSWORD = password
+    EMAIL_HOST_PASSWORD = gmail_password # imported from passwords.py
     EMAIL_PORT = 587
 
 # Application definition
@@ -148,15 +138,12 @@ if DEBUG:
         }
     }
 else:
-    db_password_path = os.path.abspath(os.path.join(BASE_DIR, '..', 'postgre_password.txt'))
-    with open(db_password_path) as f:
-        db_password = f.read().strip()
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'journalClubDB',
             'USER': 'michaelc',
-            'PASSWORD': db_password,
+            'PASSWORD': db_password, # imported from passwords.py
             'HOST': '127.0.0.1',
             'PORT': '5432',
         }
