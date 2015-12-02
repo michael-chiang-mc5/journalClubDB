@@ -8,7 +8,6 @@
 {% block javascript %}
   {% load staticfiles %}
   <script src="{% static 'js/ckeditor/ckeditor.js' %}"></script>
-  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
   <link rel="stylesheet" href="{% static 'css/detail.css' %}">
   <script>
     csrf_js = '{{ csrf_token }}'
@@ -22,12 +21,12 @@
   <div class="container">
     <!-- tab bar -->
     <ul class="nav nav-pills nav-justified">
-      <li id="pill_0" {% if current_thread == 0 %} class="active" {% endif %}> <a data-toggle="pill" href="#thread_0">Summary</a></li>
+      <li data-threadnumber="0" class="thread-switch-button {% if current_thread == 0 %}active{% endif %}"> <a data-toggle="pill" href="#thread_0">Summary</a></li>
       {% for thread in threads %}
-        <li id="pill_{{ forloop.counter }}" {% if current_thread == forloop.counter %} class="active" {% endif %}><a data-toggle="pill" href="#thread_{{ forloop.counter }}">{{ thread.title }}</a></li>
+        <li data-threadnumber="{{ forloop.counter }}" class="thread-switch-button  {% if current_thread == forloop.counter %}active{% endif %}"><a data-toggle="pill" href="#thread_{{ forloop.counter }}">{{ thread.title }}</a></li>
       {% endfor %}
       {% if user.is_authenticated %}
-        <li id="pill_{{ threads|length|add:1 }}" {% if current_thread == threads|length|add:1 %} class="active" {% endif %}><a data-toggle="pill" href="#thread_{{ threads|length|add:1 }}">Personal notes</a></li>
+        <li data-threadnumber="{{ threads|length|add:1 }}" class="thread-switch-button  {% if current_thread == threads|length|add:1 %}active{% endif %}"><a data-toggle="pill" href="#thread_{{ threads|length|add:1 }}">Personal notes</a></li>
       {% endif %}
     </ul>
 
