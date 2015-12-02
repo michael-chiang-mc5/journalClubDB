@@ -24,9 +24,9 @@ function getImageDimensions(width,height) {
 
 $(document).ready(function() {
 
+  // This resizes images within post-wrapper div
   $('.post-wrapper img').each(function(index) {
     var img = $(this)
-    img.hide()
     $(img).load(function(){
       var width = img.width()
       var height = img.height()
