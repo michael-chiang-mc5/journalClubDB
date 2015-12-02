@@ -1,26 +1,15 @@
-
-// Make login modal show title and clear error messages
 $(document).ready(function() {
   $('.username_error_message').hide()
   $('.username_error_message').mouseleave()
   $('.password_error_message').hide()
   $(".password_error_message").mouseleave();
-
   $('.login_error_message').hide()
   $(".login_error_message").mouseleave();
+});
 
-  $(".activate-login-modal-navbar").click(function() {
-    $('#login-title').html("Register or log in.  It only takes seconds!")
-  });
-  $(".activate-login-modal-post").click(function() {
-    $('#login-title').html("You must register to post comments.  It only takes seconds!")
-  });
-  $(".activate-login-modal-vote").click(function() {
-    $('#login-title').html("You must register to vote on comments.  It only takes seconds!")
-  });
-  $(".activate-login-modal-library").click(function() {
-    $('#login-title').html("You must register to add papers to your library.  It only takes seconds!")
-  });
+// Bootstrap tooltips must be initialized with jQuery
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
 });
 
 // submit login form
@@ -121,9 +110,4 @@ $(document).ready(function() {
     });
 
   });
-});
-
-// Bootstrap tooltips must be initialized with jQuery
-$(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip();
 });
