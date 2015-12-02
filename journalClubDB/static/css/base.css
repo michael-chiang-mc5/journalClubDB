@@ -8,13 +8,15 @@
   border-radius: 25px;
 }
 
-/* Make all images start off hidden. The reason for this is because we resize
-   within posts and we want to do so without the user seeing the original image
-   flash on the screen for a split second (see base.js ). If you want to display
-   an image, add class inline */
-img {
-   display: none;
- }
+
+/* Auto resizing of avatars in posts and personal messages. */
+/* Change sizing to suit your own preferences. */
+.post-wrapper img {
+   height: auto;
+   width: auto;
+   max-height: 100px;
+   max-width: 100px;
+}
 
 
 .color-grey {

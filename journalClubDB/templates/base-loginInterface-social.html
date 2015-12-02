@@ -19,15 +19,15 @@
         <!-- login with social media -->
         <div class="row center-content social-authentication-rows">
           <a class="social-login-link" href="{% url 'social:begin' backend='google-oauth2' %}?next={{ request.get_full_path }}">
-            <img class="inline" height="200" src="{% static 'images/google-icon.png'%}" alt="Log in with google!">
+            <img height="200" src="{% static 'images/google-icon.png'%}" alt="Log in with google!">
           </a>
 
           <a class="social-login-link" href="{% url 'social:begin' backend='facebook' %}?next={{ request.get_full_path }}">
-            <img class="inline" height="200" src="{% static 'images/facebook-icon.png'%}" alt="Log in with facebook!">
+            <img height="200" src="{% static 'images/facebook-icon.png'%}" alt="Log in with facebook!">
           </a>
 
           <a class="social-login-link" href="{% url 'social:begin' backend='twitter' %}?next={{ request.get_full_path }}">
-            <img class="inline" height="200" src="{% static 'images/twitter-icon.png'%}" alt="Log in with twitter!">
+            <img height="200" src="{% static 'images/twitter-icon.png'%}" alt="Log in with twitter!">
           </a>
         </div>
 
