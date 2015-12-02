@@ -123,9 +123,6 @@ def about_etiquette(request):
 def about_jcdb(request):
     context = {'navbar':'about'}
     return render(request,'papers/about_jcdb.html', context)
-def about_privacy(request):
-    context = {'navbar':'about'}
-    return render(request,'papers/about_privacy.html', context)
 
 # user login.  Code from: http://www.tangowithdjango.com/book17/chapters/login.html
 def user_login(request): # login is taken up by native django function

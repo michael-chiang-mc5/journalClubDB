@@ -12,7 +12,6 @@ urlpatterns = [
     url(r'^about_developers/$', views.about_developers, name='about_developers'),
     url(r'^about_etiquette/$', views.about_etiquette, name='about_etiquette'),
     url(r'^about_jcdb/$', views.about_jcdb, name='about_jcdb'),
-    url(r'^about_privacy/$', views.about_privacy, name='about_privacy'),
 
 
     # ex: /paperOfTheWeek_list/

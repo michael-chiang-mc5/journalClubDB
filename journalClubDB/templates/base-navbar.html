@@ -17,26 +17,28 @@
           <li class="{% if navbar == 'home' %}active{% endif %}"><a href="{% url 'papers:frontpage' %}">Home</a></li>
 
           <!-- search button -->
-          {% if user.is_authenticated %}
-            <li class="dropdown {% if navbar == 'search' %}active{% endif %}">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Explore<span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="{% url 'papers:index' %}">Search JCDB</a></li>
+          <li class="dropdown {% if navbar == 'search' %}active{% endif %}">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Search<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="{% url 'papers:index' %}">Search JCDB</a></li>
+              {% if user.is_authenticated %}
                 <li><a href="{% url 'papers:search' 0 %}">Import papers from pubmed</a></li>
-              </ul>
-            </li>
-          {% else %}
-            <li class="{% if navbar == 'search' %}active{% endif %}"><a href="{% url 'papers:index' %}">Explore</a></li>
-          {% endif %}
+              {% else %}
+                <li>
+                  <a data-toggle="modal" data-target="#myModal" class="pointer activate-login-modal-post">
+                    Import papers from pubmed
+                  </a>
+                </li>
+              {% endif %}
+            </ul>
+          </li>
           <li class="dropdown {% if navbar == 'about' %}active{% endif %}">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">About<span class="caret"></span></a>
             <ul class="dropdown-menu">
               <li><a href="{% url 'papers:about_jcdb' %}">Tell me about this website!</a></li>
               <li><a href="{% url 'papers:about_etiquette' %}">JCDB etiquette</a></li>
-              <li><a href="{% url 'papers:about_privacy' %}">Privacy policy</a></li>
               <li role="separator" class="divider"></li>
               <li><a href="{% url 'papers:about_developers' %}">About the developers</a></li>
-              <li><a href="{% url 'papers:about_contact' %}">Contact</a></li>
             </ul>
           </li>
         </ul>
@@ -71,7 +73,7 @@
               </ul>
             </li>
           {% else %}
-              <li class="active pointer"><a class="activate-login-modal-navbar" data-toggle="modal" data-target="#myModal">Register or log in</a></li>
+              <li class="active pointer"><a class="activate-login-modal-navbar" data-toggle="modal" data-target="#myModal">Login</a></li>
           {% endif %}
         </ul>
       </div>

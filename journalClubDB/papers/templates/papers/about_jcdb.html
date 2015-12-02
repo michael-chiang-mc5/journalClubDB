@@ -11,6 +11,65 @@
 <!-- webpage main content -->
 {% block body_block %}
 
-  About JCDB
+  <div class="container single-post-background background-color-grey">
+    <div class="single-post-background background-color-white">
+      <h4>What is journalClubDB?</h4>
+      <p>The "journal club" is an integral component of the graduate school experience. In journal clubs, students
+         share and discuss recently published academic papers. Journal clubs are tradiationally conducted via
+         face-to-face interaction. JournalClubDB provides functionality to discuss scientific publications online.
+      </p>
+      <p>
+        Note that JournalClubDB is currently in beta. There is a good chance that I will need to wipe the database
+        in order to implement new functionality, so please be aware that any online discussions on JCDB are subject
+        to deletion without warning.
+      </p>
+    </div>
+    <br />
+    <div class="single-post-background background-color-white">
+      <h4>How do I get started?</h4>
+      <p>The first thing you want to do is log in. Simply click
+        <a class="activate-login-modal-navbar pointer" data-toggle="modal" data-target="#myModal">
+        Login
+        </a>
+        at the top right-hand corner of the screen. Then, choose whether you want
+        to use your Google, Facebook, or Twitter account to authenticate.
+      </p>
+      <p>Next, import the publication you want to discuss into JCDB. On the top
+         of the screen, click "Search -> Import papers from pubmed"
+      </p>
+      <p>
+        The rest is self-explanatory (hopefully).
+      </p>
+    </div>
+    <br />
+    <div class="single-post-background background-color-white">
+      <h4>Why do I have to use google/facebook/twitter to log into JCDB? Is there an option to create a JCDB account without using social media?</h4>
+      <p>We hope that encouraging users to discuss papers using their real name (or at least their official social
+        media account) will foster high-quality discussions. At the same time, we recognize that the value of
+        user-controlled anonymity. If you feel uncomfortable engaging in discussion with your real name, you
+        can create a throw-away JCDB account unlinked to social media <a>here</a>.
+      </p>
+
+    </div>
+    <br />
+    <div class="single-post-background background-color-white">
+      <h4>What are "Paper Highlights". Can I submit my own publications as a "Paper Highlight"?</h4>
+      <p>Paper Highlights are featured on the front page of JCDB. We would be happy to host your publication
+        as a paper highlight if you are willing to write a short layman's summary of your work. Please <a>contact</a>
+        us to work out the details.
+      </p>
+    </div>
+
+    <br />
+    <div class="single-post-background background-color-white">
+      <h4>I'm a physicist/chemist/mathematician, but can't find any physics/chemistry/mathematics articles
+          on JournalClubDB. Why is this?</h4>
+      <p>JournalClubDB uses pubmed's search engine to import publications. Pubmed only indexes publications supported
+         by NIH funding, which means only biological articles can be imported into JCDB. We are looking into alternative
+         search engines, but for now JCDB can only be used for biological research articles.
+    </div>
+
+  </div>
+
 
 {% endblock %}
