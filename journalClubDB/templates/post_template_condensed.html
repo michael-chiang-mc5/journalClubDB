@@ -64,7 +64,7 @@
                             <a id="up-{{ p.pk }}" class="up-arrow pointer" title="This comment is useful">upvote</a>
                           {% endif %}
                         {% else %}
-                          <a class="activate-login-modal-vote pointer" data-toggle="modal" data-target="#myModal" title="This comment is useful">upvote</a>
+                          <a class="activate-login-modal-vote pointer" data-toggle="modal" data-target="#social-auth-modal" title="This comment is useful">upvote</a>
                         {% endif %}
                       </li>
                       <!-- downvote button -->
@@ -77,7 +77,7 @@
                             <a id="down-{{ p.pk }}" class="down-arrow pointer" title="This comment not useful">downvote</a>
                           {% endif %}
                         {% else %}
-                          <a class="activate-login-modal-vote pointer" data-toggle="modal" data-target="#myModal" title="This comment is not useful">downvote</a>
+                          <a class="activate-login-modal-vote pointer" data-toggle="modal" data-target="#social-auth-modal" title="This comment is not useful">downvote</a>
                         {% endif %}
                       </li>
                       <li class="divider"></li>
@@ -104,7 +104,7 @@
                             <input type="hidden" name="edit_or_reply" value="reply" />
                           </form>
                         {% else %}
-                          <a data-toggle="modal" data-target="#myModal" class="pointer activate-login-modal-post">reply</a>
+                          <a data-toggle="modal" data-target="#social-auth-modal" class="pointer activate-login-modal-post">reply</a>
                         {% endif %}
                       </li>
 

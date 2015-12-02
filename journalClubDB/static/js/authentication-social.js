@@ -49,7 +49,7 @@ $(document).ready(function() {
          data: me.serialize(),
          success: function(data){
            if(data == "login_successful"){
-             $('#myModal').modal('hide')
+             $('#social-auth-modal').modal('hide')
 
              if (origin.substring(0, 7) == "/reset/" || origin.substring(0, 16) == "/password_reset/" ) {
                window.location.href = "/papers/";
@@ -128,7 +128,7 @@ $(document).ready(function() {
              return false;
            }
 
-          $('#myModal').modal('hide')
+          $('#social-auth-modal').modal('hide')
           location.reload();
          }
     });

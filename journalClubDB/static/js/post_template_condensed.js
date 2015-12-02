@@ -2,11 +2,6 @@
 
 $(document).ready(function() {
 
-  // This keeps dropdown menu from closing on click
-  $('.dropdown-menu').click(function(event){
-       event.stopPropagation();
-   });
-
 
   // Upvote, downvote functionality is placed in base.js in order to prevent race conditions
 

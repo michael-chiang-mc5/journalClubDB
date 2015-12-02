@@ -4,11 +4,6 @@ $(document).ready(function() {
 
   // Upvote, downvote functionality is placed in base.js in order to prevent race conditions
 
-  // This keeps dropdown menu from closing on click
-  $('.dropdown-menu').click(function(event){
-       event.stopPropagation();
-   });
-
   // this implements history button functionality
   $( ".comment-all").hide()   // only show last post/edit and hide all previous
   $( ".comment-last").show()

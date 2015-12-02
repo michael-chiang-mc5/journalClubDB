@@ -25,7 +25,7 @@
                 <li><a href="{% url 'papers:search' 0 %}">Import papers from pubmed</a></li>
               {% else %}
                 <li>
-                  <a data-toggle="modal" data-target="#myModal" class="pointer activate-login-modal-post">
+                  <a data-toggle="modal" data-target="#social-auth-modal" class="pointer activate-login-modal-post">
                     Import papers from pubmed
                   </a>
                 </li>
@@ -73,7 +73,7 @@
               </ul>
             </li>
           {% else %}
-              <li class="active pointer"><a class="activate-login-modal-navbar" data-toggle="modal" data-target="#myModal">Login</a></li>
+              <li class="active pointer"><a class="activate-login-modal-navbar" data-toggle="modal" data-target="#social-auth-modal">Login</a></li>
           {% endif %}
         </ul>
       </div>

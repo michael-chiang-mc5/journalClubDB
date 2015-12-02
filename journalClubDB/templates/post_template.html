@@ -29,7 +29,7 @@
         <a id="up-{{ p.pk }}" class="up-arrow" title="This answer is useful">up vote</a>
       {% endif %}
     {% else %}
-        <div class="active pointer" id="upvote-modal"><a id="up-{{ p.pk }}" class="up-arrow activate-login-modal-vote" data-toggle="modal" data-target="#myModal">up vote</a></div>
+        <div class="active pointer" id="upvote-modal"><a id="up-{{ p.pk }}" class="up-arrow activate-login-modal-vote" data-toggle="modal" data-target="#social-auth-modal">up vote</a></div>
     {% endif %}
 
 
@@ -42,7 +42,7 @@
         <a id="down-{{ p.pk }}" class="down-arrow" title="This answer is not useful">down vote</a>
       {% endif %}
     {% else %}
-      <div class="active pointer" id="downvote-modal"><a id="down-{{ p.pk }}" class="down-arrow activate-login-modal-vote" data-toggle="modal" data-target="#myModal">down vote</a></div>
+      <div class="active pointer" id="downvote-modal"><a id="down-{{ p.pk }}" class="down-arrow activate-login-modal-vote" data-toggle="modal" data-target="#social-auth-modal">down vote</a></div>
     {% endif %}
   </div>
 </td>
@@ -101,7 +101,7 @@
               <a id="up-{{ p.pk }}" class="up-arrow pointer" title="This comment is useful">upvote</a>
             {% endif %}
         {% else %}
-          <a class="activate-login-modal-vote pointer" data-toggle="modal" data-target="#myModal" title="This comment is useful">upvote</a>
+          <a class="activate-login-modal-vote pointer" data-toggle="modal" data-target="#social-auth-modal" title="This comment is useful">upvote</a>
         {% endif %}
         &nbsp;
         </span>
@@ -116,7 +116,7 @@
             <a id="down-{{ p.pk }}" class="down-arrow pointer" title="This comment not useful">downvote</a>
           {% endif %}
         {% else %}
-          <a class="activate-login-modal-vote pointer" data-toggle="modal" data-target="#myModal" title="This comment is not useful">downvote</a>
+          <a class="activate-login-modal-vote pointer" data-toggle="modal" data-target="#social-auth-modal" title="This comment is not useful">downvote</a>
         {% endif %}
         &nbsp;
         </span>
@@ -190,7 +190,7 @@
         <!-- if user is not authenticated -->
         {% else %}
           <span>
-            <span><a data-toggle="modal" data-target="#myModal" class="pointer activate-login-modal-post">reply</a>  &nbsp; </span>
+            <span><a data-toggle="modal" data-target="#social-auth-modal" class="pointer activate-login-modal-post">reply</a>  &nbsp; </span>
           </span>
 
         {% endif %}
