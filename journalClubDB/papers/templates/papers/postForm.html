@@ -40,7 +40,7 @@
     <!-- submit button -->
     <script>
     	CKEDITOR.replace( 'editor{{ thread.pk }}', {
-    		extraPlugins: 'mathjax,justify,devtools', // put 'mathjax,devtools' if you want to know editor IDs
+    		extraPlugins: 'mathjax,justify', // put 'mathjax,devtools' if you want to know editor IDs
     		mathJaxLib: 'http://cdn.mathjax.org/mathjax/2.2-latest/MathJax.js?config=TeX-AMS_HTML',
         height: $("#postform-container").height() - $("#postform-header").height() - CKEDITOR.config.height
     	} );
