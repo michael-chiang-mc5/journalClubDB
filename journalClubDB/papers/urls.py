@@ -10,7 +10,6 @@ urlpatterns = [
     url(r'^about_contact/$', views.about_contact, name='about_contact'),
 
     url(r'^about_developers/$', views.about_developers, name='about_developers'),
-    url(r'^about_etiquette/$', views.about_etiquette, name='about_etiquette'),
     url(r'^about_jcdb/$', views.about_jcdb, name='about_jcdb'),
 
 

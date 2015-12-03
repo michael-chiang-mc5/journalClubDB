@@ -7,6 +7,10 @@
   background-color: white;
   border-radius: 25px;
 }
+.center-content {
+  text-align:center;
+  position:relative;
+}
 
 
 /* Auto resizing of avatars in posts and personal messages. */

@@ -117,9 +117,6 @@ def about_contact(request):
 def about_developers(request):
     context = {'navbar':'about'}
     return render(request,'papers/about_developers.html', context)
-def about_etiquette(request):
-    context = {'navbar':'about'}
-    return render(request,'papers/about_etiquette.html', context)
 def about_jcdb(request):
     context = {'navbar':'about'}
     return render(request,'papers/about_jcdb.html', context)
