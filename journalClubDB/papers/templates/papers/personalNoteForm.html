@@ -26,7 +26,7 @@
       <textarea cols="10" id="editor{{ thread.pk }}" name="text" rows="10" ></textarea>
       <script>
       	CKEDITOR.replace( 'editor{{ thread.pk }}', {
-      		extraPlugins: 'mathjax',
+      		extraPlugins: 'mathjax,justify',
       		mathJaxLib: 'http://cdn.mathjax.org/mathjax/2.2-latest/MathJax.js?config=TeX-AMS_HTML',
       		height: 320
       	} );

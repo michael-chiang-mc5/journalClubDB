@@ -13,6 +13,11 @@ function ChangeUrl(title, url) {
 
 $(document).ready(function() {
 
+  // create hyperlinks to all images in posts
+  $('.post-wrapper img').each(function(index) {
+    var img = $(this)
+    img.wrap( "<a href='" + img.attr("src") + "'></a>" );
+  });
 
 
   // Highlight url target
