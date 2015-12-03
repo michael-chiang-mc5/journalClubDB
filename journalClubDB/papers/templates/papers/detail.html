@@ -9,7 +9,7 @@
   {% load staticfiles %}
   <script src="{% static 'js/ckeditor/ckeditor.js' %}"></script>
   <link rel="stylesheet" href="{% static 'css/detail.css' %}">
-  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" />
+  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
   <script>
     csrf_js = '{{ csrf_token }}'
     url_upvote = "{% url 'papers:upvote' %}"
