@@ -3,6 +3,9 @@ $(document).ready(function() {
   $(".activate-login-modal-navbar").click(function() {
     $('#login-title').html("Log in with your Facebook, Twitter, or Google account.<br />It only takes seconds!")
   });
+  $(".activate-login-modal-import").click(function() {
+    $('#login-title').html("You must log in to import articles from pubmed.  It only takes seconds!")
+  });
   $(".activate-login-modal-post").click(function() {
     $('#login-title').html("You must log in to post comments.  It only takes seconds!")
   });
