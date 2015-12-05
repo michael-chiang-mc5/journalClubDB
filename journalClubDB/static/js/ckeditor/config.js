@@ -57,7 +57,6 @@ CKEDITOR.editorConfig = function( config ) {
 		{ name: 'about', groups: [ 'about' ] }
 	];
 
-	config.removeButtons = 'Cut,Undo,Copy,Redo,Paste,PasteText,PasteFromWord,Scayt,Unlink,Anchor,Maximize,RemoveFormat,Outdent,Indent,About,Source,JustifyBlock';
 	config.format_tags = 'p;h1;h2;pre';
 	config.removeDialogTabs = 'image:advanced;image:Link;link:advanced;link:target';
 	config.stylesSet = [

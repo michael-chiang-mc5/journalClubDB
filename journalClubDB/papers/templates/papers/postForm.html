@@ -42,8 +42,13 @@
     	CKEDITOR.replace( 'editor{{ thread.pk }}', {
     		extraPlugins: 'mathjax,justify', // put 'mathjax,devtools' if you want to know editor IDs
     		mathJaxLib: 'http://cdn.mathjax.org/mathjax/2.2-latest/MathJax.js?config=TeX-AMS_HTML',
-        height: $("#postform-container").height() - $("#postform-header").height() - CKEDITOR.config.height
-    	} );
+        height: $("#postform-container").height() - $("#postform-header").height() - CKEDITOR.config.height,
+        {% if user.is_superuser %}
+          removeButtons: 'Cut,Undo,Copy,Redo,Paste,PasteText,PasteFromWord,Scayt,Unlink,Anchor,Maximize,RemoveFormat,Outdent,Indent,About,JustifyBlock',
+        {% else %}
+          removeButtons: 'Cut,Undo,Copy,Redo,Paste,PasteText,PasteFromWord,Scayt,Unlink,Anchor,Maximize,RemoveFormat,Outdent,Indent,About,Source,JustifyBlock',
+        {% endif %}
+  	  });
 
       var e = CKEDITOR.instances.editor{{ thread.pk }};
       {% if edit_or_reply == "edit" %}
